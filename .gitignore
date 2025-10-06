@@ -174,4 +174,6 @@ fabric.properties
 
 .env
 .env.dev
+.env.local
 .idea
+.gitignore
