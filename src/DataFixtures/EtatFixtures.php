@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Etat;
+use App\Entity\State;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -21,7 +21,7 @@ class EtatFixtures extends Fixture
         ];
 
         foreach ($etats as $data) {
-            $etat = new Etat();
+            $etat = new State();
             $etat->setIdEtat($data['idEtat']);
             $etat->setLibelle($data['libelle']);
             $manager->persist($etat);

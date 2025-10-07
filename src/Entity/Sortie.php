@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
+use App\Enum\Etat;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use App\Entity\Etat;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -39,8 +39,7 @@ class Sortie
     #[ORM\Column(length: 255)]
     private ?string $infoSortie = null;
 
-    #[ORM\ManyToOne(targetEntity: Etat::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Column(enumType: Etat::class)]
     private ?Etat $etat = null;
 
     public function getId(): ?int

@@ -8,7 +8,11 @@
 
         {{ form_start(form) }}
         {{ form_widget(form) }}
-        <button class="btn btn-primary mt-3">Créer</button>
+
+        <button type="submit" name="action" value="enregistrer" class="btn btn-primary">Enregistrer</button>
+        <button type="submit" name="action" value="publier" class="btn btn-success">Publier</button>
+        <button class="btn btn-primary">Annuler</button>
         {{ form_end(form) }}
+
     </div>
 {% endblock %}
