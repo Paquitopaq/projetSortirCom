@@ -1,0 +1,144 @@
+/* ---------- GLOBAL ---------- */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #2e3136;
+    font-family: Arial, sans-serif;
+}
+
+.auth-card {
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    z-index: 2;
+    animation: slideUp 0.6s ease-out;
+}
+
+.auth-icon {
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(0, 173, 181);
+    border: 2px solid #00ADB5;
+}
+.auth-icon img {
+    width: 2rem;
+    height: 2rem;
+}
+
+.input-icon {
+    position: relative;
+}
+.input-icon-left {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+/* ---------- FORMULAIRES ---------- */
+.custom-form-control {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    border-radius: 8px !important;
+    padding-left: 2.5rem !important;
+}
+.custom-form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+.custom-form-control:focus {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-color: #00ADB5 !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+    color: white !important;
+}
+
+.custom-form-check {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.custom-form-check:checked {
+    background-color: #00ADB5;
+    border-color: #00ADB5;
+}
+
+/* ---------- BOUTONS ---------- */
+.custom-btn {
+    background-color: #00ADB5 !important;
+    border-color: #00ADB5 !important;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+.custom-btn:hover {
+    background-color: #009ca5 !important;
+    border-color: #009ca5 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+.custom-btn img {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* ---------- LIENS ---------- */
+.forgot-password,
+.register {
+    text-decoration: none;
+    color: #00FFDE;
+}
+.forgot-password:hover,
+.register:hover {
+    text-decoration: underline;
+}
+
+/* ---------- ALERTES ---------- */
+.custom-alert {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    border-radius: 8px;
+}
+.alert-danger {
+    border-left: 4px solid #dc3545;
+}
+.alert-success {
+    border-left: 4px solid #198754;
+}
+
+/* ---------- SÉCURITÉ ---------- */
+.security-info {
+    padding: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.security-info small {
+    color: white !important;
+}
+
+/* ---------- ANIMATIONS & RESPONSIVE ---------- */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-card {
+        margin: 1rem;
+    }
+    .card-body {
+        padding: 2rem 1.5rem !important;
+    }
+}

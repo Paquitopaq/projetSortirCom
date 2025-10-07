@@ -1,0 +1,187 @@
+/* ============================================================
+   🎨 THEME GLOBAL
+   Utilisé dans base.html.twig (dark + accent turquoise)
+   ============================================================ */
+
+/* ---------- VARIABLES ---------- */
+:root{
+    --color-bg: #222831;                 /* fond général */
+    --color-surface: #393E46;            /* containers, sections, navbar, footer */
+    --color-surface-alpha: rgba(57,62,70,0.90); /* surfaces sur fond image */
+    --color-bg-card: rgba(57,62,70,0.90);       /* cartes/boîtes par défaut */
+
+    --color-accent: #00ADB5;
+    --color-accent-light: #00FFDE;
+    --color-text: #FFFFFF;
+    --color-text-muted: rgba(255,255,255,0.75);
+    --color-border: rgba(255,255,255,0.20);
+
+    --radius-base: 8px;
+    --transition-base: all .3s ease;
+    --shadow-accent: 0 4px 12px rgba(0,173,181,.3);
+}
+
+/* ---------- GLOBAL LAYOUT ---------- */
+html,body{
+    margin:0; padding:0; min-height:100vh;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: "Inter","Segoe UI",Roboto,Arial,sans-serif;
+    scroll-behavior:smooth;
+}
+
+/* Fond plein (par défaut) */
+.page-bg{
+    min-height: 100vh;
+    background-color: var(--color-bg);
+}
+
+/* Fond image (optionnel) — passer l’URL via la variable CSS */
+.page-bg--image{
+    min-height:100vh;
+    background-color: var(--color-bg);
+    background-image: var(--page-bg-image, none);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* ---------- CONTAINERS / SURFACES ---------- */
+/* Utilitaire à appliquer quand tu veux un bloc avec le fond #393E46 */
+.surface,
+.container-surface{
+    background: var(--color-surface);
+    border-radius: 15px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 2px 12px rgba(0,0,0,.35);
+}
+
+/* Variante translucide (utile sur page à fond image) */
+.surface--alpha{
+    background: var(--color-surface-alpha);
+    backdrop-filter: blur(10px);
+}
+
+/* Tu peux wrapper un container Bootstrap */
+.container.surface,
+.container.container-surface{ padding: 1.25rem; }
+
+/* ---------- TITRES & TEXTES ---------- */
+h1,h2,h3,h4,h5{ color:var(--color-text); font-weight:600; }
+p,small,span,label{ color:var(--color-text-muted); }
+
+/* ---------- NAVBAR / FOOTER ---------- */
+.navbar.bg-surface,
+.footer.bg-surface{
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+}
+.footer.bg-surface{ border-top: 1px solid var(--color-border); border-bottom: 0; }
+
+/* ---------- CARTES ---------- */
+.card{
+    background: var(--color-bg-card);
+    border: none;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 12px rgba(0,0,0,.4);
+    animation: slideUp .6s ease-out;
+}
+
+/* ---------- FORMULAIRES ---------- */
+.custom-form-control,
+input[type="text"],input[type="email"],input[type="password"],
+textarea,select{
+    background: rgba(255,255,255,.10);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: var(--radius-base);
+    padding: .6rem .8rem;
+    width: 100%;
+    transition: var(--transition-base);
+}
+.custom-form-control::placeholder, input::placeholder{
+    color: rgba(255,255,255,.5);
+}
+.custom-form-control:focus,
+input:focus, textarea:focus, select:focus{
+    background: rgba(255,255,255,.15);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 .2rem rgba(0,173,181,.25);
+    outline: none;
+}
+
+/* Cases à cocher */
+.custom-form-check, input[type="checkbox"]{
+    accent-color: var(--color-accent);
+    cursor: pointer;
+}
+
+/* Icônes dans les champs */
+.input-icon{ position: relative; }
+.input-icon-left{
+    position:absolute; left:15px; top:50%; transform:translateY(-50%);
+    pointer-events:none; width:1.2rem; height:1.2rem;
+}
+
+/* ---------- BOUTONS ---------- */
+.btn, .custom-btn, button{
+    background: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    color: var(--color-text);
+    border-radius: var(--radius-base);
+    font-weight: 500;
+    padding: .6rem 1rem;
+    transition: var(--transition-base);
+    cursor: pointer;
+}
+.btn:hover, .custom-btn:hover, button:hover{
+    background:#009ca5; border-color:#009ca5;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-accent);
+}
+.btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+/* ---------- LIENS ---------- */
+a{ color: var(--color-accent-light); text-decoration:none; transition: var(--transition-base); }
+a:hover{ text-decoration: underline; }
+
+/* ---------- ALERTES ---------- */
+.alert{
+    border-radius: var(--radius-base);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--color-border);
+    padding: .8rem 1rem;
+}
+.alert-danger{ background: rgba(220,53,69,.15); border-left:4px solid #dc3545; }
+.alert-success{ background: rgba(25,135,84,.15); border-left:4px solid #198754; }
+
+/* ---------- BLOCS AUTH ---------- */
+.auth-card{
+    background: var(--color-bg-card);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+.auth-icon{
+    width:4rem; height:4rem;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--color-accent);
+    border: 2px solid var(--color-accent);
+    border-radius: 50%;
+}
+.auth-icon img{ width:2rem; height:2rem; }
+.security-info{
+    padding:.5rem; background: rgba(255,255,255,.05);
+    border-radius:6px; border:1px solid rgba(255,255,255,.1);
+    text-align:center; font-size:.85rem;
+}
+
+/* ---------- ANIM & RESPONSIVE ---------- */
+@keyframes slideUp{
+    from{ opacity:0; transform:translateY(30px); }
+    to{ opacity:1; transform:translateY(0); }
+}
+@media (max-width:768px){
+    .auth-card{ margin:1rem; }
+    .card-body{ padding:2rem 1.5rem !important; }
+}
