@@ -40,53 +40,41 @@
     <div class="row align-items-center">
         <div class="col-md-6 mb-4">
             <h1 class="fw-bold mb-3">Sortir à Niort</h1>
+            <p class="text-muted">Organisez vos sorties et séjours entre amis, partagez vos bons plans et découvrez de nouveaux lieux ensemble.</p>
 
-            <h3>Filtrer les sorties</h3>
             <form class="bg-white p-4 rounded-4 shadow-sm">
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Site</label>
-                    <select class="form-select" name="lieu">
-                        <option value="" selected>Choisir un lieu</option>
-                        {% for lieu in lieux %}
-                            <option value="{{ lieu.id }}">{{ lieu.nom }}</option>
-                        {% endfor %}
-                    </select>
+                    <label class="form-label fw-semibold">Adresse</label>
+                    <input type="text" class="form-control" placeholder="France">
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Le nom de la sortie contient : </label>
-                    <input type="text" name="nom_sortie" class="form-control" placeholder="search">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Arrivée</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Départ</label>
+                        <input type="date" class="form-control">
+                    </div>
                 </div>
-                <div class="mb-3">
+                <div class="row mb-4">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Entre</label>
-                        <input type="date" name="date_debut" class="form-control">
+                        <label class="form-label fw-semibold">Adultes</label>
+                        <select class="form-select">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3+</option>
+                        </select>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">et</label>
-                        <input type="date" name="date_fin" class="form-control">
+                        <label class="form-label fw-semibold">Enfants</label>
+                        <select class="form-select">
+                            <option>0</option>
+                            <option>1</option>
+                            <option>2+</option>
+                        </select>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Filtres :</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="organisateur" value="1" id="organisateur">
-                        <label class="form-check-label" for="organisateur">Sorties dont je suis l'organisateur/trice</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="inscrit" value="1" id="inscrit">
-                        <label class="form-check-label" for="inscrit">Sorties auxquelles je suis inscrit/e</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="non_inscrit" value="1" id="non_inscrit">
-                        <label class="form-check-label" for="non_inscrit">Sorties auxquelles je ne suis pas inscrit/e</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="passees" value="1" id="passees">
-                        <label class="form-check-label" for="passees">Sorties passées</label>
-                    </div>
-                </div>
-
-
                 <button class="btn btn-danger w-100 py-2 fw-bold">🔍 Rechercher</button>
             </form>
         </div>
