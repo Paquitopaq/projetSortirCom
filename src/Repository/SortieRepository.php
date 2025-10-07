@@ -16,28 +16,74 @@ class SortieRepository extends ServiceEntityRepository
         parent::__construct($registry, Sortie::class);
     }
 
-    //    /**
-    //     * @return Sortie[] Returns an array of Sortie objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findByFilters(?string $nom, ?string $dateDebut, ?string $dateFin, $organisateur, $inscrit, $nonInscrit, $passees, $user)
+    {
+        $qb = $this->createQueryBuilder('s');
 
-    //    public function findOneBySomeField($value): ?Sortie
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $filters = [
+            'nom' => $nom,
+            'dateDebut' => $dateDebut,
+            'dateFin' => $dateFin,
+            'organisateur' => $organisateur,
+            'inscrit' => $inscrit,
+            'nonInscrit' => $nonInscrit,
+            'passees' => $passees,
+        ];
+
+        foreach ($filters as $key => $value) {
+            switch ($key) {
+                case 'nom':
+                    if ($value) {
+                        $qb->andWhere('s.nom LIKE :nom')->setParameter('nom', '%' . $value . '%');
+                    }
+                    break;
+
+                case 'dateDebut':
+                    if ($value) {
+                        $qb->andWhere('s.dateHeureDebut >= :dateDebut')->setParameter('dateDebut', new \DateTime($value));
+                    }
+                    break;
+
+                case 'dateFin':
+                    if ($value) {
+                        $qb->andWhere('s.dateHeureDebut <= :dateFin')->setParameter('dateFin', new \DateTime($value));
+                    }
+                    break;
+
+                case 'organisateur':
+                    if ($value) {
+                        $qb->andWhere('s.organisateur = :user')->setParameter('user', $user);
+                    }
+                    break;
+
+                case 'inscrit':
+                    if ($value) {
+                        $qb->join('s.inscriptions', 'i')
+                            ->andWhere('i.participant = :userInscrit')
+                            ->setParameter('userInscrit', $user);
+                    }
+                    break;
+
+                case 'nonInscrit':
+                    if ($value) {
+                        $qb->leftJoin('s.inscriptions', 'i2', 'WITH', 'i2.participant = :userNonInscrit')
+                            ->andWhere('i2.id IS NULL')
+                            ->setParameter('userNonInscrit', $user);
+                    }
+                    break;
+
+                case 'passees':
+                    if ($value) {
+                        $qb->andWhere('s.dateHeureDebut < :now')->setParameter('now', new \DateTime());
+                    }
+                    break;
+            }
+        }
+
+        $qb->orderBy('s.dateHeureDebut', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+
 }
