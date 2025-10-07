@@ -1,19 +1,128 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+{% endblock %}
+
+{% block title %}Créer un compte{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+    <div class="min-vh-100 d-flex align-items-center justify-content-center position-relative py-4">
 
-    {{ form_errors(registrationForm) }}
+        <div class="container position-relative">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-5">
+                    <!-- Carte principale -->
+                    <div class="card bg-dark text-light border-0 shadow-lg auth-card">
+                        <div class="card-body p-4 p-md-5">
+                            <!-- En-tête avec icône -->
+                            <div class="text-center mb-4">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 auth-icon">
+                                    <img src="{{ asset('icons/avatar.png') }}" alt="Utilisateur">
+                                </div>
+                                <h1 class="h3 fw-bold text-white mb-2">Créer un compte</h1>
+                                <p class="text-light opacity-75 mb-0">Rejoignez SeriesTime en quelques minutes</p>
+                            </div>
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+                            {# Messages flash d'erreur #}
+                            {% for flash_error in app.flashes('verify_email_error') %}
+                                <div class="alert alert-danger d-flex align-items-start border-0 mb-4 custom-alert">
+                                    <img src="{{ asset('icons/cadenas.png') }}" class="me-2">
+                                    <small>{{ flash_error }}</small>
+                                </div>
+                            {% endfor %}
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+                            {# Messages flash de succès #}
+                            {% for flash_success in app.flashes('success') %}
+                                <div class="alert alert-success d-flex align-items-start border-0 mb-4 custom-alert">
+                                    <img src="{{ asset('icons/user.png') }}" class="me-2">
+                                    <small>{{ flash_success }}</small>
+                                </div>
+                            {% endfor %}
+
+                            {{ form_start(registrationForm) }}
+
+                            {# Champ Nom d'utilisateur (désactivé pour l’instant) #}
+                            {#
+                            <div class="mb-3">
+                                {{ form_label(registrationForm.username, null, { 'label_attr': {'class': 'form-label text-light small fw-medium'} }) }}
+                                <div class="input-icon">
+                                    <img src="{{ asset('icons/user.png') }}" class="input-icon-left" alt="Nom d'utilisateur">
+                                    {{ form_widget(registrationForm.username, { 'attr': { 'class': 'form-control custom-form-control ps-5', 'placeholder': 'Votre nom d\'utilisateur' } }) }}
+                                </div>
+                                {% if form_errors(registrationForm.username) %}
+                                    <div class="text-danger mt-2">
+                                        <small><img src="{{ asset('icons/cadenas.png') }}" class="me-1">{{ form_errors(registrationForm.username) }}</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            #}
+
+                            <!-- Champ Email -->
+                            <div class="mb-3">
+                                {{ form_label(registrationForm.email, null, { 'label_attr': {'class': 'form-label text-light small fw-medium'} }) }}
+                                <div class="input-icon">
+                                    <img src="{{ asset('icons/enveloppe.png') }}" class="input-icon-left" alt="Email">
+                                    {{ form_widget(registrationForm.email, { 'attr': { 'class': 'form-control custom-form-control ps-5', 'placeholder': 'votre@email.com' } }) }}
+                                </div>
+                                {% if form_errors(registrationForm.email) %}
+                                    <div class="text-danger mt-2">
+                                        <small><img src="{{ asset('icons/cadenas.png') }}" class="me-1">{{ form_errors(registrationForm.email) }}</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Champ Mot de passe -->
+                            <div class="mb-3">
+                                {{ form_label(registrationForm.plainPassword, 'Mot de passe', { 'label_attr': {'class': 'form-label text-light small fw-medium'} }) }}
+                                <div class="input-icon">
+                                    <img src="{{ asset('icons/cadenas.png') }}" class="input-icon-left" alt="Mot de passe">
+                                    {{ form_widget(registrationForm.plainPassword, { 'attr': { 'class': 'form-control custom-form-control ps-5', 'placeholder': '••••••••••' } }) }}
+                                </div>
+                                {% if form_errors(registrationForm.plainPassword) %}
+                                    <div class="text-danger mt-2">
+                                        <small><img src="{{ asset('icons/cadenas.png') }}" class="me-1">{{ form_errors(registrationForm.plainPassword) }}</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Case à cocher Conditions -->
+                            {% if registrationForm.agreeTerms is defined %}
+                                <div class="mb-4 p-3 custom-terms-box">
+                                    <div class="form-check">
+                                        {{ form_widget(registrationForm.agreeTerms, { 'attr': { 'class': 'form-check-input custom-form-check' } }) }}
+                                        {{ form_label(registrationForm.agreeTerms, null, { 'label_attr': {'class': 'form-check-label text-light small'} }) }}
+                                    </div>
+                                    {% if form_errors(registrationForm.agreeTerms) %}
+                                        <div class="text-danger mt-2">
+                                            <small><img src="{{ asset('icons/cadenas.png') }}" class="me-1">{{ form_errors(registrationForm.agreeTerms) }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            <!-- Bouton d'inscription -->
+                            <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold mb-4 custom-btn d-flex align-items-center justify-content-center">
+                                Créer mon compte
+                                <img src="{{ asset('icons/arrow.png') }}" class="ms-2" alt="">
+                            </button>
+
+                            {{ form_end(registrationForm) }}
+
+                            <!-- Lien de connexion -->
+                            <div class="text-center mb-3">
+                                <small class="text-light opacity-75">
+                                    Déjà un compte ?
+                                    <a href="{{ path('app_login') }}" class="register">
+                                        Se connecter
+                                    </a>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

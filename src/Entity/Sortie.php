@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\SortieRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -20,12 +23,14 @@ class Sortie
     private ?string $nom = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\GreaterThan("today", message: "La date de début doit être supérieur à aujourd'hui")]
     private ?\DateTime $dateHeureDebut = null;
 
     #[ORM\Column]
     private ?int $duree = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: "La date limite d'inscription est obligatoire")]
     private ?\DateTime $dateLimiteInscription = null;
 
     #[ORM\Column]
@@ -137,4 +142,17 @@ class Sortie
 
         return $this;
     }
+
+    #[Assert\Callback]
+    public function validateDates(ExecutionContextInterface $context): void
+    {
+        if ($this->dateLimiteInscription && $this->dateHeureDebut) {
+            if ($this->dateLimiteInscription > $this->dateHeureDebut) {
+                $context->buildViolation("La date limite d'inscription doit être avant la date de début")
+                    ->atPath('dateLimiteInscription')
+                    ->addViolation();
+            }
+        }
+    }
+
 }
