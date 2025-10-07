@@ -24,12 +24,6 @@ class SortieType extends AbstractType
             ])
             ->add('nbInscriptionMax')
             ->add('infoSortie')
-            ->add('etat', EntityType::class, [
-                'class' => Etat::class,
-                'choice_label' => 'libelle',
-                'label' => 'État de la sortie',
-                'disabled' => true,
-            ])
 
         ;
     }
