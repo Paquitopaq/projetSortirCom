@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\State;
 use App\Entity\Sortie;
-use App\Enum\Etat;
 use App\Form\SortieType;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Enum\Etat;
+use App\Enum\State;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -39,8 +40,7 @@ class Sortie
     #[ORM\Column(length: 255)]
     private ?string $infoSortie = null;
 
-    #[ORM\ManyToOne(targetEntity: Etat::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Column(enumType: Etat::class)]
     private ?Etat $etat = null;
 
     public function getId(): ?int
