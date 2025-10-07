@@ -29,6 +29,7 @@
             <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_register') }}">Inscription</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_login') }}">Connexion</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ path('sortie_create') }}">Création Sortie</a></li>
             </ul>
         </div>
     </div>
@@ -87,7 +88,67 @@
     </div>
 </section>
 
-{% block body %}{% endblock %}
+{% block body %}
+    <div class="container mt-5">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-danger">
+                <tr>
+                    <th>Nom de la sortie</th>
+                    <th>Date de la sortie</th>
+                    <th>Clôture</th>
+                    <th>Inscrits/Places</th>
+                    <th>État</th>
+                    <th>Inscrit</th>
+                    <th>Organisateur</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for sortie in sorties %}
+                    <tr>
+                        <td>{{ sortie.nom }}</td>
+                        <td>
+                            {% if sortie.dateHeureDebut %}
+                                {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
+                        <td>{# TODO : nbInscriptionMax pour le max. Tu peux remplacer avec un compteur réel si tu as une table Inscription #}
+                            0 / {{ sortie.nbInscriptionMax }}</td>
+                        <td>{{ sortie.etat.value }}</td>
+                        <td>
+                            {# TODO : Ici tu peux afficher si l'utilisateur courant est inscrit #}
+                            Non
+                        </td>
+                        <td>
+                            {# TODO : Si tu as un champ organisateur dans Sortie, tu peux mettre : sortie.organisateur.nom #}
+                            Admin
+                        </td>
+                        <td>
+                            {# TODO : Lien vers le détail /sortie/{id} ou d’autres actions #}
+{#                            <a href="{{ path('app_sortie_detail', {'id': sortie.id}) }}" class="btn btn-sm btn-primary">Voir</a>#}
+                            {# Autres actions : s'inscrire, annuler, etc. #}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            Aucune sortie trouvée.
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+
+<button class="btn btn-danger w-40 py-2 fw-bold">Créer une sortie</button>
+
 
 <footer class="text-center text-muted py-4 mt-5 border-top">
     <small>&copy; {{ "now"|date("Y") }} MonApp — Tous droits réservés.</small>
