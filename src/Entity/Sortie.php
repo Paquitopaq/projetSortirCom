@@ -39,8 +39,9 @@ class Sortie
     #[ORM\Column(length: 255)]
     private ?string $infoSortie = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $etat = null;
+    #[ORM\ManyToOne(targetEntity: Etat::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Etat $etat = null;
 
     public function getId(): ?int
     {
@@ -131,17 +132,18 @@ class Sortie
         return $this;
     }
 
-    public function getEtat(): ?string
+    public function getEtat(): ?Etat
     {
         return $this->etat;
     }
 
-    public function setEtat(string $etat): static
+    public function setEtat(?Etat $etat): static
     {
         $this->etat = $etat;
 
         return $this;
     }
+
 
     #[Assert\Callback]
     public function validateDates(ExecutionContextInterface $context): void
