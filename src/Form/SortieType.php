@@ -7,6 +7,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\Etat;
 
 class SortieType extends AbstractType
 {
@@ -22,7 +24,12 @@ class SortieType extends AbstractType
             ])
             ->add('nbInscriptionMax')
             ->add('infoSortie')
-            ->add('etat')
+            ->add('etat', EntityType::class, [
+                'class' => Etat::class,
+                'choice_label' => 'libelle',
+                'label' => 'État de la sortie',
+            ])
+
         ;
     }
 
