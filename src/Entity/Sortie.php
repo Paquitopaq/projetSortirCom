@@ -154,5 +154,38 @@ class Sortie
             }
         }
     }
+    public function updateEtat(): void
+    {
+        $now = new \DateTime();
+
+        if ($this->etat->getIdEtat() === 'CREATION') {
+            // Rien à faire, attend publication
+            return;
+        }
+
+        if ($this->etat->getIdEtat() === 'OUVERTE') {
+            if ($this->dateLimiteInscription < $now || $this->getNbInscriptionMax() <= $this->getNbInscrits()) {
+                $this->etat->setIdEtat('CLOTUREE');
+            }
+        }
+
+        if ($this->etat->getIdEtat() === 'CLOTUREE') {
+            if ($this->dateHeureDebut <= $now) {
+                $this->etat->setIdEtat('EN_COURS');
+            }
+        }
+
+        if ($this->etat->getIdEtat() === 'EN_COURS') {
+            $fin = clone $this->dateHeureDebut;
+            $fin->modify("+{$this->duree} minutes");
+
+            if ($fin <= $now) {
+                $this->etat->setIdEtat('TERMINEE');
+            }
+        }
+
+        // Rajouter les autres changements quand on fera les features annulé ou archiver
+    }
+
 
 }
