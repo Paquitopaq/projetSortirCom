@@ -28,6 +28,7 @@ class SortieType extends AbstractType
                 'class' => Etat::class,
                 'choice_label' => 'libelle',
                 'label' => 'État de la sortie',
+                'disabled' => true,
             ])
 
         ;
