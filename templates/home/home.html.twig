@@ -29,6 +29,7 @@
             <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_register') }}">Inscription</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_login') }}">Connexion</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ path('sortie_create') }}">Création Sortie</a></li>
             </ul>
         </div>
     </div>
@@ -129,7 +130,7 @@
                         <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
                         <td>{# TODO : nbInscriptionMax pour le max. Tu peux remplacer avec un compteur réel si tu as une table Inscription #}
                             0 / {{ sortie.nbInscriptionMax }}</td>
-                        <td>{{ sortie.etat }}</td>
+                        <td>{{ sortie.etat.value }}</td>
                         <td>
                             {# TODO : Ici tu peux afficher si l'utilisateur courant est inscrit #}
                             Non
