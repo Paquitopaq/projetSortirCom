@@ -25,6 +25,12 @@ security:
                 # where to redirect after logout
                 # target: app_any_route
 
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800  # 7 jours (en secondes)
+                path: /
+                always_remember_me: false
+
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
