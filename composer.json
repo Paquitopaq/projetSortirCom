@@ -22,8 +22,7 @@
         "symfony/security-bundle": "6.4.*",
         "symfony/twig-bundle": "6.4.*",
         "symfony/validator": "6.4.*",
-        "symfony/yaml": "6.4.*",
-      "ext-http": "*"
+        "symfony/yaml": "6.4.*"
     },
     "config": {
         "allow-plugins": {
