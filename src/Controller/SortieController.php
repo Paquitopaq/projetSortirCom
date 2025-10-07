@@ -24,6 +24,8 @@ final class SortieController extends AbstractController
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
         $sortie = new Sortie();
+        $sortie->setIdSortie(uniqid('SRT_'));
+
         $form = $this->createForm(SortieType::class, $sortie);
 
         $form->handleRequest($request);
@@ -33,7 +35,7 @@ final class SortieController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Sortie créée avec succès !');
-            return $this->redirectToRoute('sortie_index');
+            return $this->redirectToRoute('app_sortie');
         }
 
         return $this->render('sortie/create.html.twig', [
