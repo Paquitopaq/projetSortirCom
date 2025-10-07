@@ -130,7 +130,7 @@
                         <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
                         <td>{# TODO : nbInscriptionMax pour le max. Tu peux remplacer avec un compteur réel si tu as une table Inscription #}
                             0 / {{ sortie.nbInscriptionMax }}</td>
-                        <td>{{ sortie.etat }}</td>
+                        <td>{{ sortie.etat.value }}</td>
                         <td>
                             {# TODO : Ici tu peux afficher si l'utilisateur courant est inscrit #}
                             Non
