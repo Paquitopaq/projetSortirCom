@@ -1,20 +1,92 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-            <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-            <!-- Bootstrap CSS -->
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        {% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
+
+        <!-- Global style -->
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+
+        <!-- Navbar animation -->
+        <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <style>
+            .litepicker {
+                border-radius: 16px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+                border: none;
+            }
+
+            .litepicker .container__months {
+                display: flex;
+                gap: 2rem;
+                padding: 1.5rem;
+            }
+
+            .litepicker .month-item {
+                border: none;
+                background: white;
+            }
+
+            .litepicker .month-item-header {
+                font-weight: 600;
+                color: #38000A;
+                text-align: center;
+                font-size: 1rem;
+            }
+
+            .litepicker .day-item {
+                border-radius: 50%;
+                width: 36px;
+                height: 36px;
+                line-height: 36px;
+                transition: all 0.2s ease;
+            }
+
+            .litepicker .day-item:hover {
+                background-color: #FFA896;
+                color: white;
+            }
+
+            .litepicker .is-start-date,
+            .litepicker .is-end-date {
+                background-color: #CD1C18;
+                color: white !important;
+            }
+
+            .litepicker .is-in-range {
+                background-color: #FFA89640;
+            }
+
+            .litepicker .container__days {
+                font-size: 0.95rem;
+            }
+        </style>
+    {% endblock %}
+
+    {% block javascripts %}
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    {% endblock %}
+</head>
+
+<body>
+<!-- Navbar globale -->
+{% include 'partials/_navbar.html.twig' %}
+
+<!-- Contenu principal -->
+<main class="mt-4">
+    {% block body %}{% endblock %}
+</main>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
