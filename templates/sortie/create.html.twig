@@ -3,57 +3,170 @@
 {% block title %}Créer une Sortie{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h1>Créer une Sortie</h1>
+    <div class="min-vh-100 d-flex align-items-center justify-content-center py-4">
+        <div class="container position-relative">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <!-- Carte principale -->
+                    <div class="card bg-dark text-light border-0 shadow-lg auth-card">
+                        <div class="card-body p-4 p-md-5">
+                            <!-- En-tête -->
+                            <div class="text-center mb-4">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 auth-icon">
+                                    <img src="{{ asset('icons/event.png') }}" alt="Créer une sortie">
+                                </div>
+                                <h1 class="h3 fw-bold text-white mb-2">Créer une Sortie</h1>
+                                <p class="text-light opacity-75 mb-0">Renseignez les informations ci-dessous</p>
+                            </div>
 
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <div id="lieu-details" class="mt-3">
-            <p><strong>Ville :</strong> <span id="lieu-ville"></span></p>
-            <p><strong>Rue :</strong> <span id="lieu-rue"></span></p>
-            <p><strong>Code postal :</strong> <span id="lieu-code-postal"></span></p>
-            <p><strong>Latitude :</strong> <span id="lieu-latitude"></span></p>
-            <p><strong>Longitude :</strong> <span id="lieu-longitude"></span></p>
+                            <!-- Formulaire -->
+                            {{ form_start(form) }}
+
+                            <!-- Nom -->
+                            <div class="mb-3">
+                                {{ form_label(form.nom, 'Nom de la sortie', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
+                                <div class="input-icon">
+                                    <img src="{{ asset('icons/titre.png') }}" class="input-icon-left" alt="">
+                                    {{ form_widget(form.nom, {'attr': {'class': 'form-control custom-form-control', 'placeholder': 'Ex: Sortie au parc'}}) }}
+                                </div>
+                            </div>
+
+                            <!-- Date de début -->
+                            <div class="mb-3">
+                                {{ form_label(form.dateHeureDebut, 'Date et heure de début', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
+                                <div class="input-icon">
+                                    <img src="{{ asset('icons/calendar.png') }}" class="input-icon-left" alt="">
+                                    {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'form-control custom-form-control'}}) }}
+                                </div>
+                            </div>
+
+                            <!-- Durée -->
+                            <div class="mb-3">
+                                {{ form_label(form.duree, 'Durée (en minutes)', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
+                                <div class="input-icon">
+                                    <img src="{{ asset('icons/time.png') }}" class="input-icon-left" alt="">
+                                    {{ form_widget(form.duree, {'attr': {'class': 'form-control custom-form-control', 'placeholder': 'Ex: 120'}}) }}
+                                </div>
+                            </div>
+
+                            <!-- Date limite -->
+                            <div class="mb-3">
+                                {{ form_label(form.dateLimiteInscription, 'Date limite d’inscription', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
+                                <div class="input-icon">
+                                    <img src="{{ asset('icons/clock.png') }}" class="input-icon-left" alt="">
+                                    {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'form-control custom-form-control'}}) }}
+                                </div>
+                            </div>
+
+                            <!-- Nombre max -->
+                            <div class="mb-3">
+                                {{ form_label(form.nbInscriptionMax, 'Nombre maximum de participants', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
+                                <div class="input-icon">
+                                    <img src="{{ asset('icons/users.png') }}" class="input-icon-left" alt="">
+                                    {{ form_widget(form.nbInscriptionMax, {'attr': {'class': 'form-control custom-form-control', 'placeholder': 'Ex: 15'}}) }}
+                                </div>
+                            </div>
+
+                            <!-- Infos sortie -->
+                            <div class="mb-3">
+                                {{ form_label(form.infoSortie, 'Informations complémentaires', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
+                                <div class="input-icon">
+                                    <img src="{{ asset('icons/info.png') }}" class="input-icon-left" alt="">
+                                    {{ form_widget(form.infoSortie, {'attr': {'class': 'form-control custom-form-control', 'rows': 3, 'placeholder': 'Détails de la sortie...'}}) }}
+                                </div>
+                            </div>
+
+                            <!-- Boutons -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="submit" name="action" value="enregistrer" class="btn custom-btn fw-semibold d-flex align-items-center justify-content-center">
+                                    <img src="{{ asset('icons/save.png') }}" alt="Enregistrer" class="me-2"> Enregistrer
+                                </button>
+                                <button type="submit" name="action" value="publier" class="btn btn-success fw-semibold d-flex align-items-center justify-content-center">
+                                    <img src="{{ asset('icons/upload.png') }}" alt="Publier" class="me-2"> Publier
+                                </button>
+                                <a href="{{ path('app_sortie') }}" class="btn btn-secondary fw-semibold d-flex align-items-center justify-content-center">
+                                    <img src="{{ asset('icons/close.png') }}" alt="Annuler" class="me-2"> Annuler
+                                </a>
+                            </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-
-        <button type="submit" name="action" value="enregistrer" class="btn btn-primary">Enregistrer</button>
-        <button type="submit" name="action" value="publier" class="btn btn-success">Publier</button>
-        <button class="btn btn-primary">Annuler</button>
-        {{ form_end(form) }}
-
-    </div>
-    <script>
-        const lieux = {
-            {% for lieu in lieux %}
-            "{{ lieu.id }}": {
-                ville: "{{ lieu.ville.nom|e('js') }}",
-                rue: "{{ lieu.rue|e('js') }}",
-                codePostal: "{{ lieu.ville.codePostal|e('js') }}",
-                latitude: "{{ lieu.latitude }}",
-                longitude: "{{ lieu.longitude }}"
-            },
-            {% endfor %}
-        };
-
-        document.getElementById('sortie_lieu').addEventListener('change', function () {
-            const selectedId = this.value;
-            const details = lieux[selectedId];
-
-            if (details) {
-                document.getElementById('lieu-ville').textContent = details.ville;
-                document.getElementById('lieu-rue').textContent = details.rue;
-                document.getElementById('lieu-code-postal').textContent = details.codePostal;
-                document.getElementById('lieu-latitude').textContent = details.latitude;
-                document.getElementById('lieu-longitude').textContent = details.longitude;
-            } else {
-                document.getElementById('lieu-ville').textContent = details.ville;
-                document.getElementById('lieu-rue').textContent = details.rue;
-                document.getElementById('lieu-code-postal').textContent = details.codePostal;                document.getElementById('lieu-latitude').textContent = '';
-                document.getElementById('lieu-latitude').textContent = details.latitude;
-                document.getElementById('lieu-longitude').textContent = '';
+        <style>
+            body {
+                background-color: #2e3136;
+                font-family: Arial, sans-serif;
             }
-        });
-    </script>
 
+            .auth-card {
+                background-color: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(10px);
+                border-radius: 15px;
+                animation: slideUp 0.6s ease-out;
+            }
+
+            .auth-icon {
+                width: 4rem;
+                height: 4rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: rgb(0, 173, 181);
+                border: 2px solid #00ADB5;
+            }
+            .auth-icon img { width: 2rem; height: 2rem; }
+
+            .input-icon { position: relative; }
+            .input-icon-left {
+                position: absolute;
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                pointer-events: none;
+                width: 1.2rem; height: 1.2rem;
+            }
+
+            .custom-form-control {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                border: 1px solid rgba(255, 255, 255, 0.3) !important;
+                color: white !important;
+                border-radius: 8px !important;
+                padding-left: 2.5rem !important;
+            }
+            .custom-form-control::placeholder { color: rgba(255, 255, 255, 0.6) !important; }
+            .custom-form-control:focus {
+                background-color: rgba(255, 255, 255, 0.15) !important;
+                border-color: #00ADB5 !important;
+                box-shadow: 0 0 0 0.2rem rgba(0, 173, 181, 0.25) !important;
+                color: white !important;
+            }
+
+            .custom-btn {
+                background-color: #00ADB5 !important;
+                border-color: #00ADB5 !important;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+            }
+            .custom-btn:hover {
+                background-color: #009ca5 !important;
+                border-color: #009ca5 !important;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 173, 181, 0.3);
+            }
+
+            @keyframes slideUp {
+                from { opacity: 0; transform: translateY(30px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            @media (max-width: 768px) {
+                .auth-card { margin: 1rem; }
+                .card-body { padding: 2rem 1.5rem !important; }
+            }
+        </style>
+    </div>
 {% endblock %}

@@ -1,0 +1,97 @@
+/* =====================================================
+   🌊 Navbar animée turquoise (SeriesTime)
+   ===================================================== */
+
+.custom-nav {
+    position: relative;
+    width: 650px; /* plus longue */
+    height: 60px;
+    margin: 1.5rem auto;
+}
+
+.nav-container {
+    position: absolute;
+    inset: 0;
+    background: #00ADB5; /* fond turquoise principal */
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5em 1.2em;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* --- Boutons --- */
+.nav-btn {
+    padding: 0.5em 1.5em;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+}
+
+/* --- SVG Outline --- */
+.nav-outline {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.nav-rect {
+    stroke: #ffffff; /* barres blanches */
+    stroke-dashoffset: 5;
+    stroke-dasharray: 0 0 10 40 10 40;
+    transition: 0.5s;
+}
+
+/* Animation globale */
+.nav-container:hover .nav-outline .nav-rect {
+    transition: 999999s;
+    stroke-dashoffset: 1;
+    stroke-dasharray: 0;
+}
+
+/* Animation segmentée selon le bouton */
+.nav-btn:nth-child(1):hover ~ svg .nav-rect {
+    stroke-dashoffset: 0;
+    stroke-dasharray: 0 2 8 93.3 8 10.7;
+}
+.nav-btn:nth-child(2):hover ~ svg .nav-rect {
+    stroke-dashoffset: 0;
+    stroke-dasharray: 0 22.6 9.5 69.3 9.5 31.6;
+}
+.nav-btn:nth-child(3):hover ~ svg .nav-rect {
+    stroke-dashoffset: 0;
+    stroke-dasharray: 0 36.5 8.5 47.5 8.5 55.5;
+}
+.nav-btn:nth-child(4):hover ~ svg .nav-rect {
+    stroke-dashoffset: 0;
+    stroke-dasharray: 0 53.7 6.9 15.2 6.9 86;
+}
+
+.nav-btn:hover ~ .nav-outline .nav-rect {
+    stroke-dashoffset: 0;
+    stroke-dasharray: 0 0 10 40 10 40;
+    transition: 0.5s !important;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .custom-nav {
+        width: 95%;
+        height: 55px;
+    }
+    .nav-btn {
+        padding: 0.4em 0.8em;
+        font-size: 0.85rem;
+    }
+}

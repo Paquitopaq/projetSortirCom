@@ -1,0 +1,133 @@
+/* ======================================================
+   🏙️ Page d’accueil SeriesTime (style Saint-Dizier, bleu/turquoise)
+   ====================================================== */
+
+:root {
+    --bg-dark: #222831;
+    --bg-overlay: rgba(34, 40, 49, 0.8);
+    --accent: #00ADB5;
+    --accent-hover: #009ca5;
+    --text-light: #fff;
+}
+
+/* ---------- HERO ---------- */
+.hero-banner {
+    height: 80vh;
+    background: url("../images/niort-fond.jpg") center/cover no-repeat;
+    position: relative;
+    color: var(--text-light);
+}
+
+.hero-banner .overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--bg-overlay);
+}
+
+.hero-banner h1 {
+    font-size: 2.2rem;
+}
+
+.hero-banner p {
+    font-size: 1.1rem;
+}
+
+/* ---------- SEARCH BAR ---------- */
+.search-bar {
+    max-width: 600px;
+    background: #fff;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.search-bar input {
+    flex: 1;
+    border: none;
+    padding: 0.75rem 1.2rem;
+    border-radius: 50px 0 0 50px;
+    font-size: 1rem;
+}
+
+.search-bar input:focus {
+    outline: none;
+}
+
+.btn-accent {
+    background-color: var(--accent);
+    border: none;
+    color: #fff;
+    transition: 0.3s;
+}
+.btn-accent:hover {
+    background-color: var(--accent-hover);
+}
+
+/* ---------- QUICK LINKS ---------- */
+.quick-links {
+    margin-top: 2rem;
+}
+
+.quick-link {
+    text-decoration: none;
+    color: var(--text-light);
+    font-weight: 500;
+    text-align: center;
+    width: 100px;
+    transition: transform 0.3s;
+}
+.quick-link:hover {
+    transform: translateY(-4px);
+}
+
+.icon-circle {
+    width: 70px;
+    height: 70px;
+    background-color: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 173, 181, 0.4);
+}
+.icon-circle img {
+    width: 30px;
+    height: 30px;
+}
+
+/* ---------- TABLE ---------- */
+.table {
+    background: #fff;
+}
+
+.table-accent {
+    background: var(--accent);
+}
+
+.btn-outline-accent {
+    border: 1px solid var(--accent);
+    color: var(--accent);
+}
+.btn-outline-accent:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+    .hero-banner {
+        height: 65vh;
+    }
+    .hero-banner h1 {
+        font-size: 1.8rem;
+    }
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+    }
+    .icon-circle img {
+        width: 24px;
+        height: 24px;
+    }
+}
