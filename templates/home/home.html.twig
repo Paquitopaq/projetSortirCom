@@ -156,8 +156,9 @@
             <div class="footer-section">
                 <h4>Compte</h4>
                 {% if app.user %}
-                    <a href="{{ path('profile_index') }}">Mon profil</a>
-                    <a href="{{ path('profile_edit') }}">Paramètres</a>
+{#                     TODO
+                        <a href="{{ path('profile_index') }}">Mon profil</a>#}
+{#                      <a href="{{ path('profile_edit') }}">Paramètres</a>#}
                 {% else %}
                     <a href="{{ path('app_login') }}">Se connecter</a>
                     <a href="{{ path('app_register') }}">S'inscrire</a>
