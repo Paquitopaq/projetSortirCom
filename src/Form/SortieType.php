@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Lieu;
 use App\Entity\Sortie;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -24,6 +26,13 @@ class SortieType extends AbstractType
             ])
             ->add('nbInscriptionMax')
             ->add('infoSortie')
+            ->add('lieu', EntityType::class, [
+                'class' => Lieu::class,
+                'choice_label' => 'nom', // ou 'idLieu' si tu préfères
+                'label' => 'Lieu de la sortie',
+                'placeholder' => 'Choisissez un lieu',
+            ])
+
 
         ;
     }
