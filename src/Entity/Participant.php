@@ -7,6 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: ParticipantRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -50,6 +52,16 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private ?bool $actif = true;
+
+    #[ORM\ManyToMany(targetEntity: Sortie::class, mappedBy: 'participants')]
+    private Collection $sorties;
+
+
+    public function __construct()
+    {
+        $this->sorties = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -174,6 +186,32 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->actif = $actif;
     }
+
+    public function getSorties(): Collection
+    {
+        return $this->sorties;
+    }
+
+    public function addSortie(Sortie $sortie): self
+    {
+        if (!$this->sorties->contains($sortie)) {
+            $this->sorties->add($sortie);
+            $sortie->addParticipant($this); // synchronisation côté Sortie
+        }
+
+        return $this;
+    }
+
+    public function removeSortie(Sortie $sortie): self
+    {
+        if ($this->sorties->removeElement($sortie)) {
+            $sortie->removeParticipant($this); // synchronisation côté Sortie
+        }
+
+        return $this;
+    }
+
+
 
 
 

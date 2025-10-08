@@ -8,6 +8,8 @@ use App\Repository\SortieRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -43,6 +45,15 @@ class Sortie
     #[ORM\Column(enumType: Etat::class)]
     private ?Etat $etat = null;
 
+
+    #[ORM\ManyToMany(targetEntity: Participant::class, inversedBy: 'sorties')]
+    #[ORM\JoinTable(name: 'sortie_participant')]
+    private Collection $participants;
+
+    public function __construct()
+    {
+        $this->participants = new ArrayCollection();
+    }
     #[ORM\ManyToOne(inversedBy: 'ville')]
     private ?Site $site = null;
 
@@ -151,6 +162,18 @@ class Sortie
 
         return $this;
     }
+
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function setParticipants(Collection $participants): void
+    {
+        $this->participants = $participants;
+    }
+
+
 
 
     #[Assert\Callback]
