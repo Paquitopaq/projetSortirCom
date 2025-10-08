@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h2>Profil du participant</h2>
+
+    <table class="table table-bordered">
+        <tr>
+            <th>Pseudo</th>
+            <td>{{ participant.pseudo ?? 'Non renseigné' }}</td>
+        </tr>
+        <tr>
+            <th>Nom</th>
+            <td>{{ participant.nom ?? 'Non renseigné' }}</td>
+        </tr>
+        <tr>
+            <th>Prénom</th>
+            <td>{{ participant.prenom ?? 'Non renseigné' }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ participant.email }}</td>
+        </tr>
+        <tr>
+            <th>Téléphone</th>
+            <td>{{ participant.telephone ?? 'Non renseigné' }}</td>
+        </tr>
+        <tr>
+            <th>Administrateur</th>
+            <td>{{ participant.administrateur ? 'Oui' : 'Non' }}</td>
+        </tr>
+        <tr>
+            <th>Actif</th>
+            <td>{{ participant.actif ? 'Oui' : 'Non' }}</td>
+        </tr>
+{#        <tr>#}
+{#            <th>Rôles</th>#}
+{#            <td>{{ participant.roles|join(', ') }}</td>#}
+{#        </tr>#}
+    </table>
+
+    <h3>Sorties auxquelles il participe</h3>
+    <ul>
+        {% for sortie in participant.sorties %}
+            <li>
+                <a href="{{ path('sortie_detail', {id: sortie.id}) }}">
+                    {{ sortie.nom }} – {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}
+                </a>
+            </li>
+        {% else %}
+            <li>Aucune sortie enregistrée</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
