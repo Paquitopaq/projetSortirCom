@@ -215,8 +215,24 @@ class Sortie
                 $this->etat->setIdEtat('TERMINEE');
             }
         }
-
         // Rajouter les autres changements quand on fera les features annulé ou archiver
+    }
+
+    public function getNbInscrits(): int
+    {
+        return $this->participants->count();
+    }
+
+    public function addParticipant(Participant $participant): void
+    {
+        if (!$this->participants->contains($participant)) {
+            $this->participants->add($participant);
+        }
+    }
+
+    public function removeParticipant(Participant $participant): void
+    {
+        $this->participants->removeElement($participant);
     }
 
     public function getSite(): ?Site
