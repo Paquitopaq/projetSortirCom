@@ -56,6 +56,9 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Sortie::class, mappedBy: 'participants')]
     private Collection $sorties;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photoProfil = null;
+
 
     public function __construct()
     {
@@ -219,5 +222,17 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // @deprecated, to be removed when upgrading to Symfony 8
+    }
+
+    public function getPhotoProfil(): ?string
+    {
+        return $this->photoProfil;
+    }
+
+    public function setPhotoProfil(?string $photoProfil): static
+    {
+        $this->photoProfil = $photoProfil;
+
+        return $this;
     }
 }
