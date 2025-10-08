@@ -74,11 +74,9 @@ final class SortieController extends AbstractController
     {
         $participant = $em->getRepository(Participant::class)->find($this->getUser()->getId());
 
-        if (!$sortie->getParticipants()->contains($participant)&&$sortie->getEtat() == Etat::OPEN) {
-            $sortieService->inscrireParticipant($sortie, $participant);
+        if ($sortieService->inscrireParticipant($sortie, $participant)) {
             $this->addFlash('success', 'Inscription à la sortie réussie !');
-        }else if ($sortie->getParticipants()->contains($participant) && $sortie->getEtat() == Etat::OPEN) {
-            $sortieService->removeParticipant($sortie, $participant);
+        }else if ($sortieService->removeParticipant($sortie, $participant)) {
             $this->addFlash('success', 'vous n\'êtes plus inscrit à cette sortie.');
         }else {
             $this->addFlash('danger', 'Les inscription et désinscription ne sont plus possible pour cette sortie.');

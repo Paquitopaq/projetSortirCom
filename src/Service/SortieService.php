@@ -85,23 +85,24 @@ class SortieService
     }
     public function inscrireParticipant(Sortie $sortie, Participant $participant): bool {
 
-        $sortie->addParticipant($participant);
-        $this->entityManager->persist($sortie);
-        $this->entityManager->flush();
-
-        return true;
+        if (!$sortie->getParticipants()->contains($participant)&&$sortie->getEtat() == Etat::OPEN) {
+            $sortie->addParticipant($participant);
+            $this->entityManager->persist($sortie);
+            $this->entityManager->flush();
+            return true;
+        }
+        return false;
     }
 
     public function removeParticipant(Sortie $sortie, Participant $participant): bool {
 
-        if ($sortie->getEtat() !== Etat::OPEN) {
-            return false;
+        if ($sortie->getParticipants()->contains($participant) && $sortie->getEtat() == Etat::OPEN) {
+            $sortie->removeParticipant($participant);
+            $this->entityManager->persist($sortie);
+            $this->entityManager->flush();
+            return true;
         }
-        $sortie->removeParticipant($participant);
-        $this->entityManager->persist($sortie);
-        $this->entityManager->flush();
-
-        return true;
+        return false;
     }
 
 }
