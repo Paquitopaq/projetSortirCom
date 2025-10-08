@@ -1,94 +1,244 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Accueil | Sortir{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Accueil | BougeTonCrew{% endblock %}</title>
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
-{% endblock %}
+    {% block stylesheets %}{% endblock %}
+</head>
 
-{% block body %}
-    <!-- HERO SECTION -->
-    <section class="hero-banner text-white d-flex align-items-center justify-content-center position-relative">
-        <div class="overlay"></div>
-        <div class="container text-center position-relative z-2">
-            <h1 class="fw-bold display-5 mb-3">MonApp, vos sorties et évènements à suivre !</h1>
-            <p class="lead mb-4 opacity-75">Découvrez les meilleures sorties, participez aux événements et rejoignez la communauté</p>
+<body>
+<!-- Navbar style Airbnb -->
+<nav class="airbnb-navbar">
+    <div class="nav-content">
 
-            <!-- Barre de recherche -->
-            <form class="search-bar d-flex justify-content-center mx-auto">
-                <input type="text" class="form-control rounded-start-pill" placeholder="Que cherchez-vous ?">
-                <button class="btn btn-accent rounded-end-pill px-4 fw-semibold">Rechercher</button>
+        <!-- Logo -->
+        <a href="{{ path('app_home') }}" class="logo">
+            <img src="{{ asset('assets/images/logo.png') }}" alt="BougeTonCrew" class="logo-img">
+        </a>
+
+        <!-- Navigation centrale -->
+        <div class="nav-links">
+            <a href="{{ path('app_home') }}" class="nav-link active">Accueil</a>
+            <a href="{{ path('app_sortie') }}" class="nav-link">Sorties</a>
+        </div>
+
+        <!-- Barre de recherche -->
+        <div class="search-bar">
+            <form action="{{ path('app_sortie') }}" method="get">
+                <div class="search-container">
+                    <div class="search-section" id="destination-section">
+                        <div class="search-label">Destination</div>
+                        <input type="text" name="destination" class="search-input" placeholder="Rechercher une destination">
+                    </div>
+                    <div class="search-section" id="dates-section">
+                        <div class="search-label">Dates</div>
+                        <input type="text" name="dates" class="search-input" placeholder="Quand ?" readonly>
+
+                        <!-- Calendrier dropdown -->
+                        <div class="calendar-dropdown">
+                            <div class="calendar-header">
+                                <button type="button" class="calendar-nav" id="prev-month">&lt;</button>
+                                <div class="calendar-months">
+                                    <div class="calendar-month" id="month-1"></div>
+                                    <div class="calendar-month" id="month-2"></div>
+                                </div>
+                                <button type="button" class="calendar-nav" id="next-month">&gt;</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-section" id="type-section">
+                        <div class="search-label">Type de service</div>
+                        <input type="text" name="type" class="search-input" placeholder="Ajouter">
+                    </div>
+                    <button type="submit" class="search-btn">
+                        <svg class="search-icon" viewBox="0 0 32 32" fill="currentColor">
+                            <path d="M13 0c7.18 0 13 5.82 13 13 0 2.868-.929 5.519-2.502 7.669l7.916 7.917-2.828 2.828-7.917-7.916A12.942 12.942 0 0 1 13 26C5.82 26 0 20.18 0 13S5.82 0 13 0zm0 4a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/>
+                        </svg>
+                    </button>
+                </div>
             </form>
+        </div>
 
-            <!-- Liens rapides -->
-            <div class="quick-links d-flex justify-content-center flex-wrap gap-4 mt-5">
-                <a href="#" class="quick-link">
-                    <div class="icon-circle"><img src="{{ asset('icons/calendar.png') }}" alt="Agenda"></div>
-                    <span>Événements</span>
-                </a>
-                <a href="#" class="quick-link">
-                    <div class="icon-circle"><img src="{{ asset('icons/movie.png') }}" alt="Séries"></div>
-                    <span>Sorties</span>
-                </a>
-                <a href="#" class="quick-link">
-                    <div class="icon-circle"><img src="{{ asset('icons/community.png') }}" alt="Communauté"></div>
-                    <span>Communauté</span>
-                </a>
-                <a href="#" class="quick-link">
-                    <div class="icon-circle"><img src="{{ asset('icons/support.png') }}" alt="Aide"></div>
-                    <span>Assistance</span>
-                </a>
+        <!-- Menu utilisateur -->
+        <div class="user-menu">
+            {% if app.user %}
+                <a href="{{ path('sortie_create') }}" class="become-host">Créer une sortie</a>
+                <button class="globe-btn">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 .5a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15zM1.5 8a6.5 6.5 0 0 1 12.41-2.5H11.5a5.5 5.5 0 0 0-9.473 1.853A6.461 6.461 0 0 1 1.5 8zm0 0c0 .536.065 1.055.185 1.553A5.5 5.5 0 0 0 11.5 10.5h2.41A6.5 6.5 0 0 1 1.5 8zm6.5 6.5a6.461 6.461 0 0 1-3.473-.99A5.5 5.5 0 0 0 13.09 11H14.5a6.5 6.5 0 0 1-6.5 3.5z"/>
+                    </svg>
+                </button>
+                <div class="menu-toggle">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="user-avatar">{{ app.user.username|first|upper }}</div>
+                </div>
+
+                <div class="dropdown-menu">
+                    <a href="{{ path('profile_index') }}" class="dropdown-item">Mon profil</a>
+                    <a href="{{ path('profile_edit') }}" class="dropdown-item">Paramètres</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ path('app_logout') }}" class="dropdown-item danger">Se déconnecter</a>
+                </div>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="btn-auth">Se connecter</a>
+                <a href="{{ path('app_register') }}" class="btn-auth-outline">S'inscrire</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">Sortir à Niort</h1>
+            <p class="hero-subtitle">Découvrez les meilleures sorties et événements près de chez vous</p>
+            <div class="hero-buttons">
+                <a href="{{ path('app_sortie') }}" class="btn-primary-large">Explorer les sorties</a>
+                <a href="{{ path('sortie_create') }}" class="btn-secondary-large">Créer une sortie</a>
             </div>
         </div>
-    </section>
+        <div class="hero-image">
+            <img src="{{ asset('assets/images/niort-fond.jpg') }}" alt="Niort">
+        </div>
+    </div>
+</section>
 
-    <!-- SECTION SORTIES / CONTENU -->
-    <section class="container my-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold text-dark">Sorties à venir</h2>
-            <a href="#" class="btn btn-accent fw-semibold rounded-pill">Créer une sortie</a>
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="stats-container">
+        <div class="stat-item">
+            <div class="stat-number">{{ sorties|length }}</div>
+            <div class="stat-label">Sorties disponibles</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Participants actifs</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">Organisateurs</div>
+        </div>
+    </div>
+</section>
+
+<!-- Sorties Section -->
+{% block body %}
+    <section class="sorties-section">
+        <div class="section-header">
+            <h2 class="section-title">Prochaines sorties</h2>
+            <a href="{{ path('app_sortie') }}" class="see-all">Voir tout →</a>
         </div>
 
-        <div class="table-responsive shadow-sm rounded-4 overflow-hidden">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-accent text-white text-center">
-                <tr>
-                    <th>Nom</th>
-                    <th>Date</th>
-                    <th>Clôture</th>
-                    <th>Inscrits / Places</th>
-                    <th>État</th>
-                    <th>Inscrit</th>
-                    <th>Organisateur</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody class="text-center">
-                {% for sortie in sorties %}
-                    <tr>
-                        <td>{{ sortie.nom }}</td>
-                        <td>{{ sortie.dateHeureDebut ? sortie.dateHeureDebut|date('d/m/Y H:i') : '-' }}</td>
-                        <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
-                        <td>0 / {{ sortie.nbInscriptionMax }}</td>
-                        <td>{{ sortie.etat }}</td>
-                        <td>Non</td>
-                        <td>Admin</td>
-                        <td>
-                            <a href="#" class="btn btn-sm btn-outline-accent rounded-pill px-3">Voir</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="8" class="text-muted py-4">Aucune sortie trouvée.</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="sorties-grid">
+            {% for sortie in sorties|slice(0, 6) %}
+                <div class="sortie-card">
+                    <div class="sortie-image">
+                        <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&h=300&fit=crop" alt="{{ sortie.nom }}">
+                        <span class="sortie-badge">{{ sortie.etat.value }}</span>
+                    </div>
+                    <div class="sortie-content">
+                        <h3 class="sortie-title">{{ sortie.nom }}</h3>
+                        <div class="sortie-meta">
+                            <div class="sortie-date">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                {% if sortie.dateHeureDebut %}
+                                    {{ sortie.dateHeureDebut|date('d/m/Y à H:i') }}
+                                {% else %}
+                                    Date à définir
+                                {% endif %}
+                            </div>
+                            <div class="sortie-participants">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                                0/{{ sortie.nbInscriptionMax }} places
+                            </div>
+                        </div>
+                        <div class="sortie-footer">
+                            <div class="sortie-organizer">
+                                <div class="organizer-avatar">A</div>
+                                <span>Admin</span>
+                            </div>
+                            <a href="#" class="btn-join">S'inscrire</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="no-sorties">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <h3>Aucune sortie disponible</h3>
+                    <p>Soyez le premier à créer une sortie !</p>
+                    <a href="{{ path('sortie_create') }}" class="btn-primary-large">Créer une sortie</a>
+                </div>
+            {% endfor %}
         </div>
     </section>
-
-    <footer class="text-center text-muted py-4 border-top">
-        <small>&copy; {{ "now"|date("Y") }} SeriesTime — Tous droits réservés.</small>
-    </footer>
 {% endblock %}
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="cta-content">
+        <h2 class="cta-title">Prêt à organiser votre première sortie ?</h2>
+        <p class="cta-subtitle">Rejoignez notre communauté et partagez vos passions avec d'autres personnes</p>
+        <a href="{{ path('sortie_create') }}" class="btn-cta">Créer ma première sortie</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>MonApp</h4>
+            <p>La plateforme pour organiser et participer à des sorties près de chez vous.</p>
+        </div>
+        <div class="footer-section">
+            <h4>Navigation</h4>
+            <a href="{{ path('app_home') }}">Accueil</a>
+            <a href="{{ path('app_sortie') }}">Sorties</a>
+            <a href="{{ path('sortie_create') }}">Créer une sortie</a>
+        </div>
+        <div class="footer-section">
+            <h4>Compte</h4>
+            {% if app.user %}
+                <a href="{{ path('profile_index') }}">Mon profil</a>
+                <a href="{{ path('profile_edit') }}">Paramètres</a>
+            {% else %}
+                <a href="{{ path('app_login') }}">Se connecter</a>
+                <a href="{{ path('app_register') }}">S'inscrire</a>
+            {% endif %}
+        </div>
+        <div class="footer-section">
+            <h4>Légal</h4>
+            <a href="#">Mentions légales</a>
+            <a href="#">CGU</a>
+            <a href="#">Politique de confidentialité</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; {{ "now"|date("Y") }} MonApp - Tous droits réservés</p>
+    </div>
+</footer>
+
+<style>
+
+    }
+</style>
