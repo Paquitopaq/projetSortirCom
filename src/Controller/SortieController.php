@@ -2,9 +2,10 @@
 
 namespace App\Controller;
 
-use App\Entity\State;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\SortieType;
+use App\Repository\LieuRepository;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +28,7 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/create', name: 'sortie_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    public function create(Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
     {
         $sortie = new Sortie();
         $sortie->setIdSortie(uniqid('SRT_'));
@@ -49,11 +50,12 @@ final class SortieController extends AbstractController
 
         return $this->render('sortie/create.html.twig', [
             'form' => $form->createView(),
+            'lieux' => $lieuRepository->findAll(),
         ]);
     }
 
     #[Route('/sortie/{id}/publish', name: 'sortie_publier', methods: ['POST'])]
-    public function publier(Sortie $sortie, EntityManagerInterface $entityManager): Response
+    public function publier(Sortie $sortie): Response
     {
         try {
             $this->sortieService->publier($sortie);
@@ -64,6 +66,32 @@ final class SortieController extends AbstractController
         }
 
         return $this->redirectToRoute('app_sortie');
+    }
+
+    #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire')]
+    public function inscrire(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em): Response
+    {
+        $participant = $em->getRepository(Participant::class)->find($this->getUser()->getId());
+
+        if ($sortieService->inscrireParticipant($sortie, $participant)) {
+            $this->addFlash('success', 'Inscription réussie !');
+        } else {
+            $this->addFlash('danger', 'Impossible de vous inscrire.');
+        }
+
+        return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+    }
+
+    #[Route('/sortie/{id}/detail', name: 'sortie_detail')]
+    public function getSortie(?Sortie $sortie): Response
+    {
+        if (!$sortie) {
+            throw $this->createNotFoundException("Cette sortie n'existe pas.");
+        }
+
+        return $this->render('sortie/detail.html.twig', [
+            'sortie' => $sortie,
+        ]);
     }
 
 

@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{%  block body %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <h1 class="mb-4 text-center">{{ sortie.nom }}</h1>
+
+    <table class="table table-bordered table-striped w-75 mx-auto">
+        <tbody>
+        <tr>
+            <th>Date de début</th>
+            <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+        </tr>
+        <tr>
+            <th>Durée</th>
+            <td>{{ sortie.duree }} minutes</td>
+        </tr>
+        <tr>
+            <th>Date limite d'inscription</th>
+            <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
+        </tr>
+        <tr>
+            <th>Nombre maximum d'inscriptions</th>
+            <td>{{ sortie.nbInscriptionMax }}</td>
+        </tr>
+        <tr>
+            <th>Informations</th>
+            <td>{{ sortie.infoSortie }}</td>
+        </tr>
+        <tr>
+            <th>État</th>
+            <td>{{ sortie.etat.value }}</td>
+        </tr>
+        <tr>
+            <th>Site</th>
+            <td>
+                {% if sortie.site %}
+                    {{ sortie.site.nom }}
+                {% else %}
+                    <em>Aucun site associé</em>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Lieu</th>
+            <td>
+                {% if sortie.lieu %}
+                    {{ sortie.lieu.nom }}
+                {% else %}
+                    <em>Aucun lieu associé</em>
+                {% endif %}
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+    {% if app.user %}
+        <div class="text-center mt-4">
+            <form method="post" action="{{ path('sortie_inscrire', {'id': sortie.id}) }}">
+                <button type="submit" class="btn btn-success btn-lg">
+                    S'inscrire à cette sortie
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <p class="text-center mt-4">Vous devez être connecté pour vous inscrire.</p>
+    {% endif %}
+{% endblock %}

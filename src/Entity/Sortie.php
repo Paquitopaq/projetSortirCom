@@ -3,11 +3,13 @@
 namespace App\Entity;
 
 use App\Enum\Etat;
-use App\Enum\State;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -42,6 +44,22 @@ class Sortie
 
     #[ORM\Column(enumType: Etat::class)]
     private ?Etat $etat = null;
+
+
+    #[ORM\ManyToMany(targetEntity: Participant::class, inversedBy: 'sorties')]
+    #[ORM\JoinTable(name: 'sortie_participant')]
+    private Collection $participants;
+
+    public function __construct()
+    {
+        $this->participants = new ArrayCollection();
+    }
+    #[ORM\ManyToOne(inversedBy: 'ville')]
+    private ?Site $site = null;
+
+    #[ORM\ManyToOne(inversedBy: 'sorties')]
+    private ?Lieu $lieu = null;
+
 
     public function getId(): ?int
     {
@@ -144,6 +162,18 @@ class Sortie
         return $this;
     }
 
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function setParticipants(Collection $participants): void
+    {
+        $this->participants = $participants;
+    }
+
+
+
 
     #[Assert\Callback]
     public function validateDates(ExecutionContextInterface $context): void
@@ -185,9 +215,50 @@ class Sortie
                 $this->etat->setIdEtat('TERMINEE');
             }
         }
-
         // Rajouter les autres changements quand on fera les features annulé ou archiver
     }
+
+    public function getNbInscrits(): int
+    {
+        return $this->participants->count();
+    }
+
+    public function addParticipant(Participant $participant): void
+    {
+        if (!$this->participants->contains($participant)) {
+            $this->participants->add($participant);
+        }
+    }
+
+    public function removeParticipant(Participant $participant): void
+    {
+        $this->participants->removeElement($participant);
+    }
+
+    public function getSite(): ?Site
+    {
+        return $this->site;
+    }
+
+    public function setSite(?Site $site): static
+    {
+        $this->site = $site;
+
+        return $this;
+    }
+
+    public function getLieu(): ?Lieu
+    {
+        return $this->lieu;
+    }
+
+    public function setLieu(?Lieu $lieu): static
+    {
+        $this->lieu = $lieu;
+
+        return $this;
+    }
+
 
 
 }
