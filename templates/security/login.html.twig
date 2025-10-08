@@ -2,110 +2,105 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 {% endblock %}
 
 {% block title %}Se connecter{% endblock %}
 
 {% block body %}
-    <div class="min-vh-100 d-flex align-items-center justify-content-center position-relative py-4">
+    <div class="auth-container">
+        <div class="auth-wrapper">
 
-        <div class="container position-relative">
-            <div class="row justify-content-center">
-                <div class="col-md-6 col-lg-5">
+            <!-- Section gauche avec illustration -->
+            <div class="auth-illustration">
+                <img src="{{ asset('assets/images/illustration.png') }}" alt="Illustration">
+            </div>
 
-                    <!-- Carte principale -->
-                    <div class="auth-card bg-dark">
-                        <div class="card-body p-4 p-md-5">
+            <!-- Section droite avec formulaire -->
+            <div class="auth-form-section">
+                <div class="auth-form-content">
 
-                            <!-- En-tête avec icône -->
-                            <div class="text-center mb-4">
-                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 auth-icon">
-                                    <img src="{{ asset('icons/avatar.png') }}" alt="Utilisateur">
-                                </div>
-                                <h1 class="h3 fw-bold text-white mb-2">Connexion</h1>
-                                <p class="text-light opacity-75 mb-0">Accédez à votre espace personnel</p>
-                            </div>
+                    <h1 class="auth-title">Connexion</h1>
 
-                            {# Messages d'erreur #}
-                            {% if error %}
-                                <div class="alert alert-danger d-flex align-items-start border-0 mb-4 custom-alert">
-                                    <img src="{{ asset('icons/cadenas.png') }}" alt="Erreur" class="me-2">
-                                    <small>{{ error.messageKey|trans(error.messageData, 'security') }}</small>
-                                </div>
-                            {% endif %}
+                    {# Messages d'erreur #}
+                    {% if error %}
+                        <div class="alert alert-danger custom-alert">
+                            <small>{{ error.messageKey|trans(error.messageData, 'security') }}</small>
+                        </div>
+                    {% endif %}
 
-                            <!-- Formulaire -->
-                            <form method="post">
+                    <!-- Formulaire -->
+                    <form method="post" class="auth-form">
 
-                                <!-- Email -->
-                                <div class="mb-3">
-                                    <label for="inputEmail" class="form-label text-light small fw-medium">Adresse e-mail</label>
-                                    <div class="input-icon">
-                                        <img src="{{ asset('icons/enveloppe.png') }}" class="input-icon-left" alt="Email">
-                                        <input type="email"
-                                               name="email"
-                                               id="inputEmail"
-                                               class="form-control custom-form-control ps-5"
-                                               value="{{ last_username }}"
-                                               placeholder="votre@email.com"
-                                               autocomplete="email"
-                                               required
-                                               autofocus>
-                                    </div>
-                                </div>
-
-                                <!-- Mot de passe -->
-                                <div class="mb-3">
-                                    <label for="inputPassword" class="form-label text-light small fw-medium">Mot de passe</label>
-                                    <div class="input-icon">
-                                        <img src="{{ asset('icons/cadenas.png') }}" class="input-icon-left" alt="Mot de passe">
-                                        <input type="password"
-                                               name="password"
-                                               id="inputPassword"
-                                               class="form-control custom-form-control ps-5"
-                                               placeholder="••••••••••"
-                                               autocomplete="current-password"
-                                               required>
-                                    </div>
-                                </div>
-
-                                <!-- Options -->
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <div class="form-check">
-                                        <input type="checkbox" id="remember_me" name="_remember_me"
-                                               class="form-check-input custom-form-check">
-                                        <label for="remember_me" class="form-check-label text-light small">
-                                            Se souvenir de moi
-                                        </label>
-                                    </div>
-                                    <a href="#" class="forgot-password small">Mot de passe oublié ?</a>
-                                </div>
-
-                                <!-- Bouton connexion -->
-                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-                                <button type="submit"
-                                        class="btn btn-primary btn-lg w-100 fw-semibold mb-4 custom-btn d-flex align-items-center justify-content-center">
-                                    Se connecter
-                                    <img src="{{ asset('icons/arrow.png') }}" alt="" class="ms-2">
-                                </button>
-                            </form>
-
-                            <!-- Lien vers inscription -->
-                            <div class="text-center mb-3">
-                                <small class="text-light opacity-75">
-                                    Pas encore de compte ?
-                                    <a href="{{ path('app_register') }}" class="register fw-medium">
-                                        Créer un compte
-                                    </a>
-                                </small>
+                        <!-- Email -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </span>
+                                <input type="email"
+                                       name="email"
+                                       id="inputEmail"
+                                       class="form-input"
+                                       value="{{ last_username }}"
+                                       placeholder="Adresse e-mail"
+                                       autocomplete="email"
+                                       required
+                                       autofocus>
                             </div>
                         </div>
+
+                        <!-- Mot de passe -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                </span>
+                                <input type="password"
+                                       name="password"
+                                       id="inputPassword"
+                                       class="form-input"
+                                       placeholder="Mot de passe"
+                                       autocomplete="current-password"
+                                       required>
+                            </div>
+                        </div>
+
+                        <!-- Remember me -->
+                        <div class="form-check-wrapper">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="remember_me" name="_remember_me">
+                                <span class="checkbox-label">Se souvenir de moi</span>
+                            </label>
+                        </div>
+
+                        <!-- Token CSRF -->
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        <!-- Bouton connexion -->
+                        <button type="submit" class="btn-submit">
+                            Se connecter
+                        </button>
+
+                    </form>
+
+                    <!-- Lien création de compte -->
+                    <div class="register-link">
+                        <p class="register-text">
+                            Vous n'avez pas de compte ?
+                            <a href="{{ path('app_register') }}" class="register-link-btn">Créer un compte</a>
+                        </p>
                     </div>
 
                 </div>
             </div>
+
         </div>
     </div>
 {% endblock %}
