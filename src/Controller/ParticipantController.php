@@ -10,9 +10,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route('/profil')]
 final class ParticipantController extends AbstractController
 {
-    #[Route('/participant', name: 'app_participant')]
+    #[Route('/update', name: 'app_profil_update')]
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         $participant = $this->getUser();
