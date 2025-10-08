@@ -3,170 +3,235 @@
 {% block title %}Créer une Sortie{% endblock %}
 
 {% block body %}
-    <div class="min-vh-100 d-flex align-items-center justify-content-center py-4">
-        <div class="container position-relative">
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-lg-6">
-                    <!-- Carte principale -->
-                    <div class="card bg-dark text-light border-0 shadow-lg auth-card">
-                        <div class="card-body p-4 p-md-5">
-                            <!-- En-tête -->
-                            <div class="text-center mb-4">
-                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 auth-icon">
-                                    <img src="{{ asset('icons/event.png') }}" alt="Créer une sortie">
-                                </div>
-                                <h1 class="h3 fw-bold text-white mb-2">Créer une Sortie</h1>
-                                <p class="text-light opacity-75 mb-0">Renseignez les informations ci-dessous</p>
-                            </div>
+    <div class="page-wrapper">
+        <div class="form-wrapper">
+            <div class="form-header text-center">
+                <h1>Créer une Sortie</h1>
+                <p>Remplissez les informations ci-dessous pour planifier votre évènement.</p>
+            </div>
 
-                            <!-- Formulaire -->
-                            {{ form_start(form) }}
+            {{ form_start(form) }}
+            <div class="form-horizontal">
+                <div class="form-left">
+                    <div class="form-group">
+                        {{ form_label(form.nom, 'Nom de la sortie', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Soirée cinéma'}}) }}
+                    </div>
 
-                            <!-- Nom -->
-                            <div class="mb-3">
-                                {{ form_label(form.nom, 'Nom de la sortie', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
-                                <div class="input-icon">
-                                    <img src="{{ asset('icons/titre.png') }}" class="input-icon-left" alt="">
-                                    {{ form_widget(form.nom, {'attr': {'class': 'form-control custom-form-control', 'placeholder': 'Ex: Sortie au parc'}}) }}
-                                </div>
-                            </div>
+                    <div class="form-group">
+                        {{ form_label(form.dateHeureDebut, 'Date et heure de début', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'form-control datepicker'}}) }}
+                    </div>
 
-                            <!-- Date de début -->
-                            <div class="mb-3">
-                                {{ form_label(form.dateHeureDebut, 'Date et heure de début', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
-                                <div class="input-icon">
-                                    <img src="{{ asset('icons/calendar.png') }}" class="input-icon-left" alt="">
-                                    {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'form-control custom-form-control'}}) }}
-                                </div>
-                            </div>
+                    <div class="form-group">
+                        {{ form_label(form.dateLimiteInscription, 'Date limite d’inscription', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'form-control datepicker'}}) }}
+                    </div>
 
-                            <!-- Durée -->
-                            <div class="mb-3">
-                                {{ form_label(form.duree, 'Durée (en minutes)', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
-                                <div class="input-icon">
-                                    <img src="{{ asset('icons/time.png') }}" class="input-icon-left" alt="">
-                                    {{ form_widget(form.duree, {'attr': {'class': 'form-control custom-form-control', 'placeholder': 'Ex: 120'}}) }}
-                                </div>
-                            </div>
+                    <div class="form-group">
+                        {{ form_label(form.duree, 'Durée (en minutes)', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.duree, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 120'}}) }}
+                    </div>
+                </div>
 
-                            <!-- Date limite -->
-                            <div class="mb-3">
-                                {{ form_label(form.dateLimiteInscription, 'Date limite d’inscription', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
-                                <div class="input-icon">
-                                    <img src="{{ asset('icons/clock.png') }}" class="input-icon-left" alt="">
-                                    {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'form-control custom-form-control'}}) }}
-                                </div>
-                            </div>
+                <div class="form-right">
+                    <div class="form-group">
+                        {{ form_label(form.nbInscriptionMax, 'Nombre maximum de participants', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.nbInscriptionMax, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 20'}}) }}
+                    </div>
 
-                            <!-- Nombre max -->
-                            <div class="mb-3">
-                                {{ form_label(form.nbInscriptionMax, 'Nombre maximum de participants', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
-                                <div class="input-icon">
-                                    <img src="{{ asset('icons/users.png') }}" class="input-icon-left" alt="">
-                                    {{ form_widget(form.nbInscriptionMax, {'attr': {'class': 'form-control custom-form-control', 'placeholder': 'Ex: 15'}}) }}
-                                </div>
-                            </div>
-
-                            <!-- Infos sortie -->
-                            <div class="mb-3">
-                                {{ form_label(form.infoSortie, 'Informations complémentaires', {'label_attr': {'class': 'form-label text-light small fw-medium'}}) }}
-                                <div class="input-icon">
-                                    <img src="{{ asset('icons/info.png') }}" class="input-icon-left" alt="">
-                                    {{ form_widget(form.infoSortie, {'attr': {'class': 'form-control custom-form-control', 'rows': 3, 'placeholder': 'Détails de la sortie...'}}) }}
-                                </div>
-                            </div>
-
-                            <!-- Boutons -->
-                            <div class="d-flex justify-content-between mt-4">
-                                <button type="submit" name="action" value="enregistrer" class="btn custom-btn fw-semibold d-flex align-items-center justify-content-center">
-                                    <img src="{{ asset('icons/save.png') }}" alt="Enregistrer" class="me-2"> Enregistrer
-                                </button>
-                                <button type="submit" name="action" value="publier" class="btn btn-success fw-semibold d-flex align-items-center justify-content-center">
-                                    <img src="{{ asset('icons/upload.png') }}" alt="Publier" class="me-2"> Publier
-                                </button>
-                                <a href="{{ path('app_sortie') }}" class="btn btn-secondary fw-semibold d-flex align-items-center justify-content-center">
-                                    <img src="{{ asset('icons/close.png') }}" alt="Annuler" class="me-2"> Annuler
-                                </a>
-                            </div>
-
-                            {{ form_end(form) }}
-                        </div>
+                    <div class="form-group full-width">
+                        {{ form_label(form.infoSortie, 'Informations complémentaires', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.infoSortie, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Détails sur le lieu, le matériel, etc.'}}) }}
                     </div>
                 </div>
             </div>
+
+            <div class="form-footer">
+                <a href="{{ path('app_sortie') }}" class="btn btn-secondary">← Retour</a>
+                <div class="actions">
+                    <button type="submit" name="action" value="publier" class="btn btn-primary">Publier</button>
+                </div>
+            </div>
+
+            {{ form_end(form) }}
         </div>
+    </div>
 
+    {% block stylesheets %}
+        {{ parent() }}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <style>
-            body {
-                background-color: #2e3136;
-                font-family: Arial, sans-serif;
+            :root {
+                --bg-dark: #393E46;
+                --bg-overlay: rgba(34, 40, 49, 0.8);
+                --accent: #00ADB5;
+                --accent-hover: #009ca5;
+                --text-light: #fff;
             }
 
-            .auth-card {
-                background-color: rgba(0, 0, 0, 0.8);
-                backdrop-filter: blur(10px);
-                border-radius: 15px;
-                animation: slideUp 0.6s ease-out;
+            body, html {
+                height: 100%;
+                margin: 0;
+                font-family: "Inter", sans-serif;
+                background-color: var(--bg-dark);
+                color: var(--text-light);
             }
 
-            .auth-icon {
-                width: 4rem;
-                height: 4rem;
+            .page-wrapper {
                 display: flex;
-                align-items: center;
                 justify-content: center;
-                background-color: rgb(0, 173, 181);
-                border: 2px solid #00ADB5;
-            }
-            .auth-icon img { width: 2rem; height: 2rem; }
-
-            .input-icon { position: relative; }
-            .input-icon-left {
-                position: absolute;
-                left: 15px;
-                top: 50%;
-                transform: translateY(-50%);
-                pointer-events: none;
-                width: 1.2rem; height: 1.2rem;
+                align-items: center;
+                height: 100%;
+                padding: 2rem;
+                background: var(--bg-dark);
             }
 
-            .custom-form-control {
-                background-color: rgba(255, 255, 255, 0.1) !important;
-                border: 1px solid rgba(255, 255, 255, 0.3) !important;
-                color: white !important;
-                border-radius: 8px !important;
-                padding-left: 2.5rem !important;
-            }
-            .custom-form-control::placeholder { color: rgba(255, 255, 255, 0.6) !important; }
-            .custom-form-control:focus {
-                background-color: rgba(255, 255, 255, 0.15) !important;
-                border-color: #00ADB5 !important;
-                box-shadow: 0 0 0 0.2rem rgba(0, 173, 181, 0.25) !important;
-                color: white !important;
+            .form-wrapper {
+                background-color: var(--bg-overlay);
+                border: 2px solid var(--accent);
+                box-shadow: 0 10px 25px rgba(0, 173, 181, 0.3);
+                border-radius: 20px;
+                padding: 3rem 3.5rem;
+                max-width: 1000px;
+                width: 100%;
             }
 
-            .custom-btn {
-                background-color: #00ADB5 !important;
-                border-color: #00ADB5 !important;
-                border-radius: 8px;
+            .form-header h1 {
+                color: var(--text-light);
+                font-size: 1.8rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+            }
+
+            .form-header p {
+                color: var(--text-light);
+                font-size: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .form-horizontal {
+                display: flex;
+                justify-content: space-between;
+                gap: 2rem;
+                flex-wrap: wrap;
+            }
+
+            .form-left, .form-right {
+                flex: 1;
+                min-width: 300px;
+            }
+
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
+
+            .form-label {
+                font-weight: 500;
+                color: var(--text-light);
+                margin-bottom: 0.3rem;
+                display: block;
+            }
+
+            .form-control {
+                width: 100%;
+                border: 2px solid var(--accent);
+                border-radius: 10px;
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+                color: var(--text-light);
+                background-color: var(--bg-dark);
                 transition: all 0.3s ease;
             }
-            .custom-btn:hover {
-                background-color: #009ca5 !important;
-                border-color: #009ca5 !important;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 173, 181, 0.3);
+
+            .form-control:focus {
+                border-color: var(--accent-hover);
+                box-shadow: 0 0 0 3px rgba(0, 173, 181, 0.3);
+                outline: none;
             }
 
-            @keyframes slideUp {
-                from { opacity: 0; transform: translateY(30px); }
-                to { opacity: 1; transform: translateY(0); }
+            .form-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 2.5rem;
             }
 
-            @media (max-width: 768px) {
-                .auth-card { margin: 1rem; }
-                .card-body { padding: 2rem 1.5rem !important; }
+            .actions {
+                display: flex;
+                gap: 0.75rem;
+            }
+
+            .btn {
+                display: inline-block;
+                border-radius: 8px;
+                padding: 0.7rem 1.5rem;
+                font-weight: 600;
+                font-size: 0.95rem;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+
+            .btn-secondary {
+                background-color: transparent;
+                color: var(--accent);
+                border: 2px solid var(--accent);
+            }
+
+            .btn-secondary:hover {
+                background-color: var(--accent);
+                color: var(--text-light);
+            }
+
+            .btn-outline {
+                background-color: transparent;
+                color: var(--accent-hover);
+                border: 2px solid var(--accent-hover);
+            }
+
+            .btn-outline:hover {
+                background-color: var(--accent-hover);
+                color: var(--text-light);
+            }
+
+            .btn-primary {
+                background-color: var(--accent);
+                color: var(--text-light);
+                border: 2px solid var(--accent);
+            }
+
+            .btn-primary:hover {
+                background-color: var(--accent-hover);
+                border-color: var(--accent-hover);
+            }
+
+            @media (max-width: 900px) {
+                .form-horizontal {
+                    flex-direction: column;
+                }
+
+                .form-footer {
+                    flex-direction: column;
+                    gap: 1rem;
+                }
             }
         </style>
-    </div>
+    {% endblock %}
+
+    {% block javascripts %}
+        {{ parent() }}
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                flatpickr(".datepicker", {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    altInput: true,
+                    altFormat: "d/m/Y à H:i",
+                    time_24hr: true
+                });
+            });
+        </script>
+    {% endblock %}
 {% endblock %}
