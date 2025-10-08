@@ -54,6 +54,12 @@ class Sortie
     {
         $this->participants = new ArrayCollection();
     }
+    #[ORM\ManyToOne(inversedBy: 'ville')]
+    private ?Site $site = null;
+
+    #[ORM\ManyToOne(inversedBy: 'sorties')]
+    private ?Lieu $lieu = null;
+
 
 
     public function getId(): ?int
@@ -213,6 +219,31 @@ class Sortie
 
         // Rajouter les autres changements quand on fera les features annulé ou archiver
     }
+
+    public function getSite(): ?Site
+    {
+        return $this->site;
+    }
+
+    public function setSite(?Site $site): static
+    {
+        $this->site = $site;
+
+        return $this;
+    }
+
+    public function getLieu(): ?Lieu
+    {
+        return $this->lieu;
+    }
+
+    public function setLieu(?Lieu $lieu): static
+    {
+        $this->lieu = $lieu;
+
+        return $this;
+    }
+
 
 
 }
