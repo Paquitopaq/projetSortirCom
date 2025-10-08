@@ -51,6 +51,17 @@ class Sortie
 
 
 
+
+    #[ORM\ManyToMany(targetEntity: Participant::class, inversedBy: 'sorties')]
+    #[ORM\JoinTable(name: 'sortie_participant')]
+    private Collection $participants;
+
+    public function __construct()
+    {
+        $this->participants = new ArrayCollection();
+    }
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -151,6 +162,18 @@ class Sortie
 
         return $this;
     }
+
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function setParticipants(Collection $participants): void
+    {
+        $this->participants = $participants;
+    }
+
+
 
 
     #[Assert\Callback]
