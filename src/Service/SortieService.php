@@ -82,6 +82,7 @@ class SortieService
             'dateDebut' => $dateDebut,
             'dateFin' => $dateFin,
         ];
+    }
     public function inscrireParticipant(Sortie $sortie, Participant $participant): bool {
 
         // TODO Ajouter des messages d'erreurs clair

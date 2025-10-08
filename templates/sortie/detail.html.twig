@@ -39,12 +39,25 @@
         </tr>
         <tr>
             <th>Site</th>
-            <td>{{ sortie.site.nom }}</td>
+            <td>
+                {% if sortie.site %}
+                    {{ sortie.site.nom }}
+                {% else %}
+                    <em>Aucun site associé</em>
+                {% endif %}
+            </td>
         </tr>
         <tr>
             <th>Lieu</th>
-            <td>{{ sortie.lieu.nom }}</td>
+            <td>
+                {% if sortie.lieu %}
+                    {{ sortie.lieu.nom }}
+                {% else %}
+                    <em>Aucun lieu associé</em>
+                {% endif %}
+            </td>
         </tr>
+
         </tbody>
     </table>
     {% if app.user %}
