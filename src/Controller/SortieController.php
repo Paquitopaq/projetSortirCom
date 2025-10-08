@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Form\DeleteSortieType;
 use App\Form\SortieType;
 use App\Repository\LieuRepository;
 use App\Service\SortieService;
@@ -28,7 +29,7 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/create', name: 'sortie_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
+    public function create(Request $request, EntityManagerInterface $entityManager, LieuRepository $lieuRepository): Response
     {
         $sortie = new Sortie();
         $sortie->setIdSortie(uniqid('SRT_'));
@@ -61,7 +62,7 @@ final class SortieController extends AbstractController
             $this->sortieService->publier($sortie);
             $this->addFlash('success', 'Sortie publiée.');
 
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->addFlash('error', $exception->getMessage());
         }
 
@@ -94,6 +95,32 @@ final class SortieController extends AbstractController
         ]);
     }
 
+    #[Route('/sortie/{id}/delete', name: 'sortie_delete', methods: ['GET', 'POST'])]
+    public function delete(
+        Sortie $sortie,
+        Request $request,
+        SortieService $sortieService,
+        EntityManagerInterface $em
+    ): Response {
+        $form = $this->createForm(DeleteSortieType::class, $sortie);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $result = $sortieService->annulerSortie($sortie, $this->getUser());
+
+            if ($result['success']) {
+                $this->addFlash('success', $result['message']);
+                return $this->redirectToRoute('home');
+            } else {
+                $this->addFlash('danger', $result['message']);
+            }
+        }
+
+        return $this->render('sortie/delete.html.twig', [
+            'sortie' => $sortie,
+            'form' => $form->createView(),
+        ]);
+    }
 
 
 

@@ -10,6 +10,7 @@ use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class SortieService
 {
@@ -48,9 +49,39 @@ class SortieService
         $this->entityManager->flush();
     }
 
+    public function annulerSortie(Sortie $sortie, ?UserInterface $user): array
+    {
+        if (method_exists($sortie, 'getOrganisateur')) {
+            if ($sortie->getOrganisateur() !== $user) {
+                return [
+                    'success' => false,
+                    'message' => 'Vous n’êtes pas autorisé à annuler cette sortie.',
+                ];
+            }
+        }
+
+        if ($sortie->getDateHeureDebut() <= new \DateTime()) {
+            return [
+                'success' => false,
+                'message' => 'Impossible d’annuler une sortie déjà commencée ou passée.',
+            ];
+        }
+
+        $sortie->setEtat(Etat::CANCELLED);
+
+        // 4. Sauvegarder
+        $this->em->persist($sortie);
+        $this->em->flush();
+
+        return [
+            'success' => true,
+            'message' => 'La sortie a bien été annulée.',
+        ];
+    }
+
+
     public function getFilteredSorties(Request $request): array
     {
-        // Récupération des filtres
         $nomRecherche = $request->query->get('nom_sortie');
         $dateDebut = $request->query->get('date_debut');
         $dateFin = $request->query->get('date_fin');
@@ -62,7 +93,6 @@ class SortieService
 
         $user = $this->security->getUser();
 
-        // Requêtes en BDD
         $lieux = $this->lieuRepository->findAll();
 
         $sorties = $this->sortieRepository->findByFilters(

@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Annuler la sortie {{ sortie.nom }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">{{ sortie.nom }}</h1>
+
+
+        <table class="table table-bordered table-striped w-75 mx-auto">
+            <tbody>
+            <tr>
+                <th>Date de début</th>
+                <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+            </tr>
+            <tr>
+                <th>Site organisateur</th>
+                <td>{{ sortie.lieu }}</td>
+            </tr>
+            <tr>
+                <th>Date limite d'inscription</th>
+                <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
+            </tr>
+            <tr>
+                <th>Nombre maximum d'inscriptions</th>
+                <td>{{ sortie.nbInscriptionMax }}</td>
+            </tr>
+            <tr>
+                <th>Informations</th>
+                <td>{{ sortie.infoSortie }}</td>
+            </tr>
+            <tr>
+                <th>État</th>
+                <td>{{ sortie.etat.value }}</td>
+            </tr>
+            <tr>
+                <th>Site</th>
+                <td>
+                    {% if sortie.site %}
+                        {{ sortie.site.nom }}
+                    {% else %}
+                        <em>Aucun site associé</em>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Lieu</th>
+                <td>
+                    {% if sortie.lieu %}
+                        {{ sortie.lieu.nom }}
+                    {% else %}
+                        <em>Aucun lieu associé</em>
+                    {% endif %}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="alert alert-warning mt-3">
+            Cette action est irréversible. La sortie sera marquée comme <strong>Annulée</strong>.
+        </div>
+
+        {{ form_row(form.motifAnnulation) }}
+        <button class="btn btn-danger w-100 mt-3">Confirmer l’annulation</button>
+        {{ form_end(form) }}
+
+        <div class="mt-3 text-center">
+            <a href="{{ path('app_home') }}" class="btn btn-secondary">Retour</a>
+        </div>
+    </div>
+{% endblock %}
