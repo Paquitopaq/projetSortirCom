@@ -216,7 +216,7 @@ class Sortie
 
     public function setLieu(?Lieu $lieu): static
     {
-        $this->Lieu = $lieu;
+        $this->lieu = $lieu;
 
         return $this;
     }
