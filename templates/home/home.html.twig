@@ -4,33 +4,35 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 {% endblock %}
 
 {% block body %}
-{#    <!-- Barre de recherche -->#}
-{#    <div class="search-bar">#}
-{#        <form action="{{ path('app_sortie') }}" method="get">#}
-{#            <div class="search-container">#}
-{#                <div class="search-section" id="destination-section">#}
-{#                    <div class="search-label">Destination</div>#}
-{#                    <input type="text" name="destination" class="search-input" placeholder="Rechercher une destination">#}
-{#                </div>#}
-{#                <div class="search-section" id="dates-section">#}
-{#                    <div class="search-label">Dates</div>#}
-{#                    <input type="text" name="dates" class="search-input datepicker" placeholder="Quand ?" readonly>#}
-{#                </div>#}
-{#                <div class="search-section" id="type-section">#}
-{#                    <div class="search-label">Type de service</div>#}
-{#                    <input type="text" name="type" class="search-input" placeholder="Ajouter">#}
-{#                </div>#}
-{#                <button type="submit" class="search-btn">#}
-{#                    <svg class="search-icon" viewBox="0 0 32 32" fill="currentColor">#}
-{#                        <path d="M13 0c7.18 0 13 5.82 13 13 0 2.868-.929 5.519-2.502 7.669l7.916 7.917-2.828 2.828-7.917-7.916A12.942 12.942 0 0 1 13 26C5.82 26 0 20.18 0 13S5.82 0 13 0zm0 4a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/>#}
-{#                    </svg>#}
-{#                </button>#}
-{#            </div>#}
-{#        </form>#}
-{#    </div>#}
+    <!-- Barre de recherche -->
+    <div class="search-bar">
+        <form action="{{ path('app_sortie') }}" method="get">
+            <div class="search-container">
+                <div class="search-section" id="destination-section">
+                    <div class="search-label">Destination</div>
+                    <input type="text" name="destination" class="search-input" placeholder="Rechercher une destination">
+                </div>
+                <div class="search-section" id="dates-section">
+                    <div class="search-label">Dates</div>
+                    <input type="text" name="dates" class="search-input datepicker" placeholder="Quand ?" readonly>
+                </div>
+                <div class="search-section" id="type-section">
+                    <div class="search-label">Type de service</div>
+                    <input type="text" name="type" class="search-input" placeholder="Ajouter">
+                </div>
+                <button type="submit" class="search-btn">
+                    <svg class="search-icon" viewBox="0 0 32 32" fill="currentColor">
+                        <path d="M13 0c7.18 0 13 5.82 13 13 0 2.868-.929 5.519-2.502 7.669l7.916 7.917-2.828 2.828-7.917-7.916A12.942 12.942 0 0 1 13 26C5.82 26 0 20.18 0 13S5.82 0 13 0zm0 4a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -45,24 +47,6 @@
             </div>
             <div class="hero-image">
                 <img src="{{ asset('assets/images/niort-fond.jpg') }}" alt="Niort">
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="stats-container">
-            <div class="stat-item">
-                <div class="stat-number">{{ sorties|length }}</div>
-                <div class="stat-label">Sorties disponibles</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">500+</div>
-                <div class="stat-label">Participants actifs</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">50+</div>
-                <div class="stat-label">Organisateurs</div>
             </div>
         </div>
     </section>
@@ -97,22 +81,19 @@
                                     Date à définir
                                 {% endif %}
                             </div>
-                            <div class="sortie-participants">
+                            <div class="sortie-lieu">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
                                 </svg>
-                                0/{{ sortie.nbInscriptionMax }} places
+                                {{ sortie.lieu.nom ?? 'Lieu à définir' }}
                             </div>
                         </div>
                         <div class="sortie-footer">
-                            <div class="sortie-organizer">
-                                <div class="organizer-avatar">A</div>
-                                <span>Admin</span>
+                            <div class="sortie-info">
+                                <span class="sortie-duree">Durée : {{ sortie.duree }} min</span>
                             </div>
-                            <a href="#" class="btn-join">S'inscrire</a>
+                            <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn-join">Voir détails</a>
                         </div>
                     </div>
                 </div>
@@ -131,12 +112,21 @@
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="cta-content">
-            <h2 class="cta-title">Prêt à organiser votre première sortie ?</h2>
-            <p class="cta-subtitle">Rejoignez notre communauté et partagez vos passions avec d'autres personnes</p>
-            <a href="{{ path('sortie_create') }}" class="btn-cta">Créer ma première sortie</a>
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-number">{{ sorties|length }}</div>
+                <div class="stat-label">Sorties disponibles</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Participants actifs</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Organisateurs</div>
+            </div>
         </div>
     </section>
 
@@ -144,7 +134,7 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h4>MonApp</h4>
+                <h4>BougeTonCrew</h4>
                 <p>La plateforme pour organiser et participer à des sorties près de chez vous.</p>
             </div>
             <div class="footer-section">
@@ -156,9 +146,8 @@
             <div class="footer-section">
                 <h4>Compte</h4>
                 {% if app.user %}
-{#                     TODO
-                        <a href="{{ path('profile_index') }}">Mon profil</a>#}
-{#                      <a href="{{ path('profile_edit') }}">Paramètres</a>#}
+                    {# TODO: <a href="{{ path('profile_index') }}">Mon profil</a> #}
+                    {# <a href="{{ path('profile_edit') }}">Paramètres</a> #}
                 {% else %}
                     <a href="{{ path('app_login') }}">Se connecter</a>
                     <a href="{{ path('app_register') }}">S'inscrire</a>
@@ -172,32 +161,87 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; {{ "now"|date("Y") }} MonApp - Tous droits réservés</p>
+            <p>&copy; {{ "now"|date("Y") }} BougeTonCrew - Tous droits réservés</p>
         </div>
     </footer>
 {% endblock %}
 
 {% block javascripts %}
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- flatpickr JS + localisation FR -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const el = document.querySelector('.datepicker');
-            if (!el) {
-                console.error('Flatpickr: aucun élément avec la classe .datepicker trouvé.');
-                return;
-            }
-
-            flatpickr(el, {
-                enableTime: true,
-                dateFormat: "Y-m-d H:i",
-                altInput: true,
-                altFormat: "d/m/Y à H:i",
-                time_24hr: true,
-                locale: "fr",
+        // Gestion des messages flash avec SweetAlert2
+        document.addEventListener('DOMContentLoaded', function() {
+            // Messages de succès (toast en haut à droite)
+            {% for message in app.flashes('success') %}
+            Swal.fire({
+                icon: 'success',
+                title: 'Succès !',
+                text: '{{ message|escape('js') }}',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end',
+                background: '#d4edda',
+                color: '#155724',
+                iconColor: '#28a745'
             });
+            {% endfor %}
+
+            // Messages d'erreur (popup au centre)
+            {% for message in app.flashes('danger') %}
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: '{{ message|escape('js') }}',
+                confirmButtonColor: '#dc3545',
+                confirmButtonText: 'Compris'
+            });
+            {% endfor %}
+
+            // Messages d'avertissement
+            {% for message in app.flashes('warning') %}
+            Swal.fire({
+                icon: 'warning',
+                title: 'Attention',
+                text: '{{ message|escape('js') }}',
+                confirmButtonColor: '#ffc107',
+                confirmButtonText: 'OK'
+            });
+            {% endfor %}
+
+            // Messages d'information (toast en haut à droite)
+            {% for message in app.flashes('info') %}
+            Swal.fire({
+                icon: 'info',
+                title: 'Information',
+                text: '{{ message|escape('js') }}',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
+            {% endfor %}
+
+            // Initialisation de flatpickr
+            const el = document.querySelector('.datepicker');
+            if (el) {
+                flatpickr(el, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    altInput: true,
+                    altFormat: "d/m/Y à H:i",
+                    time_24hr: true,
+                    locale: "fr",
+                });
+            }
         });
     </script>
 {% endblock %}
