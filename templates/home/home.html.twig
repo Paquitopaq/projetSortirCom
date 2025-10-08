@@ -1,135 +1,48 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Accueil | BougeTonCrew{% endblock %}</title>
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil | BougeTonCrew{% endblock %}
+
+{% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
-    {% block stylesheets %}{% endblock %}
-</head>
+{% endblock %}
 
-<body>
-<!-- Navbar style Airbnb -->
-<nav class="airbnb-navbar">
-    <div class="nav-content">
-
-        <!-- Logo -->
-        <a href="{{ path('app_home') }}" class="logo">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="BougeTonCrew" class="logo-img">
-        </a>
-
-        <!-- Navigation centrale -->
-        <div class="nav-links">
-            <a href="{{ path('app_home') }}" class="nav-link active">Accueil</a>
-            <a href="{{ path('app_sortie') }}" class="nav-link">Sorties</a>
-        </div>
-
-        <!-- Barre de recherche -->
-        <div class="search-bar">
-            <form action="{{ path('app_sortie') }}" method="get">
-                <div class="search-container">
-                    <div class="search-section" id="destination-section">
-                        <div class="search-label">Destination</div>
-                        <input type="text" name="destination" class="search-input" placeholder="Rechercher une destination">
-                    </div>
-                    <div class="search-section" id="dates-section">
-                        <div class="search-label">Dates</div>
-                        <input type="text" name="dates" class="search-input" placeholder="Quand ?" readonly>
-
-                        <!-- Calendrier dropdown -->
-                        <div class="calendar-dropdown">
-                            <div class="calendar-header">
-                                <button type="button" class="calendar-nav" id="prev-month">&lt;</button>
-                                <div class="calendar-months">
-                                    <div class="calendar-month" id="month-1"></div>
-                                    <div class="calendar-month" id="month-2"></div>
-                                </div>
-                                <button type="button" class="calendar-nav" id="next-month">&gt;</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="search-section" id="type-section">
-                        <div class="search-label">Type de service</div>
-                        <input type="text" name="type" class="search-input" placeholder="Ajouter">
-                    </div>
-                    <button type="submit" class="search-btn">
-                        <svg class="search-icon" viewBox="0 0 32 32" fill="currentColor">
-                            <path d="M13 0c7.18 0 13 5.82 13 13 0 2.868-.929 5.519-2.502 7.669l7.916 7.917-2.828 2.828-7.917-7.916A12.942 12.942 0 0 1 13 26C5.82 26 0 20.18 0 13S5.82 0 13 0zm0 4a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/>
-                        </svg>
-                    </button>
+{% block body %}
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">Sortir à Niort</h1>
+                <p class="hero-subtitle">Découvrez les meilleures sorties et événements près de chez vous</p>
+                <div class="hero-buttons">
+                    <a href="{{ path('app_sortie') }}" class="btn-primary-large">Explorer les sorties</a>
+                    <a href="{{ path('sortie_create') }}" class="btn-secondary-large">Créer une sortie</a>
                 </div>
-            </form>
-        </div>
-
-        <!-- Menu utilisateur -->
-        <div class="user-menu">
-            {% if app.user %}
-                <a href="{{ path('sortie_create') }}" class="become-host">Créer une sortie</a>
-                <button class="globe-btn">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                        <path d="M8 .5a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15zM1.5 8a6.5 6.5 0 0 1 12.41-2.5H11.5a5.5 5.5 0 0 0-9.473 1.853A6.461 6.461 0 0 1 1.5 8zm0 0c0 .536.065 1.055.185 1.553A5.5 5.5 0 0 0 11.5 10.5h2.41A6.5 6.5 0 0 1 1.5 8zm6.5 6.5a6.461 6.461 0 0 1-3.473-.99A5.5 5.5 0 0 0 13.09 11H14.5a6.5 6.5 0 0 1-6.5 3.5z"/>
-                    </svg>
-                </button>
-                <div class="menu-toggle">
-                    <div class="hamburger">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                    <div class="user-avatar">{{ app.user.username|first|upper }}</div>
-                </div>
-
-                <div class="dropdown-menu">
-                    <a href="{{ path('profile_index') }}" class="dropdown-item">Mon profil</a>
-                    <a href="{{ path('profile_edit') }}" class="dropdown-item">Paramètres</a>
-                    <div class="dropdown-divider"></div>
-                    <a href="{{ path('app_logout') }}" class="dropdown-item danger">Se déconnecter</a>
-                </div>
-            {% else %}
-                <a href="{{ path('app_login') }}" class="btn-auth">Se connecter</a>
-                <a href="{{ path('app_register') }}" class="btn-auth-outline">S'inscrire</a>
-            {% endif %}
-        </div>
-    </div>
-</nav>
-
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="hero-content">
-        <div class="hero-text">
-            <h1 class="hero-title">Sortir à Niort</h1>
-            <p class="hero-subtitle">Découvrez les meilleures sorties et événements près de chez vous</p>
-            <div class="hero-buttons">
-                <a href="{{ path('app_sortie') }}" class="btn-primary-large">Explorer les sorties</a>
-                <a href="{{ path('sortie_create') }}" class="btn-secondary-large">Créer une sortie</a>
+            </div>
+            <div class="hero-image">
+                <img src="{{ asset('assets/images/niort-fond.jpg') }}" alt="Niort">
             </div>
         </div>
-        <div class="hero-image">
-            <img src="{{ asset('assets/images/niort-fond.jpg') }}" alt="Niort">
-        </div>
-    </div>
-</section>
+    </section>
 
-<!-- Stats Section -->
-<section class="stats-section">
-    <div class="stats-container">
-        <div class="stat-item">
-            <div class="stat-number">{{ sorties|length }}</div>
-            <div class="stat-label">Sorties disponibles</div>
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-number">{{ sorties|length }}</div>
+                <div class="stat-label">Sorties disponibles</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Participants actifs</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Organisateurs</div>
+            </div>
         </div>
-        <div class="stat-item">
-            <div class="stat-number">500+</div>
-            <div class="stat-label">Participants actifs</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">50+</div>
-            <div class="stat-label">Organisateurs</div>
-        </div>
-    </div>
-</section>
+    </section>
 
-<!-- Sorties Section -->
-{% block body %}
+    <!-- Sorties Section -->
     <section class="sorties-section">
         <div class="section-header">
             <h2 class="section-title">Prochaines sorties</h2>
@@ -192,53 +105,73 @@
             {% endfor %}
         </div>
     </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-title">Prêt à organiser votre première sortie ?</h2>
+            <p class="cta-subtitle">Rejoignez notre communauté et partagez vos passions avec d'autres personnes</p>
+            <a href="{{ path('sortie_create') }}" class="btn-cta">Créer ma première sortie</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>MonApp</h4>
+                <p>La plateforme pour organiser et participer à des sorties près de chez vous.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <a href="{{ path('app_home') }}">Accueil</a>
+                <a href="{{ path('app_sortie') }}">Sorties</a>
+                <a href="{{ path('sortie_create') }}">Créer une sortie</a>
+            </div>
+            <div class="footer-section">
+                <h4>Compte</h4>
+                {% if app.user %}
+                    <a href="{{ path('profile_index') }}">Mon profil</a>
+                    <a href="{{ path('profile_edit') }}">Paramètres</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}">Se connecter</a>
+                    <a href="{{ path('app_register') }}">S'inscrire</a>
+                {% endif %}
+            </div>
+            <div class="footer-section">
+                <h4>Légal</h4>
+                <a href="#">Mentions légales</a>
+                <a href="#">CGU</a>
+                <a href="#">Politique de confidentialité</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; {{ "now"|date("Y") }} MonApp - Tous droits réservés</p>
+        </div>
+    </footer>
 {% endblock %}
 
-<!-- CTA Section -->
-<section class="cta-section">
-    <div class="cta-content">
-        <h2 class="cta-title">Prêt à organiser votre première sortie ?</h2>
-        <p class="cta-subtitle">Rejoignez notre communauté et partagez vos passions avec d'autres personnes</p>
-        <a href="{{ path('sortie_create') }}" class="btn-cta">Créer ma première sortie</a>
-    </div>
-</section>
+{% block javascripts %}
+    <!-- flatpickr JS + localisation FR -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 
-<!-- Footer -->
-<footer class="footer">
-    <div class="footer-content">
-        <div class="footer-section">
-            <h4>MonApp</h4>
-            <p>La plateforme pour organiser et participer à des sorties près de chez vous.</p>
-        </div>
-        <div class="footer-section">
-            <h4>Navigation</h4>
-            <a href="{{ path('app_home') }}">Accueil</a>
-            <a href="{{ path('app_sortie') }}">Sorties</a>
-            <a href="{{ path('sortie_create') }}">Créer une sortie</a>
-        </div>
-        <div class="footer-section">
-            <h4>Compte</h4>
-            {% if app.user %}
-                <a href="{{ path('profile_index') }}">Mon profil</a>
-                <a href="{{ path('profile_edit') }}">Paramètres</a>
-            {% else %}
-                <a href="{{ path('app_login') }}">Se connecter</a>
-                <a href="{{ path('app_register') }}">S'inscrire</a>
-            {% endif %}
-        </div>
-        <div class="footer-section">
-            <h4>Légal</h4>
-            <a href="#">Mentions légales</a>
-            <a href="#">CGU</a>
-            <a href="#">Politique de confidentialité</a>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>&copy; {{ "now"|date("Y") }} MonApp - Tous droits réservés</p>
-    </div>
-</footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const el = document.querySelector('.datepicker');
+            if (!el) {
+                console.error('Flatpickr: aucun élément avec la classe .datepicker trouvé.');
+                return;
+            }
 
-<style>
-
-    }
-</style>
+            flatpickr(el, {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                altInput: true,
+                altFormat: "d/m/Y à H:i",
+                time_24hr: true,
+                locale: "fr",
+            });
+        });
+    </script>
+{% endblock %}
