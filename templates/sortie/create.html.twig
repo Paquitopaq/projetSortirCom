@@ -8,6 +8,14 @@
 
         {{ form_start(form) }}
         {{ form_widget(form) }}
+        <div id="lieu-details" class="mt-3">
+            <p><strong>Ville :</strong> <span id="lieu-ville"></span></p>
+            <p><strong>Rue :</strong> <span id="lieu-rue"></span></p>
+            <p><strong>Code postal :</strong> <span id="lieu-code-postal"></span></p>
+            <p><strong>Latitude :</strong> <span id="lieu-latitude"></span></p>
+            <p><strong>Longitude :</strong> <span id="lieu-longitude"></span></p>
+        </div>
+
 
         <button type="submit" name="action" value="enregistrer" class="btn btn-primary">Enregistrer</button>
         <button type="submit" name="action" value="publier" class="btn btn-success">Publier</button>
@@ -15,4 +23,37 @@
         {{ form_end(form) }}
 
     </div>
+    <script>
+        const lieux = {
+            {% for lieu in lieux %}
+            "{{ lieu.id }}": {
+                ville: "{{ lieu.ville.nom|e('js') }}",
+                rue: "{{ lieu.rue|e('js') }}",
+                codePostal: "{{ lieu.ville.codePostal|e('js') }}",
+                latitude: "{{ lieu.latitude }}",
+                longitude: "{{ lieu.longitude }}"
+            },
+            {% endfor %}
+        };
+
+        document.getElementById('sortie_lieu').addEventListener('change', function () {
+            const selectedId = this.value;
+            const details = lieux[selectedId];
+
+            if (details) {
+                document.getElementById('lieu-ville').textContent = details.ville;
+                document.getElementById('lieu-rue').textContent = details.rue;
+                document.getElementById('lieu-code-postal').textContent = details.codePostal;
+                document.getElementById('lieu-latitude').textContent = details.latitude;
+                document.getElementById('lieu-longitude').textContent = details.longitude;
+            } else {
+                document.getElementById('lieu-ville').textContent = details.ville;
+                document.getElementById('lieu-rue').textContent = details.rue;
+                document.getElementById('lieu-code-postal').textContent = details.codePostal;                document.getElementById('lieu-latitude').textContent = '';
+                document.getElementById('lieu-latitude').textContent = details.latitude;
+                document.getElementById('lieu-longitude').textContent = '';
+            }
+        });
+    </script>
+
 {% endblock %}
