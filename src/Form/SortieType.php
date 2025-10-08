@@ -31,6 +31,7 @@ class SortieType extends AbstractType
                 'choice_label' => 'nom', // ou 'idLieu' si tu préfères
                 'label' => 'Lieu de la sortie',
                 'placeholder' => 'Choisissez un lieu',
+                'attr' => ['id' => 'lieu-select'],
             ])
 
 

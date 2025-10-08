@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\State;
 use App\Entity\Sortie;
 use App\Form\SortieType;
+use App\Repository\LieuRepository;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +28,7 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/create', name: 'sortie_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    public function create(Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
     {
         $sortie = new Sortie();
         $sortie->setIdSortie(uniqid('SRT_'));
@@ -49,6 +50,7 @@ final class SortieController extends AbstractController
 
         return $this->render('sortie/create.html.twig', [
             'form' => $form->createView(),
+            'lieux' => $lieuRepository->findAll(),
         ]);
     }
 
