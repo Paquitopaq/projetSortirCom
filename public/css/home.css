@@ -1197,12 +1197,12 @@ body, main {
 }
 
 .sidebar-dropdown-item:hover i {
-    color: var(--background);
+    color: var(--orange);
 }
 
 .sidebar-dropdown-item:hover {
-    background: var(--orange);
-    color: var(--background);
+    color: var(--orange);
+    background: rgba(255, 107, 0, 0.05);
     transform: translateX(4px);
 }
 
