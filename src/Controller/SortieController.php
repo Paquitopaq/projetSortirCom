@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Enum\Etat;
 use App\Form\SortieType;
 use App\Repository\LieuRepository;
 use App\Service\SortieService;
@@ -31,7 +32,6 @@ final class SortieController extends AbstractController
     public function create(Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
     {
         $sortie = new Sortie();
-        $sortie->setIdSortie(uniqid('SRT_'));
 
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
@@ -69,14 +69,16 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire')]
-    public function inscrire(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em): Response
+    public function inscription(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em): Response
     {
         $participant = $em->getRepository(Participant::class)->find($this->getUser()->getId());
 
         if ($sortieService->inscrireParticipant($sortie, $participant)) {
-            $this->addFlash('success', 'Inscription réussie !');
-        } else {
-            $this->addFlash('danger', 'Impossible de vous inscrire.');
+            $this->addFlash('success', 'Inscription à la sortie réussie !');
+        }else if ($sortieService->removeParticipant($sortie, $participant)) {
+            $this->addFlash('success', 'vous n\'êtes plus inscrit à cette sortie.');
+        }else {
+            $this->addFlash('danger', 'Les inscription et désinscription ne sont plus possible pour cette sortie.');
         }
 
         return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);

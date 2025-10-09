@@ -20,9 +20,6 @@ class Sortie
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $idSortie = null;
-
-    #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
     #[ORM\Column(nullable: true)]
@@ -64,18 +61,6 @@ class Sortie
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdSortie(): ?string
-    {
-        return $this->idSortie;
-    }
-
-    public function setIdSortie(string $idSortie): static
-    {
-        $this->idSortie = $idSortie;
-
-        return $this;
     }
 
     public function getNom(): ?string

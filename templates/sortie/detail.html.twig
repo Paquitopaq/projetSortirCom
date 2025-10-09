@@ -71,4 +71,19 @@
     {% else %}
         <p class="text-center mt-4">Vous devez être connecté pour vous inscrire.</p>
     {% endif %}
+    {% if sortie.participants|length > 0 %}
+        <h2 class="mt-5 text-center">Participants inscrits</h2>
+        <ul class="list-group w-50 mx-auto mb-5">
+            {% for participant in sortie.participants %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="{{ path('app_profil_participant', {id: participant.id}) }}">
+                        {{ participant.pseudo ?? participant.prenom ~ ' ' ~ participant.nom }}
+                    </a>
+                    <span class="badge bg-primary rounded-pill">Inscrit</span>
+                </li>
+            {% endfor %}
+        </ul>
+
+    {% endif %}
+
 {% endblock %}
