@@ -32,7 +32,9 @@
                 <div class="sidebar-dropdown">
                     <div class="sidebar-dropdown-header">
                         <div class="sidebar-user-info">
-                            <img class="sidebar-user-avatar" src="{{ asset('icons/default.png') }}" alt="Avatar" />
+                            <img class="sidebar-user-avatar"
+                                 src="{{ app.user.photoProfil ? asset('assets/images/' ~ app.user.photoProfil) : asset('icons/default.png') }}"
+                                 alt="Avatar" />
                             <div>
                                 <p class="sidebar-user-name">{{ app.user.email|split('@')|first }}</p>
                                 <p class="sidebar-user-role">Membre</p>
