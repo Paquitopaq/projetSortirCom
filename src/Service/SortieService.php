@@ -128,7 +128,7 @@ class SortieService
 
     public function removeParticipant(Sortie $sortie, Participant $participant): bool {
 
-        if ($sortie->getParticipants()->contains($participant) && $sortie->getEtat() == Etat::OPEN) {
+        if ($sortie->getParticipants()->contains($participant) && ($sortie->getEtat() == Etat::OPEN || $sortie->getEtat() == Etat::CLOSED)) {
             $sortie->removeParticipant($participant);
             $this->entityManager->persist($sortie);
             $this->entityManager->flush();
@@ -140,6 +140,10 @@ class SortieService
     public function archiverSorties(): void
     {
         $this->sortieRepository->archiverSortiesAnciennes();
+    }
+
+    public function clotureSorties(): void{
+        $this->sortieRepository->clotureSortie();
     }
 
 
