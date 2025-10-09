@@ -28,7 +28,6 @@ class SortieService
     {
         $this->sortieRepository = $sortieRepository;
         $this->lieuRepository = $lieuRepository;
-        $this->entityManager = $entityManager;
         $this->security = $security;
     }
     public function createSortie(Sortie $sortie, bool $publier): void
@@ -38,6 +37,9 @@ class SortieService
         } else {
             $sortie->setEtat(Etat::CREATED);
         }
+
+        $participant = $this->entityManager->getRepository(Participant::class)->find($this->security->getUser()->getId());
+        $sortie->setOrganisateur($participant);
 
         $this->entityManager->persist($sortie);
         $this->entityManager->flush();
