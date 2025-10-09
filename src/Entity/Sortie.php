@@ -40,6 +40,7 @@ class Sortie
     private ?string $infoSortie = null;
 
     #[ORM\Column(enumType: Etat::class)]
+
     private ?Etat $etat = null;
 
 
@@ -47,16 +48,20 @@ class Sortie
     #[ORM\JoinTable(name: 'sortie_participant')]
     private Collection $participants;
 
+    #[ORM\ManyToOne(inversedBy: 'ville')]
+    private ?Site $site = null;
+
+    #[ORM\ManyToOne(targetEntity: Lieu::class, inversedBy: 'sorties')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Lieu $lieu = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $motifAnnulation = null;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
     }
-    #[ORM\ManyToOne(inversedBy: 'ville')]
-    private ?Site $site = null;
-
-    #[ORM\ManyToOne(inversedBy: 'sorties')]
-    private ?Lieu $lieu = null;
-
 
     public function getId(): ?int
     {
@@ -244,6 +249,15 @@ class Sortie
         return $this;
     }
 
+    public function getMotifAnnulation(): ?string
+    {
+        return $this->motifAnnulation;
+    }
+
+    public function setMotifAnnulation(?string $motifAnnulation): void
+    {
+        $this->motifAnnulation = $motifAnnulation;
+    }
 
 
 }

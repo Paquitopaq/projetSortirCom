@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
-use App\Enum\Etat;
+use App\Form\DeleteSortieType;
 use App\Form\SortieType;
 use App\Repository\LieuRepository;
 use App\Service\SortieService;
@@ -29,7 +29,7 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/create', name: 'sortie_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
+    public function create(Request $request, EntityManagerInterface $entityManager, LieuRepository $lieuRepository): Response
     {
         $sortie = new Sortie();
 
@@ -61,7 +61,7 @@ final class SortieController extends AbstractController
             $this->sortieService->publier($sortie);
             $this->addFlash('success', 'Sortie publiée.');
 
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->addFlash('error', $exception->getMessage());
         }
 
@@ -85,10 +85,14 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/{id}/detail', name: 'sortie_detail')]
-    public function getSortie(?Sortie $sortie): Response
+    public function detailsortie(?Sortie $sortie): Response
     {
         if (!$sortie) {
-            throw $this->createNotFoundException("Cette sortie n'existe pas.");
+            $this->addFlash('danger',"Cette sortie n'existe pas.");
+        }
+        if ($sortie->getEtat() === Etat::ARCHIVEE) {
+            $this->addFlash('danger',"Cette sortie n'est plus consultable.");
+            return $this->redirectToRoute('app_home');
         }
 
         return $this->render('sortie/detail.html.twig', [
@@ -96,6 +100,34 @@ final class SortieController extends AbstractController
         ]);
     }
 
+    #[Route('/sortie/{id}/delete', name: 'sortie_delete', methods: ['GET', 'POST'])]
+    public function delete(
+        Sortie $sortie,
+        Request $request,
+        SortieService $sortieService
+    ): Response {
+        $form = $this->createForm(DeleteSortieType::class, $sortie);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getUser();
+            $motif = $form->get('motifAnnulation')->getData();
+            $result = $sortieService->deleteSortie($sortie, $user, $motif);
+
+            if ($result['success']) {
+                $this->addFlash('success', $result['message']);
+            } else {
+                $this->addFlash('danger', $result['message']);
+            }
+
+            return $this->redirectToRoute('app_home');
+        }
+
+        return $this->render('sortie/delete.html.twig', [
+            'sortie' => $sortie,
+            'form' => $form->createView(),
+        ]);
+    }
 
 
 

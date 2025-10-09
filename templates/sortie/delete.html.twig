@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Annuler la sortie {{ sortie.nom }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+
+        <h1 class="mb-4 text-center">Annuler une sortie</h1>
+
+
+        <table class="table table-bordered table-striped w-75 mx-auto">
+            <tbody>
+            <tr>
+                <th>Nom de la sortie</th>
+                <td>{{ sortie.nom }}</td>
+            </tr>
+            <tr>
+                <th>Date de début</th>
+                <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+            </tr>
+            <tr>
+                <th>Site organisateur</th>
+                <td>{{ sortie.lieu.nom }}</td>
+            </tr>
+            <tr>
+                <th>Lieu</th>
+                <td>
+                    {% if sortie.lieu %}
+                    {{ sortie.lieu.ville.codePostal }} {{ sortie.lieu.ville.nom }}
+                    {% else %}
+                        <em>Aucun lieu associé</em>
+                    {% endif %}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        {{ form_start(form) }}
+
+        <div class="mb-3">
+            {{ form_label(form.motifAnnulation, 'Motif d’annulation', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+            {{ form_widget(form.motifAnnulation, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Expliquez pourquoi vous devez annuler cette sortie.'}}) }}
+            {{ form_errors(form.motifAnnulation) }}
+        </div>
+
+        <div class="alert alert-warning mt-3">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Cette action est <strong>irréversible</strong>. <br>
+            La sortie sera marquée comme <strong>Annulée</strong>.
+        </div>
+
+        <button class="btn btn-danger w-100 mt-4">
+            <i class="bi bi-x-circle"></i> Confirmer l’annulation
+        </button>
+
+        {{ form_end(form) }}
+
+        <div class="mt-3 text-center">
+            <a href="{{ path('app_home') }}" class="btn btn-secondary">Retour</a>
+        </div>
+    </div>
+{% endblock %}
