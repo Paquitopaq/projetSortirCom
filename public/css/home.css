@@ -96,7 +96,6 @@ body, main {
 /* Hero Section */
 .hero-section {
     padding: 120px 40px;
-    background: linear-gradient(135deg, rgba(11, 36, 71, 0.85) 0%, rgba(255, 107, 0, 0.75) 100%);
     position: relative;
     min-height: 600px;
     display: flex;
