@@ -92,9 +92,7 @@ class SortieService
         $nonInscrit = $request->query->get('non_inscrit');
         $passees = $request->query->get('passees');
 
-        $user = $this->security->getUser();
-
-        $lieux = $this->lieuRepository->findAll();
+        $participant = $this->entityManager->getRepository(Participant::class)->find($this->security->getUser()->getId());
 
         $sorties = $this->sortieRepository->findByFilters(
             $nomRecherche,
@@ -104,8 +102,10 @@ class SortieService
             $inscrit,
             $nonInscrit,
             $passees,
-            $user
+            $participant
         );
+
+        $lieux = $this->lieuRepository->findAll();
 
         return [
             'sorties' => $sorties,
@@ -135,5 +135,11 @@ class SortieService
         }
         return false;
     }
+
+    public function archiverSorties(): void
+    {
+        $this->sortieRepository->archiverSortiesAnciennes();
+    }
+
 
 }

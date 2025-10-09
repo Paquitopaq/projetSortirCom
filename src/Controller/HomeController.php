@@ -16,6 +16,7 @@ final class HomeController extends AbstractController
         SortieService $sortieService
     ): Response
     {
+        $sortieService->archiverSorties();
         $data = $sortieService->getFilteredSorties($request);
 
         return $this->render('home/home.html.twig', [
