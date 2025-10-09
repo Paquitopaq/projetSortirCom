@@ -85,10 +85,13 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/{id}/detail', name: 'sortie_detail')]
-    public function getSortie(?Sortie $sortie): Response
+    public function detailsortie(?Sortie $sortie): Response
     {
         if (!$sortie) {
             throw $this->createNotFoundException("Cette sortie n'existe pas.");
+        }
+        if ($sortie->getEtat() === Etat::ARCHIVEE) {
+            throw $this->createNotFoundException("Cette sortie n'est plus consultable.");
         }
 
         return $this->render('sortie/detail.html.twig', [

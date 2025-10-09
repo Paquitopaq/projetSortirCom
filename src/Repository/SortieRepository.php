@@ -85,5 +85,15 @@ class SortieRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function findNonArchivees(): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.etat != :etat')
+            ->setParameter('etat', \App\Enum\Etat::ARCHIVEE)
+            ->orderBy('s.dateHeureDebut', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
 
 }

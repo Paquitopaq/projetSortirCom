@@ -10,4 +10,5 @@ enum Etat: string
     case IN_PROGRESS = 'Activité en cours';
     case PASSED = 'Passée';
     case CANCELLED = 'Annulée';
+    case ARCHIVEE = 'Archive';
 }

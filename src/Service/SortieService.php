@@ -105,4 +105,26 @@ class SortieService
         return false;
     }
 
+    public function archiverSorties(): void
+    {
+        $now = new \DateTime();
+        $unMoisAvant = (clone $now)->modify('-1 month');
+
+        $sorties = $this->entityManager->getRepository(Sortie::class)->findAll();
+
+        foreach ($sorties as $sortie) {
+            // Si la sortie est terminée depuis plus d’un mois
+            $finSortie = clone $sortie->getDateHeureDebut();
+            $finSortie->modify("+{$sortie->getDuree()} minutes");
+
+            if ($finSortie < $unMoisAvant && $sortie->getEtat() !== Etat::ARCHIVEE) {
+                $sortie->setEtat(Etat::ARCHIVEE);
+                $this->entityManager->persist($sortie);
+            }
+        }
+
+        $this->entityManager->flush();
+    }
+
+
 }
