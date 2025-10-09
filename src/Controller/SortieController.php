@@ -22,10 +22,12 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie', name: 'app_sortie')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $data = $this->sortieService->getFilteredSorties($request);
+
         return $this->render('sortie/index.html.twig', [
-            'controller_name' => 'SortieController',
+            'sorties' => $data['sorties'],
         ]);
     }
 

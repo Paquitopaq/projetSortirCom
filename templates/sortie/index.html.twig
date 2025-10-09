@@ -1,16 +1,289 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil Sortie{% endblock %}
+{% block title %}Toutes les sorties | BougeTonCrew{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/sortie.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h1>Bienvenue sur la page Sortie</h1>
-        <p>Ce message provient de :</p>
-        <ul>
-            <li>Ton contrôleur : <code>src/Controller/SortieController.php</code></li>
-            <li>Ton template : <code>templates/sortie/index.html.twig</code></li>
-        </ul>
+    <!-- Section de recherche et filtres -->
+    <section class="search-section-page">
+        <div class="container-page">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-list"></i> Toutes les sorties
+                </h1>
+                {% if app.user %}
+                    <a href="{{ path('sortie_create') }}" class="btn-primary-large">
+                        <i class="fas fa-plus-circle"></i> Créer une sortie
+                    </a>
+                {% endif %}
+            </div>
 
-        <a href="{{ path('sortie_create') }}" class="btn btn-success mt-3">Créer une nouvelle Sortie</a>
-    </div>
+            <!-- Formulaire de recherche -->
+            <div class="search-box">
+                <form action="{{ path('app_sortie') }}" method="get">
+                    <div class="search-container">
+                        <!-- Recherche par nom -->
+                        <div class="search-section">
+                            <div class="search-label">
+                                <i class="fas fa-search"></i> Nom de la sortie
+                            </div>
+                            <input type="text"
+                                   name="nom_sortie"
+                                   class="search-input"
+                                   placeholder="Rechercher une sortie..."
+                                   value="{{ app.request.query.get('nom_sortie') }}">
+                        </div>
+
+                        <!-- Date de début -->
+                        <div class="search-section">
+                            <div class="search-label">
+                                <i class="fas fa-calendar-alt"></i> Date de début
+                            </div>
+                            <input type="text"
+                                   name="date_debut"
+                                   id="date-debut"
+                                   class="search-input"
+                                   placeholder="À partir du..."
+                                   value="{{ app.request.query.get('date_debut') }}"
+                                   readonly>
+                        </div>
+
+                        <!-- Date de fin -->
+                        <div class="search-section">
+                            <div class="search-label">
+                                <i class="fas fa-calendar-check"></i> Date de fin
+                            </div>
+                            <input type="text"
+                                   name="date_fin"
+                                   id="date-fin"
+                                   class="search-input"
+                                   placeholder="Jusqu'au..."
+                                   value="{{ app.request.query.get('date_fin') }}"
+                                   readonly>
+                        </div>
+
+                        <!-- Bouton de recherche -->
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+
+                    <!-- Filtres avancés -->
+                    <div class="search-filters">
+                        {% if app.user %}
+                            <label class="filter-checkbox">
+                                <input type="checkbox"
+                                       name="organisateur"
+                                       value="1"
+                                        {{ app.request.query.get('organisateur') ? 'checked' : '' }}>
+                                <span><i class="fas fa-user-tie"></i> Sorties que j'organise</span>
+                            </label>
+
+                            <label class="filter-checkbox">
+                                <input type="checkbox"
+                                       name="inscrit"
+                                       value="1"
+                                        {{ app.request.query.get('inscrit') ? 'checked' : '' }}>
+                                <span><i class="fas fa-check-circle"></i> Sorties auxquelles je participe</span>
+                            </label>
+
+                            <label class="filter-checkbox">
+                                <input type="checkbox"
+                                       name="non_inscrit"
+                                       value="1"
+                                        {{ app.request.query.get('non_inscrit') ? 'checked' : '' }}>
+                                <span><i class="fas fa-times-circle"></i> Sorties auxquelles je ne participe pas</span>
+                            </label>
+                        {% endif %}
+
+                        <label class="filter-checkbox">
+                            <input type="checkbox"
+                                   name="passees"
+                                   value="1"
+                                    {{ app.request.query.get('passees') ? 'checked' : '' }}>
+                            <span><i class="fas fa-history"></i> Sorties passées</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Liste des sorties en timeline -->
+    <section class="sorties-section">
+        <div class="container-page">
+            {% if sorties is defined and sorties|length > 0 %}
+                <div class="sorties-count">
+                    <p><strong>{{ sorties|length }}</strong> sortie(s) trouvée(s)</p>
+                </div>
+
+                <div class="timeline">
+                    {% for sortie in sorties %}
+                        {% set now = date() %}
+                        {% set sortieDate = sortie.dateHeureDebut %}
+                        {% set isToday = sortieDate|date('Y-m-d') == now|date('Y-m-d') %}
+                        {% set isNow = isToday and sortieDate|date('H:i') <= now|date('H:i') and (sortieDate|date_modify('+' ~ sortie.duree ~ ' minutes'))|date('H:i') >= now|date('H:i') %}
+
+                        <div class="event-item">
+                            <!-- Boîte de date -->
+                            <div class="date-box">
+                                <div class="date-number">{{ sortieDate|date('d') }}</div>
+                                <div class="date-month">{{ sortieDate|date('M') }}</div>
+                                {% if isNow %}
+                                    <span class="date-badge">Now!</span>
+                                {% elseif isToday %}
+                                    <span class="date-badge today">Today</span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Contenu de l'événement -->
+                            <div class="event-content-timeline">
+                                <h3 class="event-title-timeline">{{ sortie.nom }}</h3>
+
+                                <div class="event-time">
+                                    <i class="fas fa-clock"></i>
+                                    {{ sortieDate|date('H:i') }} -
+                                    {{ sortieDate|date_modify('+' ~ sortie.duree ~ ' minutes')|date('H:i') }}
+                                    ({{ sortie.duree }} min)
+                                </div>
+
+                                <div class="event-details">
+                                    <div class="event-detail">
+                                        <i class="fas fa-tag"></i>
+                                        <span>État: {{ sortie.etat.value }}</span>
+                                    </div>
+                                    <div class="event-detail">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>{{ sortie.lieu.nom ?? 'Lieu à définir' }}</span>
+                                    </div>
+                                    <div class="event-detail">
+                                        <i class="fas fa-users"></i>
+                                        <span>{{ sortie.nbInscrits }} / {{ sortie.nbInscriptionMax }} participants</span>
+                                    </div>
+                                    <div class="event-detail">
+                                        <i class="fas fa-info-circle"></i>
+                                        <span>{{ sortie.infoSortie|length > 80 ? sortie.infoSortie|slice(0, 80) ~ '...' : sortie.infoSortie }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Footer avec organisateur et boutons -->
+                                <div class="sortie-footer">
+                                    <div class="sortie-organizer">
+                                        <div class="organizer-avatar">
+                                            {% if sortie.organisateur %}
+                                                {{ sortie.organisateur.prenom|first|upper }}{{ sortie.organisateur.nom|first|upper }}
+                                            {% else %}
+                                                <i class="fas fa-user"></i>
+                                            {% endif %}
+                                        </div>
+                                        <span>
+                                            {% if sortie.organisateur %}
+                                                {{ sortie.organisateur.prenom }} {{ sortie.organisateur.nom }}
+                                            {% else %}
+                                                Organisateur inconnu
+                                            {% endif %}
+                                        </span>
+                                    </div>
+
+                                    {% if app.user %}
+                                        {% set isInscrit = sortie.participants.contains(app.user) %}
+                                        {% set isOrganisateur = sortie.organisateur == app.user %}
+                                        {% set isComplet = sortie.nbInscrits >= sortie.nbInscriptionMax %}
+                                        {% set etatValue = sortie.etat.value %}
+
+                                        {% if isOrganisateur %}
+                                            <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn-join">
+                                                <i class="fas fa-edit"></i> Gérer
+                                            </a>
+                                        {% elseif isInscrit %}
+                                            <div class="inscription-actions">
+                                                <span class="btn-inscrit-info">
+                                                    <i class="fas fa-check"></i> Inscrit
+                                                </span>
+                                                <form method="post"
+                                                      action="{{ path('sortie_inscrire', {'id': sortie.id}) }}"
+                                                      class="form-inline"
+                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir vous désinscrire ?');">
+                                                    <button type="submit" class="btn-desinscrire" title="Se désinscrire">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        {% elseif sortie.etat != constant('App\\Enum\\Etat::OPEN') %}
+                                            <button class="btn-join btn-ferme" disabled>
+                                                <i class="fas fa-lock"></i>
+                                                {{ etatValue }}
+                                            </button>
+                                        {% elseif isComplet %}
+                                            <button class="btn-join btn-complet" disabled>
+                                                <i class="fas fa-user-times"></i> Complet
+                                            </button>
+                                        {% else %}
+                                            <form method="post"
+                                                  action="{{ path('sortie_inscrire', {'id': sortie.id}) }}"
+                                                  class="form-inline">
+                                                <button type="submit" class="btn-join">
+                                                    <i class="fas fa-user-plus"></i> S'inscrire
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    {% else %}
+                                        <a href="{{ path('app_login') }}" class="btn-join btn-login">
+                                            <i class="fas fa-sign-in-alt"></i> Connexion
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-sorties">
+                    <i class="fas fa-inbox fa-4x"></i>
+                    <h3>Aucune sortie disponible</h3>
+                    <p>Soyez le premier à créer une sortie !</p>
+                    {% if app.user %}
+                        <a href="{{ path('sortie_create') }}" class="btn-primary-large">
+                            <i class="fas fa-plus-circle"></i> Créer une sortie
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialisation Flatpickr pour date début
+            const dateDebut = document.getElementById('date-debut');
+            if (dateDebut) {
+                flatpickr(dateDebut, {
+                    dateFormat: "Y-m-d",
+                    altInput: true,
+                    altFormat: "d/m/Y",
+                    locale: "fr"
+                });
+            }
+
+            // Initialisation Flatpickr pour date fin
+            const dateFin = document.getElementById('date-fin');
+            if (dateFin) {
+                flatpickr(dateFin, {
+                    dateFormat: "Y-m-d",
+                    altInput: true,
+                    altFormat: "d/m/Y",
+                    locale: "fr"
+                });
+            }
+        });
+    </script>
 {% endblock %}
