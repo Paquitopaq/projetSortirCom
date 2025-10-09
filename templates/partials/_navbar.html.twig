@@ -25,7 +25,14 @@
                         <span></span>
                         <span></span>
                     </div>
-                    <div class="user-avatar">{{ app.user.email|first|upper }}</div>
+                    <div class="user-avatar">
+                        {% if app.user.photoProfil %}
+                            <img class="user-avatar" src="{{ asset('assets/images/' ~ app.user.photoProfil) }}" alt="Avatar">
+                        {% else %}
+                            {{ app.user.email|slice(0, 1)|upper }}
+                        {% endif %}
+                    </div >
+
                 </label>
 
                 {# Sidebar intégrée dans le dropdown #}
