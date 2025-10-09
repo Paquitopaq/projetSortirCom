@@ -18,15 +18,21 @@ class LieuxFixtures extends Fixture implements DependentFixtureInterface
             ['nom' => 'Place Napoléon', 'rue' => 'Place Napoléon', 'latitude' => 46.6705, 'longitude' => -1.4264, 'ville' => 'V003'],
         ];
 
-        foreach ($lieux as $data) {
+        foreach ($lieux as $index => $data) {
             $lieu = new Lieu();
             $lieu->setNom($data['nom']);
             $lieu->setRue($data['rue']);
             $lieu->setLatitude($data['latitude']);
             $lieu->setLongitude($data['longitude']);
-            $lieu->setVille($this->getReference($data['ville'], Ville::class));
+
+            // ✅ getReference() nécessite 2 arguments avec Doctrine Fixtures 2.1.0
+            $ville = $this->getReference($data['ville'], Ville::class);
+            $lieu->setVille($ville);
 
             $manager->persist($lieu);
+
+            // ✅ ajoute une référence pour SortieFixtures
+            $this->addReference('lieu_' . $index, $lieu);
         }
 
         $manager->flush();
