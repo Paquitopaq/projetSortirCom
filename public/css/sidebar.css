@@ -60,7 +60,7 @@
     top: 0;
     width: 380px;
     height: 100vh;
-    background: white;
+    background: var(--background);
     box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
     z-index: 1001;
     transition: right 0.3s ease-out;

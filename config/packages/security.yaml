@@ -41,7 +41,7 @@ security:
     - { path: ^/admin, roles: ROLE_ADMIN }
     # Routes pour utilisateurs connectés
     - { path: ^/sortie/create, roles: ROLE_USER }
-    - { path: ^/profil/**, roles: ROLE_USER }
+    - { path: ^/profil/, roles: ROLE_USER }
 
 when@test:
   security:
