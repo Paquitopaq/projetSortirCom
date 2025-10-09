@@ -18,7 +18,6 @@ class VilleFixtures extends Fixture
     {
         foreach (self::VILLES as $data) {
             $ville = new Ville();
-            $ville->setIdVille($data['idVille']);
             $ville->setNom($data['nom']);
             $ville->setCodePostal($data['codePostal']);
 

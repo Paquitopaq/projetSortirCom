@@ -116,28 +116,24 @@ class SortieService
     }
     public function inscrireParticipant(Sortie $sortie, Participant $participant): bool {
 
-        // TODO Ajouter des messages d'erreurs clair
-        if ($sortie->getEtat() !== Etat::OPEN) {
-            return false;
+        if (!$sortie->getParticipants()->contains($participant)&&$sortie->getEtat() == Etat::OPEN) {
+            $sortie->addParticipant($participant);
+            $this->entityManager->persist($sortie);
+            $this->entityManager->flush();
+            return true;
         }
-
-        if ($sortie->getParticipants()->contains($participant)) {
-            return false;
-        }
-
-        if ($sortie->getNbInscrits()>= $sortie->getNbInscriptionMax()) {
-            return false;
-        }
-
-        $sortie->addParticipant($participant);
-        $this->entityManager->persist($sortie);
-        $this->entityManager->flush();
-
-        return true;
+        return false;
     }
 
-    public function removeParticipant(Sortie $sortie, Participant $participant): void {
-        $sortie->removeParticipant($participant);
+    public function removeParticipant(Sortie $sortie, Participant $participant): bool {
+
+        if ($sortie->getParticipants()->contains($participant) && $sortie->getEtat() == Etat::OPEN) {
+            $sortie->removeParticipant($participant);
+            $this->entityManager->persist($sortie);
+            $this->entityManager->flush();
+            return true;
+        }
+        return false;
     }
 
 }

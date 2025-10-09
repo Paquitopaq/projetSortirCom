@@ -16,9 +16,6 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
         for ($i = 1; $i <= 10; $i++) {
             $sortie = new Sortie();
 
-            // Identifiant unique
-            $sortie->setIdSortie('SORTIE-' . str_pad($i, 3, '0', STR_PAD_LEFT));
-
             // Nom
             $sortie->setNom('Sortie Test ' . $i);
 

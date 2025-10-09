@@ -1,0 +1,42 @@
+/* Personnalisation SweetAlert2 */
+.swal2-popup {
+    border-radius: 16px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.swal2-title {
+    color: var(--blue-dark) !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+}
+
+.swal2-html-container {
+    color: var(--blue-dark) !important;
+}
+
+/* Bouton de confirmation avec votre orange */
+.swal2-confirm {
+    background-color: var(--orange) !important;
+    border-radius: 8px !important;
+    padding: 0.75rem 2rem !important;
+    font-weight: 600 !important;
+}
+
+.swal2-confirm:hover {
+    background-color: #e55f00 !important;
+}
+
+/* Toast en haut à droite */
+.swal2-toast {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Icône de succès avec votre orange */
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: #28a745 !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+    border-color: rgba(40, 167, 69, 0.3) !important;
+}
