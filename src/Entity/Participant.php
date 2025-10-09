@@ -26,7 +26,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var list<string> The user roles
      */
-    #[ORM\Column]
+    #[ORM\Column(type : 'json')]
     private array $roles = [];
 
     /**
@@ -56,13 +56,13 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Sortie::class, mappedBy: 'participants')]
     private Collection $sorties;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $photoProfil = null;
-
+    #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'organisateur')]
+    private Collection $sortiesOrganisees;
 
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
+        $this->sortiesOrganisees = new ArrayCollection();
     }
 
 
@@ -195,6 +195,11 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->sorties;
     }
 
+    public function getSortiesOrganisees(): Collection
+    {
+        return $this->sortiesOrganisees;
+    }
+
     public function addSortie(Sortie $sortie): self
     {
         if (!$this->sorties->contains($sortie)) {
@@ -214,11 +219,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
-
-
-
-    #[\Deprecated]
+    #[Deprecated]
     public function eraseCredentials(): void
     {
         // @deprecated, to be removed when upgrading to Symfony 8
