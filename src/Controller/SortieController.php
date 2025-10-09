@@ -6,6 +6,7 @@ use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Enum\Etat;
 use App\Form\DeleteSortieType;
+use App\Form\ImportParticipantType;
 use App\Form\SortieType;
 use App\Repository\LieuRepository;
 use App\Service\SortieService;
@@ -85,19 +86,51 @@ final class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
     }
 
+
     #[Route('/sortie/{id}/detail', name: 'sortie_detail')]
-    public function detailsortie(?Sortie $sortie): Response
-    {
+    public function detailsortie(
+        Request $request,
+        ?Sortie $sortie,
+        SortieService $sortieService,
+        EntityManagerInterface $em
+    ): Response {
         if (!$sortie) {
-            $this->addFlash('danger',"Cette sortie n'existe pas.");
-        }
-        if ($sortie->getEtat() === Etat::ARCHIVEE) {
-            $this->addFlash('danger',"Cette sortie n'est plus consultable.");
+            $this->addFlash('danger', "Cette sortie n'existe pas.");
             return $this->redirectToRoute('app_home');
+        }
+
+        if ($sortie->getEtat() === Etat::ARCHIVEE) {
+            $this->addFlash('danger', "Cette sortie n'est plus consultable.");
+            return $this->redirectToRoute('app_home');
+        }
+
+        $form = $this->createForm(ImportParticipantType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid() && $this->getUser()?->getAdministrateur()) {
+            $csvFile = $form->get('csvFile')->getData();
+
+            if (($handle = fopen($csvFile->getPathname(), 'r')) !== false) {
+                while (($data = fgetcsv($handle, 1000, ',')) !== false) {
+                    $email = $data[0];
+                    $participant = $em->getRepository(Participant::class)->findOneBy(['email' => $email]);
+
+                    if ($participant && $sortieService->inscrireParticipant($sortie, $participant)) {
+                        $this->addFlash('success', "Inscription réussie pour {$email}");
+                    } else {
+                        $this->addFlash('danger', "Échec d'inscription pour {$email}");
+                    }
+                }
+                fclose($handle);
+                $em->flush();
+            }
+
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
         return $this->render('sortie/detail.html.twig', [
             'sortie' => $sortie,
+            'form' => $form->createView(),
         ]);
     }
 
