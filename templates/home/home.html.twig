@@ -4,32 +4,70 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
-    <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 {% endblock %}
 
 {% block body %}
-    <!-- Barre de recherche -->
+    <!-- Barre de recherche avec filtres -->
     <div class="search-bar">
         <form action="{{ path('app_sortie') }}" method="get">
             <div class="search-container">
-                <div class="search-section" id="destination-section">
-                    <div class="search-label">Destination</div>
-                    <input type="text" name="destination" class="search-input" placeholder="Rechercher une destination">
+                <!-- Recherche par nom -->
+                <div class="search-section">
+                    <div class="search-label">
+                        <i class="fas fa-search"></i> Nom de la sortie
+                    </div>
+                    <input type="text" name="nom_sortie" class="search-input"
+                           placeholder="Rechercher une sortie...">
                 </div>
-                <div class="search-section" id="dates-section">
-                    <div class="search-label">Dates</div>
-                    <input type="text" name="dates" class="search-input datepicker" placeholder="Quand ?" readonly>
+
+                <!-- Dates -->
+                <div class="search-section">
+                    <div class="search-label">
+                        <i class="fas fa-calendar-alt"></i> Date de début
+                    </div>
+                    <input type="text" name="date_debut" id="date-debut" class="search-input"
+                           placeholder="À partir du..." readonly>
                 </div>
-                <div class="search-section" id="type-section">
-                    <div class="search-label">Type de service</div>
-                    <input type="text" name="type" class="search-input" placeholder="Ajouter">
+
+                <div class="search-section">
+                    <div class="search-label">
+                        <i class="fas fa-calendar-check"></i> Date de fin
+                    </div>
+                    <input type="text" name="date_fin" id="date-fin" class="search-input"
+                           placeholder="Jusqu'au..." readonly>
                 </div>
+
+                <!-- Bouton de recherche -->
                 <button type="submit" class="search-btn">
-                    <svg class="search-icon" viewBox="0 0 32 32" fill="currentColor">
-                        <path d="M13 0c7.18 0 13 5.82 13 13 0 2.868-.929 5.519-2.502 7.669l7.916 7.917-2.828 2.828-7.917-7.916A12.942 12.942 0 0 1 13 26C5.82 26 0 20.18 0 13S5.82 0 13 0zm0 4a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/>
-                    </svg>
+                    <i class="fas fa-search"></i>
                 </button>
+            </div>
+
+            <!-- Filtres avancés (checkboxes) -->
+            <div class="search-filters">
+                <label class="filter-checkbox">
+                    <input type="checkbox" name="organisateur" value="1">
+                    <span><i class="fas fa-user-tie"></i> Sorties que j'organise</span>
+                </label>
+
+                <label class="filter-checkbox">
+                    <input type="checkbox" name="inscrit" value="1">
+                    <span><i class="fas fa-check-circle"></i> Sorties auxquelles je participe</span>
+                </label>
+
+                <label class="filter-checkbox">
+                    <input type="checkbox" name="non_inscrit" value="1">
+                    <span><i class="fas fa-times-circle"></i> Sorties auxquelles je ne participe pas</span>
+                </label>
+
+                <label class="filter-checkbox">
+                    <input type="checkbox" name="passees" value="1">
+                    <span><i class="fas fa-history"></i> Sorties passées</span>
+                </label>
             </div>
         </form>
     </div>
@@ -41,8 +79,12 @@
                 <h1 class="hero-title">Sortir à Niort</h1>
                 <p class="hero-subtitle">Découvrez les meilleures sorties et événements près de chez vous</p>
                 <div class="hero-buttons">
-                    <a href="{{ path('app_sortie') }}" class="btn-primary-large">Explorer les sorties</a>
-                    <a href="{{ path('sortie_create') }}" class="btn-secondary-large">Créer une sortie</a>
+                    <a href="{{ path('app_sortie') }}" class="btn-primary-large">
+                        <i class="fas fa-compass"></i> Explorer les sorties
+                    </a>
+                    <a href="{{ path('sortie_create') }}" class="btn-secondary-large">
+                        <i class="fas fa-plus-circle"></i> Créer une sortie
+                    </a>
                 </div>
             </div>
             <div class="hero-image">
@@ -55,7 +97,9 @@
     <section class="sorties-section">
         <div class="section-header">
             <h2 class="section-title">Prochaines sorties</h2>
-            <a href="{{ path('app_sortie') }}" class="see-all">Voir tout →</a>
+            <a href="{{ path('app_sortie') }}" class="see-all">
+                Voir tout <i class="fas fa-arrow-right"></i>
+            </a>
         </div>
 
         <div class="sorties-grid">
@@ -69,12 +113,7 @@
                         <h3 class="sortie-title">{{ sortie.nom }}</h3>
                         <div class="sortie-meta">
                             <div class="sortie-date">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
+                                <i class="fas fa-calendar"></i>
                                 {% if sortie.dateHeureDebut %}
                                     {{ sortie.dateHeureDebut|date('d/m/Y à H:i') }}
                                 {% else %}
@@ -82,31 +121,29 @@
                                 {% endif %}
                             </div>
                             <div class="sortie-lieu">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                    <circle cx="12" cy="10" r="3"></circle>
-                                </svg>
+                                <i class="fas fa-map-marker-alt"></i>
                                 {{ sortie.lieu.nom ?? 'Lieu à définir' }}
                             </div>
                         </div>
                         <div class="sortie-footer">
                             <div class="sortie-info">
-                                <span class="sortie-duree">Durée : {{ sortie.duree }} min</span>
+                                <i class="fas fa-clock"></i>
+                                <span class="sortie-duree">{{ sortie.duree }} min</span>
                             </div>
-                            <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn-join">Voir détails</a>
+                            <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn-join">
+                                <i class="fas fa-eye"></i> Voir détails
+                            </a>
                         </div>
                     </div>
                 </div>
             {% else %}
                 <div class="no-sorties">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
+                    <i class="fas fa-inbox fa-4x"></i>
                     <h3>Aucune sortie disponible</h3>
                     <p>Soyez le premier à créer une sortie !</p>
-                    <a href="{{ path('sortie_create') }}" class="btn-primary-large">Créer une sortie</a>
+                    <a href="{{ path('sortie_create') }}" class="btn-primary-large">
+                        <i class="fas fa-plus-circle"></i> Créer une sortie
+                    </a>
                 </div>
             {% endfor %}
         </div>
@@ -116,14 +153,17 @@
     <section class="stats-section">
         <div class="stats-container">
             <div class="stat-item">
+                <i class="fas fa-calendar-check fa-3x"></i>
                 <div class="stat-number">{{ sorties|length }}</div>
                 <div class="stat-label">Sorties disponibles</div>
             </div>
             <div class="stat-item">
+                <i class="fas fa-users fa-3x"></i>
                 <div class="stat-number">500+</div>
                 <div class="stat-label">Participants actifs</div>
             </div>
             <div class="stat-item">
+                <i class="fas fa-user-tie fa-3x"></i>
                 <div class="stat-number">50+</div>
                 <div class="stat-label">Organisateurs</div>
             </div>
@@ -134,30 +174,29 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h4>BougeTonCrew</h4>
+                <h4><i class="fas fa-rocket"></i> BougeTonCrew</h4>
                 <p>La plateforme pour organiser et participer à des sorties près de chez vous.</p>
             </div>
             <div class="footer-section">
-                <h4>Navigation</h4>
-                <a href="{{ path('app_home') }}">Accueil</a>
-                <a href="{{ path('app_sortie') }}">Sorties</a>
-                <a href="{{ path('sortie_create') }}">Créer une sortie</a>
+                <h4><i class="fas fa-compass"></i> Navigation</h4>
+                <a href="{{ path('app_home') }}"><i class="fas fa-home"></i> Accueil</a>
+                <a href="{{ path('app_sortie') }}"><i class="fas fa-list"></i> Sorties</a>
+                <a href="{{ path('sortie_create') }}"><i class="fas fa-plus"></i> Créer une sortie</a>
             </div>
             <div class="footer-section">
-                <h4>Compte</h4>
+                <h4><i class="fas fa-user"></i> Compte</h4>
                 {% if app.user %}
                     {# TODO: <a href="{{ path('profile_index') }}">Mon profil</a> #}
-                    {# <a href="{{ path('profile_edit') }}">Paramètres</a> #}
                 {% else %}
-                    <a href="{{ path('app_login') }}">Se connecter</a>
-                    <a href="{{ path('app_register') }}">S'inscrire</a>
+                    <a href="{{ path('app_login') }}"><i class="fas fa-sign-in-alt"></i> Se connecter</a>
+                    <a href="{{ path('app_register') }}"><i class="fas fa-user-plus"></i> S'inscrire</a>
                 {% endif %}
             </div>
             <div class="footer-section">
-                <h4>Légal</h4>
-                <a href="#">Mentions légales</a>
-                <a href="#">CGU</a>
-                <a href="#">Politique de confidentialité</a>
+                <h4><i class="fas fa-gavel"></i> Légal</h4>
+                <a href="#"><i class="fas fa-info-circle"></i> Mentions légales</a>
+                <a href="#"><i class="fas fa-file-contract"></i> CGU</a>
+                <a href="#"><i class="fas fa-shield-alt"></i> Confidentialité</a>
             </div>
         </div>
         <div class="footer-bottom">
@@ -167,17 +206,13 @@
 {% endblock %}
 
 {% block javascripts %}
-    <!-- SweetAlert2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- flatpickr JS + localisation FR -->
+    <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 
     <script>
-        // Gestion des messages flash avec SweetAlert2
         document.addEventListener('DOMContentLoaded', function() {
-            // Messages de succès (toast en haut à droite)
+            // Messages flash avec SweetAlert2
             {% for message in app.flashes('success') %}
             Swal.fire({
                 icon: 'success',
@@ -194,7 +229,6 @@
             });
             {% endfor %}
 
-            // Messages d'erreur (popup au centre)
             {% for message in app.flashes('danger') %}
             Swal.fire({
                 icon: 'error',
@@ -205,7 +239,6 @@
             });
             {% endfor %}
 
-            // Messages d'avertissement
             {% for message in app.flashes('warning') %}
             Swal.fire({
                 icon: 'warning',
@@ -216,7 +249,6 @@
             });
             {% endfor %}
 
-            // Messages d'information (toast en haut à droite)
             {% for message in app.flashes('info') %}
             Swal.fire({
                 icon: 'info',
@@ -230,16 +262,27 @@
             });
             {% endfor %}
 
-            // Initialisation de flatpickr
-            const el = document.querySelector('.datepicker');
-            if (el) {
-                flatpickr(el, {
-                    enableTime: true,
-                    dateFormat: "Y-m-d H:i",
+            // Initialisation Flatpickr pour date début
+            const dateDebut = document.getElementById('date-debut');
+            if (dateDebut) {
+                flatpickr(dateDebut, {
+                    dateFormat: "Y-m-d",
                     altInput: true,
-                    altFormat: "d/m/Y à H:i",
-                    time_24hr: true,
+                    altFormat: "d/m/Y",
                     locale: "fr",
+                    minDate: "today"
+                });
+            }
+
+            // Initialisation Flatpickr pour date fin
+            const dateFin = document.getElementById('date-fin');
+            if (dateFin) {
+                flatpickr(dateFin, {
+                    dateFormat: "Y-m-d",
+                    altInput: true,
+                    altFormat: "d/m/Y",
+                    locale: "fr",
+                    minDate: "today"
                 });
             }
         });

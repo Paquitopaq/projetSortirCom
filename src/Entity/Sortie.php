@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Enum\Etat;
 use App\Repository\SortieRepository;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -25,14 +25,14 @@ class Sortie
 
     #[ORM\Column(nullable: true)]
     #[Assert\GreaterThan("today", message: "La date de début doit être supérieur à aujourd'hui")]
-    private ?DateTime $dateHeureDebut = null;
+    private ?DateTimeImmutable $dateHeureDebut = null;
 
     #[ORM\Column]
     private ?int $duree = null;
 
     #[ORM\Column]
     #[Assert\NotNull(message: "La date limite d'inscription est obligatoire")]
-    private ?DateTime $dateLimiteInscription = null;
+    private ?DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column]
     private ?int $nbInscriptionMax = null;
@@ -82,12 +82,12 @@ class Sortie
         return $this;
     }
 
-    public function getDateHeureDebut(): ?DateTime
+    public function getDateHeureDebut(): ?DateTimeImmutable
     {
         return $this->dateHeureDebut;
     }
 
-    public function setDateHeureDebut(?DateTime $dateHeureDebut): static
+    public function setDateHeureDebut(?DateTimeImmutable $dateHeureDebut): static
     {
         $this->dateHeureDebut = $dateHeureDebut;
 
@@ -106,12 +106,12 @@ class Sortie
         return $this;
     }
 
-    public function getDateLimiteInscription(): ?DateTime
+    public function getDateLimiteInscription(): ?DateTimeImmutable
     {
         return $this->dateLimiteInscription;
     }
 
-    public function setDateLimiteInscription(DateTime $dateLimiteInscription): static
+    public function setDateLimiteInscription(DateTimeImmutable $dateLimiteInscription): static
     {
         $this->dateLimiteInscription = $dateLimiteInscription;
 
@@ -194,7 +194,7 @@ class Sortie
     }
     public function updateEtat(): void
     {
-        $now = new DateTime();
+        $now = new DateTimeImmutable();
 
         if ($this->etat->getIdEtat() === 'CREATION') {
             // Rien à faire, attend publication

@@ -4,15 +4,8 @@
     --background: #FCFBf9;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body, main {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--background);
     color: var(--blue-dark);
     padding-top: 80px;
 }
@@ -94,6 +87,83 @@ body, main {
 
 .flash-close:hover {
     color: #000;
+}
+
+/* Filtres avancés sous la barre de recherche */
+.search-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem 0;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 2px solid #e8e8e8;
+    border-radius: 24px;
+    transition: all 0.3s;
+    font-size: 14px;
+    color: var(--blue-dark);
+    font-weight: 500;
+}
+
+.filter-checkbox:hover {
+    border-color: var(--orange);
+    background: rgba(255, 107, 0, 0.05);
+}
+
+.filter-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--orange);
+}
+
+.filter-checkbox input[type="checkbox"]:checked + span {
+    color: var(--orange);
+    font-weight: 600;
+}
+
+.filter-checkbox span i {
+    margin-right: 0.25rem;
+}
+
+.search-bar {
+    padding: 1.5rem 40px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.search-label i,
+.sortie-meta i,
+.sortie-info i {
+    margin-right: 0.5rem;
+    color: var(--orange);
+}
+
+.stat-item i {
+    color: var(--orange);
+    margin-bottom: 1rem;
+}
+
+/* Responsive pour les filtres */
+@media (max-width: 768px) {
+    .search-filters {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .filter-checkbox {
+        width: 100%;
+        justify-content: flex-start;
+    }
 }
 
 /* Hero Section */
