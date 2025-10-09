@@ -60,10 +60,7 @@ class SortieService
         $nonInscrit = $request->query->get('non_inscrit');
         $passees = $request->query->get('passees');
 
-        $user = $this->security->getUser();
-
-        // Requêtes en BDD
-        $lieux = $this->lieuRepository->findAll();
+        $participant = $this->entityManager->getRepository(Participant::class)->find($this->security->getUser()->getId());
 
         $sorties = $this->sortieRepository->findByFilters(
             $nomRecherche,
@@ -73,8 +70,10 @@ class SortieService
             $inscrit,
             $nonInscrit,
             $passees,
-            $user
+            $participant
         );
+
+        $lieux = $this->lieuRepository->findAll();
 
         return [
             'sorties' => $sorties,
@@ -107,23 +106,7 @@ class SortieService
 
     public function archiverSorties(): void
     {
-        $now = new \DateTime();
-        $unMoisAvant = (clone $now)->modify('-1 month');
-
-        $sorties = $this->entityManager->getRepository(Sortie::class)->findAll();
-
-        foreach ($sorties as $sortie) {
-            // Si la sortie est terminée depuis plus d’un mois
-            $finSortie = clone $sortie->getDateHeureDebut();
-            $finSortie->modify("+{$sortie->getDuree()} minutes");
-
-            if ($finSortie < $unMoisAvant && $sortie->getEtat() !== Etat::ARCHIVEE) {
-                $sortie->setEtat(Etat::ARCHIVEE);
-                $this->entityManager->persist($sortie);
-            }
-        }
-
-        $this->entityManager->flush();
+        $this->sortieRepository->archiverSortiesAnciennes();
     }
 
 
