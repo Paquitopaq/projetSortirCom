@@ -53,6 +53,9 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $actif = true;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $photoProfil = null;
+
     #[ORM\ManyToMany(targetEntity: Sortie::class, mappedBy: 'participants')]
     private Collection $sorties;
 

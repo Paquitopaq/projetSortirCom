@@ -1,0 +1,219 @@
+/* Sidebar */
+/* Checkbox cachée pour la sidebar */
+.sidebar-checkbox {
+    display: none;
+}
+
+/* Animation du hamburger */
+.menu-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 5px 5px 5px 12px;
+    border: 1px solid #ddd;
+    border-radius: 21px;
+    background: var(--background);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.menu-toggle:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.18);
+}
+
+.hamburger {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+}
+
+.hamburger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--blue-dark);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Animation du hamburger en X */
+.sidebar-checkbox:checked ~ .menu-toggle .hamburger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.sidebar-checkbox:checked ~ .menu-toggle .hamburger span:nth-child(2) {
+    opacity: 0;
+}
+
+.sidebar-checkbox:checked ~ .menu-toggle .hamburger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Sidebar Dropdown */
+.sidebar-dropdown {
+    position: fixed;
+    right: -400px;
+    top: 0;
+    width: 380px;
+    height: 100vh;
+    background: var(--background);
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    transition: right 0.3s ease-out;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-checkbox:checked ~ .sidebar-dropdown {
+    right: 0;
+}
+
+/* Header de la sidebar */
+.sidebar-dropdown-header {
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--orange) 0%, #ff8533 100%);
+    color: white;
+}
+
+.sidebar-user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sidebar-user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid white;
+    object-fit: cover;
+}
+
+.sidebar-user-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.sidebar-user-role {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+/* Contenu de la sidebar */
+.sidebar-dropdown-content {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.sidebar-section {
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    color: var(--blue-dark);
+    margin-bottom: 0.75rem;
+    padding-left: 0.5rem;
+}
+
+.sidebar-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    color: var(--blue-dark);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+.sidebar-dropdown-item i {
+    width: 20px;
+    color: var(--blue-dark);
+    font-size: 1.125rem;
+}
+
+.sidebar-dropdown-item:hover i {
+    color: var(--orange);
+}
+
+.sidebar-dropdown-item:hover {
+    color: var(--orange);
+    background: rgba(255, 107, 0, 0.05);
+    transform: translateX(4px);
+}
+
+.sidebar-dropdown-item.danger {
+    color: #dc3545;
+}
+
+.sidebar-dropdown-item.danger i {
+    color: #dc3545;
+}
+
+.sidebar-dropdown-item.danger:hover {
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: #e8e8e8;
+    margin: 1.5rem 0;
+}
+
+/* Overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.sidebar-checkbox:checked ~ .sidebar-overlay {
+    display: block;
+}
+
+/* Fermer la sidebar en cliquant sur un lien */
+.sidebar-dropdown-item {
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar-dropdown {
+        width: 320px;
+        right: -320px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar-dropdown {
+        width: 85vw;
+        right: -85vw;
+    }
+
+    .sidebar-dropdown-header {
+        padding: 1.5rem;
+    }
+
+    .sidebar-user-avatar {
+        width: 50px;
+        height: 50px;
+    }
+}
