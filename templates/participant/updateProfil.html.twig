@@ -39,11 +39,17 @@
                     {{ form_widget(form.email) }}
                 </div>
             </div>
-            <div class="field-group">
-                {{ form_label(form.photoProfil, 'Photo de profil') }}
-                {{ form_widget(form.photoProfil) }}
-                {{ form_errors(form.photoProfil) }}
-            </div>
+            {% if participant.photoProfil %}
+                <div class="field-group">
+                    <label>Photo actuelle</label><br>
+                    <img src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil" class="img-thumbnail" width="150">
+                </div>
+            {% else %}
+                <div class="field-group">
+                    <label>Photo actuelle</label><br>
+                    <p>Aucune photo de profil</p>
+                </div>
+            {% endif %}
 
 
             <div class="text-center mt-4">
