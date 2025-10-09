@@ -20,6 +20,7 @@ final class HomeController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
         $sortieService->archiverSorties();
+        $sortieService->clotureSorties();
         $data = $sortieService->getFilteredSorties($request);
 
         return $this->render('home/home.html.twig', [

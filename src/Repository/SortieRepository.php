@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Enum\Etat;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -158,6 +159,20 @@ class SortieRepository extends ServiceEntityRepository
             ->setParameter('limit', (new \DateTime())->modify('-1 month'));
 
         return $qb->getQuery()->execute(); // retourne le nombre de lignes mises à jour
+    }
+
+    public function clotureSortie(): int {
+
+        $qb = $this->createQueryBuilder('s')
+            ->update()
+            ->set('s.etat', ':etat')
+            ->where('s.dateLimiteInscription <= :now')
+            ->andWhere('s.etat != :etatArchivee')
+            ->setParameter('etat', Etat::CLOSED)
+            ->setParameter('etatArchivee', \App\Enum\Etat::ARCHIVEE)
+            ->setParameter('now', new \DateTime());
+
+        return $qb->getQuery()->execute();
     }
 
 
