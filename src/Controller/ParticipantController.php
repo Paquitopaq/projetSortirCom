@@ -10,20 +10,38 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/profil')]
 final class ParticipantController extends AbstractController
 {
     #[Route('/update', name: 'app_profil_update')]
-    public function index(Request $request, EntityManagerInterface $em): Response
+    public function index(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
         $participant = $this->getUser();
         $form = $this->createForm(UpdateProfilType::class, $participant);
         $form -> handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $photoFile = $form->get('photoProfil')->getData();
+            if ($photoFile) {
+                $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$photoFile->guessExtension();
 
+                try {
+                    $photoFile->move(
+                        $this->getParameter('photo_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    $e->getMessage();
+                }
+
+                $participant->setPhotoProfil($newFilename);
+            }
             $em->flush();
+            $this->addFlash('success', 'Profil mis à jour avec succès.');
 
             return $this->redirectToRoute('app_home');
         }

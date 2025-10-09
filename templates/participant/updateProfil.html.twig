@@ -39,6 +39,12 @@
                     {{ form_widget(form.email) }}
                 </div>
             </div>
+            <div class="field-group">
+                {{ form_label(form.photoProfil, 'Photo de profil') }}
+                {{ form_widget(form.photoProfil) }}
+                {{ form_errors(form.photoProfil) }}
+            </div>
+
 
             <div class="text-center mt-4">
                 {{ form_widget(form.submit) }}
