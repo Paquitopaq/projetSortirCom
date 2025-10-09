@@ -32,8 +32,6 @@ class Ville
         $this->lieu = new ArrayCollection();
     }
 
-
-
     public function getId(): ?int
     {
         return $this->id;

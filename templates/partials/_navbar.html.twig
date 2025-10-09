@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+<link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
+
 <nav class="navbar">
     <div class="nav-content">
 
@@ -8,14 +11,13 @@
 
         <!-- Navigation au centre -->
         <div class="nav-links">
-            <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
-            <a href="{{ path('app_sortie') }}" class="nav-link">Liste des sorties</a>
+            <a href="{{ path('app_sortie') }}" class="nav-link"><i class="fas fa-compass"></i> Explorer les sorties</a>
         </div>
 
         <!-- Menu utilisateur à droite -->
         <div class="user-menu">
             {% if app.user %}
-                <a href="{{ path('sortie_create') }}" class="become-host">Créer une sortie</a>
+                <a href="{{ path('sortie_create') }}" class="become-host"><i class="fas fa-plus-circle"></i> Créer une sortie</a>
 
                 {# Menu toggle avec checkbox pour la sidebar #}
                 <input type="checkbox" id="sidebar-toggle" class="sidebar-checkbox" />

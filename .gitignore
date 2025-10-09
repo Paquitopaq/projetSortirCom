@@ -179,3 +179,5 @@ fabric.properties
 ###> symfony/asset-mapper ###
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+/migrations

@@ -19,7 +19,6 @@ final class HomeController extends AbstractController
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
         }
-
         $sortieService->archiverSorties();
         $sortieService->clotureSorties();
         $data = $sortieService->getFilteredSorties($request);
