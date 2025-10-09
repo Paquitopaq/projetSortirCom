@@ -32,7 +32,13 @@
             <th>Actif</th>
             <td>{{ participant.actif ? 'Oui' : 'Non' }}</td>
         </tr>
-{#        <tr>#}
+        {% if participant.photoProfil %}
+            <img src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil" class="img-thumbnail" width="150">
+        {% else %}
+            <p>Aucune photo de profil</p>
+        {% endif %}
+
+        {#        <tr>#}
 {#            <th>Rôles</th>#}
 {#            <td>{{ participant.roles|join(', ') }}</td>#}
 {#        </tr>#}
