@@ -53,6 +53,8 @@
 </head>
 
 <body>
+{# Loader global #}
+{% include 'partials/_loader.html.twig' %}
 {# Navbar globale #}
 {% include 'partials/_navbar.html.twig' %}
 
@@ -169,9 +171,28 @@
         }
     });
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const loader = document.getElementById("global-loader");
+
+        if (!loader) return;
+
+        // Fonction pour cacher le loader avec une animation fluide
+        const hideLoader = () => {
+            if (loader.classList.contains("fade-out")) return;
+            loader.classList.add("fade-out");
+            setTimeout(() => loader.remove(), 600);
+        };
+
+        hideLoader();
+        setTimeout(hideLoader, 3000);
+    });
+</script>
 
 {# --- Bloc pour JS spécifiques à une page --- #}
 {% block javascripts %}
+
 {% endblock %}
+
 </body>
 </html>
