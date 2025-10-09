@@ -20,7 +20,7 @@ class SortieService
     private Security $security;
 
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
+        private EntityManagerInterface $entityManager,
         SortieRepository $sortieRepository,
         LieuRepository $lieuRepository,
         Security $security
@@ -28,6 +28,7 @@ class SortieService
     {
         $this->sortieRepository = $sortieRepository;
         $this->lieuRepository = $lieuRepository;
+        $this->entityManager = $entityManager;
         $this->security = $security;
     }
     public function createSortie(Sortie $sortie, bool $publier): void
@@ -49,17 +50,17 @@ class SortieService
         $this->entityManager->flush();
     }
 
-    public function annulerSortie(Sortie $sortie, ?UserInterface $user): array
+    public function deleteSortie(Sortie $sortie, ?UserInterface $user, ?string $motif = null): array
     {
-        if (method_exists($sortie, 'getOrganisateur')) {
-            if ($sortie->getOrganisateur() !== $user) {
-                return [
-                    'success' => false,
-                    'message' => 'Vous n’êtes pas autorisé à annuler cette sortie.',
-                ];
-            }
+        // Vérifier que l'utilisateur est l'organisateur
+        if (method_exists($sortie, 'getOrganisateur') && $sortie->getOrganisateur() !== $user) {
+            return [
+                'success' => false,
+                'message' => 'Vous n’êtes pas autorisé à annuler cette sortie.',
+            ];
         }
 
+        // Vérifier que la sortie n’est pas encore commencée
         if ($sortie->getDateHeureDebut() <= new \DateTime()) {
             return [
                 'success' => false,
@@ -68,10 +69,10 @@ class SortieService
         }
 
         $sortie->setEtat(Etat::CANCELLED);
+        $sortie->setMotifAnnulation($motif);
 
-        // 4. Sauvegarder
-        $this->em->persist($sortie);
-        $this->em->flush();
+        $this->entityManager->persist($sortie);
+        $this->entityManager->flush();
 
         return [
             'success' => true,

@@ -99,21 +99,23 @@ final class SortieController extends AbstractController
     public function delete(
         Sortie $sortie,
         Request $request,
-        SortieService $sortieService,
-        EntityManagerInterface $em
+        SortieService $sortieService
     ): Response {
         $form = $this->createForm(DeleteSortieType::class, $sortie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $result = $sortieService->annulerSortie($sortie, $this->getUser());
+            $user = $this->getUser();
+            $motif = $form->get('motifAnnulation')->getData();
+            $result = $sortieService->deleteSortie($sortie, $user, $motif);
 
             if ($result['success']) {
                 $this->addFlash('success', $result['message']);
-                return $this->redirectToRoute('home');
             } else {
                 $this->addFlash('danger', $result['message']);
             }
+
+            return $this->redirectToRoute('app_home');
         }
 
         return $this->render('sortie/delete.html.twig', [

@@ -23,7 +23,7 @@ class DeleteSortieType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'rows' => 4,
-                    'placeholder' => 'Expliquez pourquoi vous devez annuler cette sortie...',
+                    'placeholder' => 'Expliquez pourquoi vous devez annuler cette sortie.',
                 ],
             ]);
     }

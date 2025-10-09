@@ -2,12 +2,14 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Enum\Etat;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class SortieFixtures extends Fixture
+class SortieFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -43,9 +45,22 @@ class SortieFixtures extends Fixture
             $etats = Etat::cases();
             $sortie->setEtat($etats[array_rand($etats)]);
 
+            // 🔹 Associer un lieu existant depuis LieuxFixtures
+            // Doctrine 2.1.0 → getReference($name, $class)
+            $randomLieuIndex = rand(0, 2); // si tu as 3 lieux
+            $lieu = $this->getReference('lieu_' . $randomLieuIndex, Lieu::class);
+            $sortie->setLieu($lieu);
+
             $manager->persist($sortie);
         }
 
         $manager->flush();
     }
+
+    public function getDependencies(): array
+    {
+        // Pour que les Lieux soient chargés avant les Sorties
+        return [LieuxFixtures::class];
+    }
+
 }

@@ -4,50 +4,29 @@
 
 {% block body %}
     <div class="container mt-5">
-        <h1 class="mb-4 text-center">{{ sortie.nom }}</h1>
+
+        <h1 class="mb-4 text-center">Annuler une sortie</h1>
 
 
         <table class="table table-bordered table-striped w-75 mx-auto">
             <tbody>
+            <tr>
+                <th>Nom de la sortie</th>
+                <td>{{ sortie.nom }}</td>
+            </tr>
             <tr>
                 <th>Date de début</th>
                 <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
             </tr>
             <tr>
                 <th>Site organisateur</th>
-                <td>{{ sortie.lieu }}</td>
-            </tr>
-            <tr>
-                <th>Date limite d'inscription</th>
-                <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
-            </tr>
-            <tr>
-                <th>Nombre maximum d'inscriptions</th>
-                <td>{{ sortie.nbInscriptionMax }}</td>
-            </tr>
-            <tr>
-                <th>Informations</th>
-                <td>{{ sortie.infoSortie }}</td>
-            </tr>
-            <tr>
-                <th>État</th>
-                <td>{{ sortie.etat.value }}</td>
-            </tr>
-            <tr>
-                <th>Site</th>
-                <td>
-                    {% if sortie.site %}
-                        {{ sortie.site.nom }}
-                    {% else %}
-                        <em>Aucun site associé</em>
-                    {% endif %}
-                </td>
+                <td>{{ sortie.lieu.nom }}</td>
             </tr>
             <tr>
                 <th>Lieu</th>
                 <td>
                     {% if sortie.lieu %}
-                        {{ sortie.lieu.nom }}
+                    {{ sortie.lieu.ville.codePostal }} {{ sortie.lieu.ville.nom }}
                     {% else %}
                         <em>Aucun lieu associé</em>
                     {% endif %}
@@ -56,12 +35,24 @@
             </tbody>
         </table>
 
-        <div class="alert alert-warning mt-3">
-            Cette action est irréversible. La sortie sera marquée comme <strong>Annulée</strong>.
+        {{ form_start(form) }}
+
+        <div class="mb-3">
+            {{ form_label(form.motifAnnulation, 'Motif d’annulation', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+            {{ form_widget(form.motifAnnulation, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Expliquez pourquoi vous devez annuler cette sortie.'}}) }}
+            {{ form_errors(form.motifAnnulation) }}
         </div>
 
-        {{ form_row(form.motifAnnulation) }}
-        <button class="btn btn-danger w-100 mt-3">Confirmer l’annulation</button>
+        <div class="alert alert-warning mt-3">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Cette action est <strong>irréversible</strong>. <br>
+            La sortie sera marquée comme <strong>Annulée</strong>.
+        </div>
+
+        <button class="btn btn-danger w-100 mt-4">
+            <i class="bi bi-x-circle"></i> Confirmer l’annulation
+        </button>
+
         {{ form_end(form) }}
 
         <div class="mt-3 text-center">
