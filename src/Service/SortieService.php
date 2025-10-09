@@ -92,6 +92,7 @@ class SortieService
         $nonInscrit = $request->query->get('non_inscrit');
         $passees = $request->query->get('passees');
 
+
         $participant = $this->entityManager->getRepository(Participant::class)->find($this->security->getUser()->getId());
 
         $sorties = $this->sortieRepository->findByFilters(
