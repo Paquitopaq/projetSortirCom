@@ -20,7 +20,7 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
             $sortie->setNom('Sortie Test ' . $i);
 
             // Date de début (entre demain et 30 jours)
-            $dateDebut = new \DateTime();
+            $dateDebut = new \DateTimeImmutable();
             $dateDebut->modify('+' . rand(1, 30) . ' days');
             $sortie->setDateHeureDebut($dateDebut);
 
