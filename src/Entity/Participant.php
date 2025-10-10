@@ -68,7 +68,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         $this->sortiesOrganisees = new ArrayCollection();
     }
 
-
     public function getId(): ?int
     {
         return $this->id;

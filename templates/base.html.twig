@@ -53,6 +53,8 @@
 </head>
 
 <body>
+{# Loader global #}
+{% include 'partials/_loader.html.twig' %}
 {# Navbar globale #}
 {% include 'partials/_navbar.html.twig' %}
 
@@ -92,9 +94,105 @@
         {% endfor %}
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Messages flash avec SweetAlert2
+        {% for message in app.flashes('success') %}
+        Swal.fire({
+            icon: 'success',
+            title: 'Succès !',
+            text: '{{ message|escape('js') }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            toast: true,
+            position: 'top-end',
+            background: '#d4edda',
+            color: '#155724',
+            iconColor: '#28a745'
+        });
+        {% endfor %}
+
+        {% for message in app.flashes('danger') %}
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: '{{ message|escape('js') }}',
+            confirmButtonColor: '#dc3545',
+            confirmButtonText: 'Compris'
+        });
+        {% endfor %}
+
+        {% for message in app.flashes('warning') %}
+        Swal.fire({
+            icon: 'warning',
+            title: 'Attention',
+            text: '{{ message|escape('js') }}',
+            confirmButtonColor: '#ffc107',
+            confirmButtonText: 'OK'
+        });
+        {% endfor %}
+
+        {% for message in app.flashes('info') %}
+        Swal.fire({
+            icon: 'info',
+            title: 'Information',
+            text: '{{ message|escape('js') }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            toast: true,
+            position: 'top-end'
+        });
+        {% endfor %}
+
+        // Initialisation Flatpickr pour date début
+        const dateDebut = document.getElementById('date-debut');
+        if (dateDebut) {
+            flatpickr(dateDebut, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d/m/Y",
+                locale: "fr",
+                minDate: "today"
+            });
+        }
+
+        // Initialisation Flatpickr pour date fin
+        const dateFin = document.getElementById('date-fin');
+        if (dateFin) {
+            flatpickr(dateFin, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d/m/Y",
+                locale: "fr",
+                minDate: "today"
+            });
+        }
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const loader = document.getElementById("global-loader");
+
+        if (!loader) return;
+
+        // Fonction pour cacher le loader avec une animation fluide
+        const hideLoader = () => {
+            if (loader.classList.contains("fade-out")) return;
+            loader.classList.add("fade-out");
+            setTimeout(() => loader.remove(), 600);
+        };
+
+        hideLoader();
+        setTimeout(hideLoader, 3000);
+    });
+</script>
 
 {# --- Bloc pour JS spécifiques à une page --- #}
 {% block javascripts %}
+
 {% endblock %}
+
 </body>
 </html>
