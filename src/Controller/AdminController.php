@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Form\ImportParticipantType;
 use App\Form\ProfilType;
+use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -94,6 +96,38 @@ class AdminController extends AbstractController
         return $this->render('participant/createProfil.html.twig', [
             'form' => $form->createView(),
             'participant' => $participant,
+        ]);
+    }
+
+    #[Route('/import/{id}/sortie', name: 'admin_import')]
+    public function import(Request $request,Sortie $sortie,SortieService $sortieService,EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(ImportParticipantType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $csvFile = $form->get('csvFile')->getData();
+
+            if (($handle = fopen($csvFile->getPathname(), 'r')) !== false) {
+                while (($data = fgetcsv($handle, 1000, ',')) !== false) {
+                    // suppose que l’email est en première colonne, attention à ne pas changer le csv
+                    $email = $data[0];
+                    $participant = $em->getRepository(Participant::class)->findOneBy(['email' => $email]);
+
+                    if ($participant && $sortieService->inscrireParticipant($sortie, $participant)) {
+                        $this->addFlash('success', "Inscription réussie pour {$email}");
+                    } else {
+                        $this->addFlash('danger', "Échec d'inscription pour {$email}");
+                    }
+                }
+                fclose($handle);
+                $em->flush();
+            }
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+        return $this->render('sortie/import.html.twig', [
+            'form' => $form->createView(),
+            'sortie' => $sortie,
         ]);
     }
 }
