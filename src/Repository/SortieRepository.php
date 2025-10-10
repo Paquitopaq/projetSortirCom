@@ -140,8 +140,8 @@ class SortieRepository extends ServiceEntityRepository
         }
 
         if ($passees) {
-            $qb->andWhere('s.dateHeureDebut < :now')
-                ->setParameter('now', new \DateTime());
+            $qb->andWhere('s.etat = :etatPassed')
+                ->setParameter('etatPassed', \App\Enum\Etat::PASSED);
         }
 
         return $qb->orderBy('s.dateHeureDebut', 'DESC')
