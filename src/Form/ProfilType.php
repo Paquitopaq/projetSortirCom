@@ -23,7 +23,9 @@ class ProfilType extends AbstractType
             ->add('prenom')
             ->add('telephone')
             ->add('email')
+            ->add('telephone')
             ->add('administrateur')
+            ->add('actif')
             ->add('photoProfil', FileType::class, [
                 'label' => 'Photo de profil',
                 'mapped' => false,

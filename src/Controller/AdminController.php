@@ -6,6 +6,7 @@ use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\ImportParticipantType;
 use App\Form\ProfilType;
+use App\Repository\ParticipantRepository;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,12 +35,22 @@ class AdminController extends AbstractController
     }
 
     #[Route('/users', name: 'admin_users')]
-    public function users(EntityManagerInterface $em): Response
+    public function users(EntityManagerInterface $em, ParticipantRepository $participantRepository, Request $request): Response
     {
-        $users = $em->getRepository(Participant::class)->findAll();
+        $participants = $participantRepository->findAll();
+        $forms = [];
+
+        foreach ($participants as $participant) {
+            $form = $this->createForm(ProfilType::class, $participant, [
+                'method' => 'POST',
+                'action' => $this->generateUrl('admin_user_edit', ['id' => $participant->getId()])
+            ]);
+            $forms[$participant->getId()] = $form->createView();
+        }
 
         return $this->render('admin/users.html.twig', [
-            'users' => $users,
+            'participants' => $participants,
+            'forms' => $forms,
         ]);
     }
 
@@ -53,6 +64,26 @@ class AdminController extends AbstractController
         ]);
     }
 
+    #[Route('/admin/user/{id}/edit', name: 'admin_user_edit', methods: ['POST'])]
+    public function editUser(
+        Participant $participant,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+        $form = $this->createForm(ProfilType::class, $participant);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($participant);
+            $em->flush();
+
+            $this->addFlash('success', 'Utilisateur mis à jour avec succès.');
+        }
+
+        // Redirection vers la liste après édition
+        return $this->redirectToRoute('admin_users');
+    }
+
     #[Route('/create', name: 'admin_create_profil')]
     public function createProfil(Request $request, EntityManagerInterface $em, SluggerInterface $slugger, UserPasswordHasherInterface $passwordHasher): Response {
 
@@ -64,7 +95,6 @@ class AdminController extends AbstractController
             $plainPassword = $form->get('plainPassword')->getData();
 
             if ($plainPassword) {
-                // ✅ Hasher le mot de passe sur le nouvel objet $participant
                 $hashedPassword = $passwordHasher->hashPassword($participant, $plainPassword);
                 $participant->setPassword($hashedPassword);
             }
