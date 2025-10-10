@@ -9,6 +9,7 @@ use App\Form\DeleteSortieType;
 use App\Form\ImportParticipantType;
 use App\Form\SortieType;
 use App\Repository\LieuRepository;
+use App\Service\ImportService;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -89,9 +90,10 @@ final class SortieController extends AbstractController
 
     #[Route('/sortie/{id}/detail', name: 'sortie_detail')]
     public function detailsortie(
-        Request $request,
-        ?Sortie $sortie,
-        SortieService $sortieService,
+        Request                $request,
+        ?Sortie                $sortie,
+        SortieService          $sortieService,
+        ImportService          $importService,
         EntityManagerInterface $em
     ): Response {
         if (!$sortie) {
@@ -108,21 +110,12 @@ final class SortieController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid() && $this->getUser()?->getAdministrateur()) {
-            $csvFile = $form->get('csvFile')->getData();
+            $csvFile = $form->get('csv_file')->getData();
 
-            if (($handle = fopen($csvFile->getPathname(), 'r')) !== false) {
-                while (($data = fgetcsv($handle, 1000, ',')) !== false) {
-                    $email = $data[0];
-                    $participant = $em->getRepository(Participant::class)->findOneBy(['email' => $email]);
+            $messages = $importService->importerEtInscrire($csvFile, $sortie);
 
-                    if ($participant && $sortieService->inscrireParticipant($sortie, $participant)) {
-                        $this->addFlash('success', "Inscription réussie pour {$email}");
-                    } else {
-                        $this->addFlash('danger', "Échec d'inscription pour {$email}");
-                    }
-                }
-                fclose($handle);
-                $em->flush();
+            foreach ($messages as $msg) {
+                $this->addFlash($msg['type'], $msg['text']);
             }
 
             return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
@@ -133,6 +126,8 @@ final class SortieController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+
 
     #[Route('/sortie/{id}/delete', name: 'sortie_delete', methods: ['GET', 'POST'])]
     public function delete(
