@@ -28,7 +28,6 @@ class SortieService
     {
         $this->sortieRepository = $sortieRepository;
         $this->lieuRepository = $lieuRepository;
-        $this->entityManager = $entityManager;
         $this->security = $security;
     }
     public function createSortie(Sortie $sortie, bool $publier): void
@@ -38,6 +37,9 @@ class SortieService
         } else {
             $sortie->setEtat(Etat::CREATED);
         }
+
+        $participant = $this->entityManager->getRepository(Participant::class)->find($this->security->getUser()->getId());
+        $sortie->setOrganisateur($participant);
 
         $this->entityManager->persist($sortie);
         $this->entityManager->flush();
@@ -92,6 +94,7 @@ class SortieService
         $nonInscrit = $request->query->get('non_inscrit');
         $passees = $request->query->get('passees');
 
+
         $participant = $this->entityManager->getRepository(Participant::class)->find($this->security->getUser()->getId());
 
         $sorties = $this->sortieRepository->findByFilters(
@@ -127,7 +130,7 @@ class SortieService
 
     public function removeParticipant(Sortie $sortie, Participant $participant): bool {
 
-        if ($sortie->getParticipants()->contains($participant) && $sortie->getEtat() == Etat::OPEN) {
+        if ($sortie->getParticipants()->contains($participant) && ($sortie->getEtat() == Etat::OPEN || $sortie->getEtat() == Etat::CLOSED)) {
             $sortie->removeParticipant($participant);
             $this->entityManager->persist($sortie);
             $this->entityManager->flush();
@@ -139,6 +142,10 @@ class SortieService
     public function archiverSorties(): void
     {
         $this->sortieRepository->archiverSortiesAnciennes();
+    }
+
+    public function clotureSorties(): void{
+        $this->sortieRepository->clotureSortie();
     }
 
 

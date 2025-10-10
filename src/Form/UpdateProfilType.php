@@ -4,9 +4,11 @@ namespace App\Form;
 
 use App\Entity\Participant;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class UpdateProfilType extends AbstractType
 {
@@ -19,6 +21,18 @@ class UpdateProfilType extends AbstractType
             ->add('telephone')
             ->add('email')
             ->add('administrateur')
+            ->add('photoProfil', FileType::class, [
+                'label' => 'Photo de profil',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => ['image/jpeg', 'image/png'],
+                        'mimeTypesMessage' => 'Formats autorisés : JPG, PNG',
+                    ])
+                ],
+            ])
             ->add('submit', SubmitType::class, [
         'label' => 'Enregistrer',
         'attr' => [

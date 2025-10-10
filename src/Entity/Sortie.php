@@ -3,9 +3,10 @@
 namespace App\Entity;
 
 use App\Enum\Etat;
+use App\Repository\SortieRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use App\Repository\SortieRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -24,14 +25,14 @@ class Sortie
 
     #[ORM\Column(nullable: true)]
     #[Assert\GreaterThan("today", message: "La date de début doit être supérieur à aujourd'hui")]
-    private ?\DateTime $dateHeureDebut = null;
+    private ?DateTimeImmutable $dateHeureDebut = null;
 
     #[ORM\Column]
     private ?int $duree = null;
 
     #[ORM\Column]
     #[Assert\NotNull(message: "La date limite d'inscription est obligatoire")]
-    private ?\DateTime $dateLimiteInscription = null;
+    private ?DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column]
     private ?int $nbInscriptionMax = null;
@@ -40,19 +41,20 @@ class Sortie
     private ?string $infoSortie = null;
 
     #[ORM\Column(enumType: Etat::class)]
-
     private ?Etat $etat = null;
-
 
     #[ORM\ManyToMany(targetEntity: Participant::class, inversedBy: 'sorties')]
     #[ORM\JoinTable(name: 'sortie_participant')]
     private Collection $participants;
 
-    #[ORM\ManyToOne(inversedBy: 'ville')]
+    #[ORM\ManyToOne(targetEntity: Participant::class, inversedBy: 'sortiesOrganisees')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Participant $organisateur = null;
+
+    #[ORM\ManyToOne(inversedBy: 'sorties')]
     private ?Site $site = null;
 
-    #[ORM\ManyToOne(targetEntity: Lieu::class, inversedBy: 'sorties')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'sorties')]
     private ?Lieu $lieu = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
@@ -80,12 +82,12 @@ class Sortie
         return $this;
     }
 
-    public function getDateHeureDebut(): ?\DateTime
+    public function getDateHeureDebut(): ?DateTimeImmutable
     {
         return $this->dateHeureDebut;
     }
 
-    public function setDateHeureDebut(?\DateTime $dateHeureDebut): static
+    public function setDateHeureDebut(?DateTimeImmutable $dateHeureDebut): static
     {
         $this->dateHeureDebut = $dateHeureDebut;
 
@@ -104,12 +106,12 @@ class Sortie
         return $this;
     }
 
-    public function getDateLimiteInscription(): ?\DateTime
+    public function getDateLimiteInscription(): ?DateTimeImmutable
     {
         return $this->dateLimiteInscription;
     }
 
-    public function setDateLimiteInscription(\DateTime $dateLimiteInscription): static
+    public function setDateLimiteInscription(DateTimeImmutable $dateLimiteInscription): static
     {
         $this->dateLimiteInscription = $dateLimiteInscription;
 
@@ -162,8 +164,22 @@ class Sortie
         $this->participants = $participants;
     }
 
+    public function getOrganisateur(): ?Participant
+    {
+        return $this->organisateur;
+    }
 
+    public function setOrganisateur(?Participant $organisateur): static
+    {
+        $this->organisateur = $organisateur;
+        return $this;
+    }
 
+    // Méthode helper pour vérifier si un participant est l'organisateur
+    public function isOrganisateur(Participant $participant): bool
+    {
+        return $this->organisateur === $participant;
+    }
 
     #[Assert\Callback]
     public function validateDates(ExecutionContextInterface $context): void
@@ -178,7 +194,7 @@ class Sortie
     }
     public function updateEtat(): void
     {
-        $now = new \DateTime();
+        $now = new DateTimeImmutable();
 
         if ($this->etat->getIdEtat() === 'CREATION') {
             // Rien à faire, attend publication
@@ -254,10 +270,9 @@ class Sortie
         return $this->motifAnnulation;
     }
 
-    public function setMotifAnnulation(?string $motifAnnulation): void
+    public function setMotifAnnulation(?string $motifAnnulation): static
     {
         $this->motifAnnulation = $motifAnnulation;
+        return $this;
     }
-
-
 }

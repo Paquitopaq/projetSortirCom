@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Enum\Etat;
 use App\Form\DeleteSortieType;
 use App\Form\SortieType;
 use App\Repository\LieuRepository;
@@ -128,7 +129,4 @@ final class SortieController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
-
-
 }
