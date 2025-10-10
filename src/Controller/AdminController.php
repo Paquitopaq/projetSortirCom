@@ -6,6 +6,7 @@ use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\ImportParticipantType;
 use App\Form\ProfilType;
+use App\Repository\ParticipantRepository;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,13 +35,54 @@ class AdminController extends AbstractController
     }
 
     #[Route('/users', name: 'admin_users')]
-    public function users(EntityManagerInterface $em): Response
+    public function users(EntityManagerInterface $em, ParticipantRepository $participantRepository, Request $request): Response
     {
-        $users = $em->getRepository(Participant::class)->findAll();
+        $participants = $participantRepository->findAll();
+        $forms = [];
+
+        foreach ($participants as $participant) {
+            $form = $this->createForm(ProfilType::class, $participant, [
+                'method' => 'POST',
+                'action' => $this->generateUrl('admin_user_edit', ['id' => $participant->getId()])
+            ]);
+            $forms[$participant->getId()] = $form->createView();
+        }
 
         return $this->render('admin/users.html.twig', [
-            'users' => $users,
+            'participants' => $participants,
+            'forms' => $forms,
         ]);
+    }
+
+    #[Route('/admin/user/{id}/edit', name: 'admin_user_edit', methods: ['POST'])]
+    public function editUser(
+        Participant $participant,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+        $form = $this->createForm(ProfilType::class, $participant);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($participant);
+            $em->flush();
+
+            $this->addFlash('success', 'Utilisateur mis à jour avec succès.');
+        }
+
+        return $this->redirectToRoute('admin_users');
+    }
+
+    #[Route('/admin/user/{id}/toggle', name: 'admin_user_desactived', methods: ['POST'])]
+    public function toggleUser(Participant $participant, EntityManagerInterface $em): Response
+    {
+        $participant->setActif(!$participant->getActif());
+        $em->persist($participant);
+        $em->flush();
+
+        $this->addFlash('success', $participant->getActif() ? 'Utilisateur activé avec succès.' : 'Utilisateur désactivé avec succès.');
+
+        return $this->redirectToRoute('admin_users');
     }
 
     #[Route('/sorties', name: 'admin_sorties')]
@@ -54,17 +96,15 @@ class AdminController extends AbstractController
     }
 
     #[Route('/create', name: 'admin_create_profil')]
-    public function createProfil(Request $request, EntityManagerInterface $em, SluggerInterface $slugger, UserPasswordHasherInterface $passwordHasher): Response {
-
+    public function createProfil(Request $request, EntityManagerInterface $em, SluggerInterface $slugger, UserPasswordHasherInterface $passwordHasher): Response
+    {
         $participant = new Participant();
         $form = $this->createForm(ProfilType::class, $participant, ['is_create' => true]);
-        $form -> handleRequest($request);
+        $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-
             $plainPassword = $form->get('plainPassword')->getData();
-
             if ($plainPassword) {
-                // ✅ Hasher le mot de passe sur le nouvel objet $participant
                 $hashedPassword = $passwordHasher->hashPassword($participant, $plainPassword);
                 $participant->setPassword($hashedPassword);
             }
@@ -76,21 +116,19 @@ class AdminController extends AbstractController
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$photoFile->guessExtension();
 
                 try {
-                    $photoFile->move(
-                        $this->getParameter('photo_directory'),
-                        $newFilename
-                    );
+                    $photoFile->move($this->getParameter('photo_directory'), $newFilename);
                 } catch (FileException $e) {
-                    $e->getMessage();
+                    $this->addFlash('danger', 'Erreur lors du téléchargement de la photo.');
                 }
 
                 $participant->setPhotoProfil($newFilename);
             }
+
             $em->persist($participant);
             $em->flush();
-            $this->addFlash('success', 'Profil mis à jour avec succès.');
+            $this->addFlash('success', 'Profil créé avec succès.');
 
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('admin_users');
         }
 
         return $this->render('participant/createProfil.html.twig', [
@@ -100,7 +138,7 @@ class AdminController extends AbstractController
     }
 
     #[Route('/import/{id}/sortie', name: 'admin_import')]
-    public function import(Request $request,Sortie $sortie,SortieService $sortieService,EntityManagerInterface $em): Response
+    public function import(Request $request, Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(ImportParticipantType::class);
         $form->handleRequest($request);
@@ -110,7 +148,6 @@ class AdminController extends AbstractController
 
             if (($handle = fopen($csvFile->getPathname(), 'r')) !== false) {
                 while (($data = fgetcsv($handle, 1000, ',')) !== false) {
-                    // suppose que l’email est en première colonne, attention à ne pas changer le csv
                     $email = $data[0];
                     $participant = $em->getRepository(Participant::class)->findOneBy(['email' => $email]);
 
@@ -123,8 +160,10 @@ class AdminController extends AbstractController
                 fclose($handle);
                 $em->flush();
             }
+
             return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
+
         return $this->render('sortie/import.html.twig', [
             'form' => $form->createView(),
             'sortie' => $sortie,
