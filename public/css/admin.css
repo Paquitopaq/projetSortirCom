@@ -1,0 +1,426 @@
+:root {
+    --orange: #FF6B00;
+    --blue-dark: #0B2447;
+    --background: #FCFBF9;
+    --card-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.admin-page {
+    background: var(--background);
+    min-height: 100vh;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--blue-dark);
+    padding-top: 80px;
+}
+
+/* Barre de recherche */
+.search-bar {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 40px;
+    padding: 8px 16px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.search-bar i {
+    color: #717171;
+    font-size: 16px;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    padding: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.search-bar button {
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.search-bar button:hover {
+    background: #e55f00;
+}
+
+/* Liste des utilisateurs */
+.users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.user-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+}
+
+.user-card-content {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    margin-right: 16px;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--orange), #ff8533);
+    color: white;
+    font-weight: 600;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--blue-dark);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-name i {
+    color: var(--orange);
+    font-size: 18px;
+}
+
+.user-details {
+    font-size: 13px;
+    color: #717171;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+}
+
+.user-details span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.user-details i {
+    font-size: 14px;
+    color: #999;
+}
+
+.badge-admin {
+    padding: 4px 10px;
+    background: #fff3cd;
+    color: #856404;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-admin i {
+    color: #856404;
+}
+
+.user-status {
+    margin-right: 16px;
+    flex-shrink: 0;
+}
+
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-open {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-open i {
+    color: #155724;
+}
+
+.status-closed {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-closed i {
+    color: #721c24;
+}
+
+.user-actions {
+    flex-shrink: 0;
+    display: flex;
+    gap: 8px;
+}
+
+/* Boutons d'action */
+.btn-action {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-manage {
+    background: var(--blue-dark);
+    color: white;
+}
+
+.btn-manage:hover {
+    background: #081829;
+    transform: translateY(-1px);
+}
+
+/* Bouton principal orange */
+.btn-create {
+    padding: 10px 20px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-create:hover {
+    background: #e55f00;
+    transform: translateY(-1px);
+}
+
+/* Bouton secondaire gris */
+.btn-secondary {
+    padding: 10px 20px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* Créer un utilisateur */
+.btn-create-user {
+    padding: 10px 20px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-create-user:hover {
+    background: #e55f00;
+    transform: translateY(-1px);
+}
+
+/* Désactiver / Activer */
+.btn-disable-user {
+    padding: 8px 16px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+}
+
+.btn-disable-user.active {
+    background: #28a745;
+}
+
+.btn-disable-user:hover {
+    transform: translateY(-1px);
+}
+
+
+/* Message vide */
+.no-sorties {
+    text-align: center;
+    padding: 60px 20px;
+    color: #717171;
+}
+
+.no-sorties i {
+    font-size: 64px;
+    color: #ddd;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.no-sorties h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: var(--blue-dark);
+}
+
+/* Modal */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    border-bottom: 1px solid #e9ecef;
+    padding: 20px 24px;
+    background: var(--background);
+}
+
+.modal-title {
+    font-weight: 600;
+    color: var(--blue-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-title i {
+    color: var(--orange);
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 16px 24px;
+    gap: 8px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-page {
+        padding: 15px;
+    }
+
+    .page-title {
+        padding-top: 60px;
+        font-size: 22px;
+    }
+
+    .user-card-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .user-avatar {
+        margin-right: 0;
+    }
+
+    .user-info {
+        width: 100%;
+    }
+
+    .user-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .user-status, .user-actions {
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .btn-action {
+        width: 100%;
+        justify-content: center;
+    }
+}

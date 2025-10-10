@@ -33,7 +33,7 @@
                         {% else %}
                             {{ app.user.email|slice(0, 1)|upper }}
                         {% endif %}
-                    </div >
+                    </div>
                 </label>
 
                 {# Sidebar intégrée dans le dropdown #}
@@ -53,12 +53,10 @@
                         <!-- Section Compte -->
                         <div class="sidebar-section">
                             <h3 class="sidebar-section-title">Compte</h3>
-                            {% if app.user %}
-                                <a href="{{ path('app_profil_participant', {id: app.user.id}) }}" class="sidebar-dropdown-item">
-                                    <i class="fas fa-user-circle"></i>
-                                    <span>Mon profil</span>
-                                </a>
-                            {% endif %}
+                            <a href="{{ path('app_profil_participant', {id: app.user.id}) }}" class="sidebar-dropdown-item">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Mon profil</span>
+                            </a>
                             <a href="{{ path('app_profil_update') }}" class="sidebar-dropdown-item">
                                 <i class="fas fa-cog"></i>
                                 <span>Gérer son profil</span>
@@ -70,6 +68,8 @@
                         </div>
 
                         {% if is_granted('ROLE_ADMIN') %}
+                            <!-- Section Administration -->
+                            <div class="sidebar-section mt-3">
                                 <h3 class="sidebar-section-title">Administration</h3>
 
                                 <a href="{{ path('admin_dashboard') }}" class="sidebar-dropdown-item">
@@ -86,6 +86,7 @@
                                     <i class="fas fa-user-plus"></i>
                                     <span>Créer un compte</span>
                                 </a>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
