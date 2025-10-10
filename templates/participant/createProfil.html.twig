@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/profil.css') }}">
+{% endblock %}
+
+{% block title %}Modifier mon profil{% endblock %}
+
+{% block body %}
+    <div class="profile-container">
+        <div class="profile-card">
+            <h2 class="profile-title">Créer un nouveau profil</h2>
+
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success text-center">{{ message }}</div>
+            {% endfor %}
+
+            {{ form_start(form, {'attr': {'class': 'profile-form'}}) }}
+            {% if participant.photoProfil %}
+                <div class="field-group">
+                    <label>Photo actuelle</label><br>
+                    <img src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil" class="img-thumbnail" width="150">
+                </div>
+            {% else %}
+                <div class="field-group">
+                    <label>Photo actuelle</label><br>
+                    <p>Aucune photo de profil</p>
+                </div>
+            {% endif %}
+            <div class="profile-fields">
+                <div class="field-group">
+                    {{ form_label(form.pseudo, 'Pseudo') }}
+                    {{ form_widget(form.pseudo) }}
+                </div>
+                <div class="field-group">
+                    {{ form_label(form.nom, 'Nom') }}
+                    {{ form_widget(form.nom) }}
+                </div>
+                <div class="field-group">
+                    {{ form_label(form.prenom, 'Prénom') }}
+                    {{ form_widget(form.prenom) }}
+                </div>
+                <div class="field-group">
+                    {{ form_label(form.telephone, 'Téléphone') }}
+                    {{ form_widget(form.telephone) }}
+                </div>
+                <div class="field-group">
+                    {{ form_label(form.email, 'Email') }}
+                    {{ form_widget(form.email) }}
+                </div>
+                <div class="field-group">
+                    {{ form_label(form.plainPassword, 'Password') }}
+                    {{ form_widget(form.plainPassword) }}
+                </div>
+            </div>
+
+
+
+            <div class="text-center mt-4">
+                {{ form_widget(form.submit) }}
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
