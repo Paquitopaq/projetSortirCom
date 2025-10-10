@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Form\ImportParticipantType;
 use App\Form\ProfilType;
+use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -108,7 +110,8 @@ class AdminController extends AbstractController
 
             if (($handle = fopen($csvFile->getPathname(), 'r')) !== false) {
                 while (($data = fgetcsv($handle, 1000, ',')) !== false) {
-                    $email = $data[0]; // suppose que l’email est en première colonne
+                    // suppose que l’email est en première colonne, attention à ne pas changer le csv
+                    $email = $data[0];
                     $participant = $em->getRepository(Participant::class)->findOneBy(['email' => $email]);
 
                     if ($participant && $sortieService->inscrireParticipant($sortie, $participant)) {
