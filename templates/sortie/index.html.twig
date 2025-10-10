@@ -5,256 +5,761 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/sortie.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Styles spécifiques pour la vue grille */
+        :root {
+            --orange: #FF6B00;
+            --blue-dark: #0B2447;
+            --background: #FCFBF9;
+            --card-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--blue-dark);
+            padding: 20px;
+        }
+
+        .container {
+            padding-top: 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* En-tête */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--blue-dark);
+        }
+
+        .btn-primary-large {
+            padding: 12px 24px;
+            background: var(--orange);
+            color: var(--background);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary-large:hover {
+            background: #e55f00;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 107, 0, 0.3);
+        }
+
+        /* Barre de recherche et filtres (styles originaux) */
+        .search-section-page {
+            padding: 20px 40px 10px;
+            background: var(--background);
+        }
+
+        .container-page {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            background: var(--background);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 2px solid #e8e8e8;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 8px;
+            background: var(--background);
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .search-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .search-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--blue-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 2px solid #e8e8e8;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: all 0.3s;
+            background: var(--background);
+            color: var(--blue-dark);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+        }
+
+        .search-btn {
+            padding: 8px 20px;
+            background: var(--orange);
+            color: var(--background);
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            align-self: flex-end;
+        }
+
+        .search-btn:hover {
+            background: #e55f00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+        }
+
+        .search-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .filter-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 6px 12px;
+            background: var(--background);
+            border: 2px solid #e8e8e8;
+            border-radius: 16px;
+            transition: all 0.3s;
+            font-size: 12px;
+            color: var(--blue-dark);
+            font-weight: 500;
+        }
+
+        .filter-checkbox:hover {
+            border-color: var(--orange);
+            background: rgba(255, 107, 0, 0.05);
+        }
+
+        .filter-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--orange);
+        }
+
+        .sorties-count {
+            margin-bottom: 16px;
+            padding: 10px;
+            background: var(--background);
+            border-left: 4px solid var(--orange);
+            border-radius: 6px;
+        }
+
+        .sorties-count p {
+            margin: 0;
+            color: var(--blue-dark);
+            font-size: 14px;
+        }
+
+        .sorties-count strong {
+            color: var(--orange);
+            font-size: 16px;
+        }
+
+        .sorties-section {
+            padding: 20px 40px 40px;
+        }
+
+        /* Grille de sorties */
+        .sorties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .sorties-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1025px) and (max-width: 1400px) {
+            .sorties-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1401px) {
+            .sorties-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sorties-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sortie-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+        }
+
+        .sortie-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+
+        .sortie-image {
+            width: 100%;
+            height: 240px;
+            background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sortie-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.7), rgba(255, 133, 51, 0.7));
+        }
+
+        .sortie-image i {
+            position: relative;
+            z-index: 1;
+            color: white;
+            font-size: 48px;
+        }
+
+        .status-badge-top {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: white;
+            color: var(--blue-dark);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .status-badge-top.status-now {
+            background: var(--orange);
+            color: white;
+        }
+
+        .status-badge-top.status-today {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-badge-top.status-open {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge-top.status-closed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-badge-top.status-full {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .sortie-content {
+            padding: 16px;
+        }
+
+        .sortie-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .sortie-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--blue-dark);
+            margin-bottom: 4px;
+        }
+
+        .sortie-location {
+            font-size: 14px;
+            color: #717171;
+            margin-bottom: 8px;
+        }
+
+        .sortie-date {
+            font-size: 14px;
+            color: #717171;
+            margin-bottom: 8px;
+        }
+
+        .sortie-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #717171;
+            margin-bottom: 12px;
+        }
+
+        .sortie-info span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sortie-participants {
+            font-size: 14px;
+            color: var(--blue-dark);
+            font-weight: 500;
+        }
+
+        .sortie-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .organizer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #717171;
+        }
+
+        .organizer-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--orange);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-open {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-closed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-full {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* Boutons d'action */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-join {
+            background: var(--orange);
+            color: white;
+        }
+
+        .btn-join:hover {
+            background: #e55f00;
+        }
+
+        .btn-manage {
+            background: var(--blue-dark);
+            color: white;
+        }
+
+        .btn-manage:hover {
+            background: #081829;
+        }
+
+        .btn-subscribed {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sorties-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .sorties-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .sorties-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Message vide */
+        .no-sorties {
+            text-align: center;
+            padding: 60px 20px;
+            color: #717171;
+        }
+
+        .no-sorties i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 16px;
+        }
+
+        .no-sorties h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--blue-dark);
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-    <!-- Section de recherche et filtres -->
-    <section class="search-section-page">
-        <div class="container-page">
-            <div class="page-header">
-                <h1 class="page-title">
-                    <i class="fas fa-list"></i> Toutes les sorties
-                </h1>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="page-header">
+            <h1 class="page-title">Toutes les sorties</h1>
+            {% if app.user %}
+                <a href="{{ path('sortie_create') }}" class="btn-create">
+                    <i class="fas fa-plus"></i>
+                    Créer une sortie
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- Barre de recherche -->
+        <div class="search-bar">
+            <form action="{{ path('app_sortie') }}" method="get" style="display: flex; width: 100%; align-items: center; gap: 16px;">
+                <input type="text"
+                       name="nom_sortie"
+                       placeholder="Rechercher une sortie..."
+                       value="{{ app.request.query.get('nom_sortie') }}">
+
+                <input type="text"
+                       name="date_debut"
+                       id="date-debut"
+                       placeholder="Date de début"
+                       value="{{ app.request.query.get('date_debut') }}"
+                       readonly
+                       style="width: 150px; border: none; outline: none; padding: 8px; font-size: 14px;">
+
+                <input type="text"
+                       name="date_fin"
+                       id="date-fin"
+                       placeholder="Date de fin"
+                       value="{{ app.request.query.get('date_fin') }}"
+                       readonly
+                       style="width: 150px; border: none; outline: none; padding: 8px; font-size: 14px;">
+
+                <button type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Filtres -->
+        <form action="{{ path('app_sortie') }}" method="get" id="filter-form">
+            <input type="hidden" name="nom_sortie" value="{{ app.request.query.get('nom_sortie') }}">
+            <input type="hidden" name="date_debut" value="{{ app.request.query.get('date_debut') }}">
+            <input type="hidden" name="date_fin" value="{{ app.request.query.get('date_fin') }}">
+
+            <div class="filters">
                 {% if app.user %}
-                    <a href="{{ path('sortie_create') }}" class="btn-primary-large">
+                    <label class="filter-btn {{ app.request.query.get('organisateur') ? 'active' : '' }}">
+                        <input type="checkbox"
+                               name="organisateur"
+                               value="1"
+                                {{ app.request.query.get('organisateur') ? 'checked' : '' }}
+                               onchange="document.getElementById('filter-form').submit();"
+                               style="display: none;">
+                        <i class="fas fa-user-tie"></i> Mes sorties
+                    </label>
+
+                    <label class="filter-btn {{ app.request.query.get('inscrit') ? 'active' : '' }}">
+                        <input type="checkbox"
+                               name="inscrit"
+                               value="1"
+                                {{ app.request.query.get('inscrit') ? 'checked' : '' }}
+                               onchange="document.getElementById('filter-form').submit();"
+                               style="display: none;">
+                        <i class="fas fa-check-circle"></i> Inscrit
+                    </label>
+
+                    <label class="filter-btn {{ app.request.query.get('non_inscrit') ? 'active' : '' }}">
+                        <input type="checkbox"
+                               name="non_inscrit"
+                               value="1"
+                                {{ app.request.query.get('non_inscrit') ? 'checked' : '' }}
+                               onchange="document.getElementById('filter-form').submit();"
+                               style="display: none;">
+                        <i class="fas fa-times-circle"></i> Non inscrit
+                    </label>
+                {% endif %}
+
+                <label class="filter-btn {{ app.request.query.get('passees') ? 'active' : '' }}">
+                    <input type="checkbox"
+                           name="passees"
+                           value="1"
+                            {{ app.request.query.get('passees') ? 'checked' : '' }}
+                           onchange="document.getElementById('filter-form').submit();"
+                           style="display: none;">
+                    <i class="fas fa-history"></i> Passées
+                </label>
+            </div>
+        </form>
+
+        {% if sorties is defined and sorties|length > 0 %}
+            <!-- Compteur de résultats -->
+            <div style="margin: 24px 0; color: #717171; font-size: 14px;">
+                <strong style="color: var(--blue-dark);">{{ sorties|length }}</strong> sortie(s) trouvée(s)
+            </div>
+
+            <!-- Grille de sorties -->
+            <div class="sorties-grid">
+                {% for sortie in sorties %}
+                    {% set now = date() %}
+                    {% set sortieDate = sortie.dateHeureDebut %}
+                    {% set isToday = sortieDate|date('Y-m-d') == now|date('Y-m-d') %}
+                    {% set isNow = isToday and sortieDate|date('H:i') <= now|date('H:i') and (sortieDate|date_modify('+' ~ sortie.duree ~ ' minutes'))|date('H:i') >= now|date('H:i') %}
+                    {% set isInscrit = app.user and sortie.participants.contains(app.user) %}
+                    {% set isOrganisateur = app.user and sortie.organisateur == app.user %}
+                    {% set isComplet = sortie.nbInscrits >= sortie.nbInscriptionMax %}
+                    {% set etatValue = sortie.etat.value %}
+
+                    {# Couleurs aléatoires pour les images #}
+                    {% set gradients = [
+                        'linear-gradient(135deg, #FF6B00, #ff8533)',
+                        'linear-gradient(135deg, #667eea, #764ba2)',
+                        'linear-gradient(135deg, #f093fb, #f5576c)',
+                        'linear-gradient(135deg, #4facfe, #00f2fe)',
+                        'linear-gradient(135deg, #fa709a, #fee140)',
+                        'linear-gradient(135deg, #30cfd0, #330867)',
+                        'linear-gradient(135deg, #a8edea, #fed6e3)',
+                        'linear-gradient(135deg, #ff9a9e, #fecfef)'
+                    ] %}
+                    {% set randomGradient = gradients[random(0, gradients|length - 1)] %}
+
+                    <div class="sortie-card">
+                        <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" style="text-decoration: none; color: inherit;">
+                            <div class="sortie-image">
+                                {# Badge de statut en haut à droite #}
+                                {% if isNow %}
+                                    <span class="status-badge-top status-now">En cours</span>
+                                {% elseif isToday %}
+                                    <span class="status-badge-top status-today">Aujourd'hui</span>
+                                {% elseif sortie.etat == constant('App\\Enum\\Etat::OPEN') %}
+                                    <span class="status-badge-top status-open">{{ etatValue }}</span>
+                                {% elseif isComplet %}
+                                    <span class="status-badge-top status-full">Complet</span>
+                                {% else %}
+                                    <span class="status-badge-top status-closed">{{ etatValue }}</span>
+                                {% endif %}
+
+                                {# Icônes thématiques basées sur le nom ou aléatoire #}
+                                {% set icons = ['hiking', 'music', 'utensils', 'film', 'gamepad', 'paint-brush', 'bicycle', 'camera', 'book', 'coffee'] %}
+                                <i class="fas fa-{{ icons[random(0, icons|length - 1)] }}"></i>
+                            </div>
+                        </a>
+
+                        <div class="sortie-content">
+                            <div class="sortie-header">
+                                <h3 class="sortie-title">{{ sortie.nom }}</h3>
+                            </div>
+
+                            <p class="sortie-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ sortie.lieu.nom ?? 'Lieu à définir' }}
+                            </p>
+
+                            <p class="sortie-date">
+                                {{ sortieDate|date('d M') }} · {{ sortieDate|date('H:i') }} - {{ sortieDate|date_modify('+' ~ sortie.duree ~ ' minutes')|date('H:i') }}
+                            </p>
+
+                            <div class="sortie-info">
+                                <span><i class="fas fa-clock"></i> {{ sortie.duree }} min</span>
+                            </div>
+
+                            <p class="sortie-participants">
+                                <i class="fas fa-users"></i> {{ sortie.nbInscrits }} / {{ sortie.nbInscriptionMax }} participants
+                            </p>
+
+                            <div class="sortie-footer">
+                                <div class="organizer">
+                                    <div class="organizer-avatar">
+                                        {% if sortie.organisateur %}
+                                            {{ sortie.organisateur.prenom|first|upper }}{{ sortie.organisateur.nom|first|upper }}
+                                        {% else %}
+                                            <i class="fas fa-user"></i>
+                                        {% endif %}
+                                    </div>
+                                    <span>
+                                        {% if isOrganisateur %}
+                                            Vous
+                                        {% elseif sortie.organisateur %}
+                                            {{ sortie.organisateur.prenom }} {{ sortie.organisateur.nom }}
+                                        {% else %}
+                                            Organisateur inconnu
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                {% if app.user %}
+                                    {% if isOrganisateur %}
+                                        <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn-action btn-manage">
+                                            <i class="fas fa-edit"></i> Gérer
+                                        </a>
+                                    {% elseif isInscrit %}
+                                        <form method="post"
+                                              action="{{ path('sortie_inscrire', {'id': sortie.id}) }}"
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir vous désinscrire ?');"
+                                              style="width: 100%;">
+                                            <button type="submit" class="btn-action btn-subscribed">
+                                                <i class="fas fa-check"></i> Inscrit
+                                            </button>
+                                        </form>
+                                    {% elseif sortie.etat != constant('App\\Enum\\Etat::OPEN') %}
+                                        <button class="btn-action btn-disabled" disabled>
+                                            <i class="fas fa-lock"></i> {{ etatValue }}
+                                        </button>
+                                    {% elseif isComplet %}
+                                        <button class="btn-action btn-disabled" disabled>
+                                            <i class="fas fa-user-times"></i> Complet
+                                        </button>
+                                    {% else %}
+                                        <form method="post"
+                                              action="{{ path('sortie_inscrire', {'id': sortie.id}) }}"
+                                              style="width: 100%;">
+                                            <button type="submit" class="btn-action btn-join">
+                                                <i class="fas fa-user-plus"></i> S'inscrire
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ path('app_login') }}" class="btn-action btn-join">
+                                        <i class="fas fa-sign-in-alt"></i> Connexion
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-sorties">
+                <i class="fas fa-inbox"></i>
+                <h3>Aucune sortie disponible</h3>
+                <p>Soyez le premier à créer une sortie !</p>
+                {% if app.user %}
+                    <a href="{{ path('sortie_create') }}" class="btn-create" style="margin-top: 20px;">
                         <i class="fas fa-plus-circle"></i> Créer une sortie
                     </a>
                 {% endif %}
             </div>
+        {% endif %}
+    </div>
 
-            <!-- Formulaire de recherche -->
-            <div class="search-box">
-                <form action="{{ path('app_sortie') }}" method="get">
-                    <div class="search-container">
-                        <!-- Recherche par nom -->
-                        <div class="search-section">
-                            <div class="search-label">
-                                <i class="fas fa-search"></i> Nom de la sortie
-                            </div>
-                            <input type="text"
-                                   name="nom_sortie"
-                                   class="search-input"
-                                   placeholder="Rechercher une sortie..."
-                                   value="{{ app.request.query.get('nom_sortie') }}">
-                        </div>
-
-                        <!-- Date de début -->
-                        <div class="search-section">
-                            <div class="search-label">
-                                <i class="fas fa-calendar-alt"></i> Date de début
-                            </div>
-                            <input type="text"
-                                   name="date_debut"
-                                   id="date-debut"
-                                   class="search-input"
-                                   placeholder="À partir du..."
-                                   value="{{ app.request.query.get('date_debut') }}"
-                                   readonly>
-                        </div>
-
-                        <!-- Date de fin -->
-                        <div class="search-section">
-                            <div class="search-label">
-                                <i class="fas fa-calendar-check"></i> Date de fin
-                            </div>
-                            <input type="text"
-                                   name="date_fin"
-                                   id="date-fin"
-                                   class="search-input"
-                                   placeholder="Jusqu'au..."
-                                   value="{{ app.request.query.get('date_fin') }}"
-                                   readonly>
-                        </div>
-
-                        <!-- Bouton de recherche -->
-                        <button type="submit" class="search-btn">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-
-                    <!-- Filtres avancés -->
-                    <div class="search-filters">
-                        {% if app.user %}
-                            <label class="filter-checkbox">
-                                <input type="checkbox"
-                                       name="organisateur"
-                                       value="1"
-                                        {{ app.request.query.get('organisateur') ? 'checked' : '' }}>
-                                <span><i class="fas fa-user-tie"></i> Sorties que j'organise</span>
-                            </label>
-
-                            <label class="filter-checkbox">
-                                <input type="checkbox"
-                                       name="inscrit"
-                                       value="1"
-                                        {{ app.request.query.get('inscrit') ? 'checked' : '' }}>
-                                <span><i class="fas fa-check-circle"></i> Sorties auxquelles je participe</span>
-                            </label>
-
-                            <label class="filter-checkbox">
-                                <input type="checkbox"
-                                       name="non_inscrit"
-                                       value="1"
-                                        {{ app.request.query.get('non_inscrit') ? 'checked' : '' }}>
-                                <span><i class="fas fa-times-circle"></i> Sorties auxquelles je ne participe pas</span>
-                            </label>
-                        {% endif %}
-
-                        <label class="filter-checkbox">
-                            <input type="checkbox"
-                                   name="passees"
-                                   value="1"
-                                    {{ app.request.query.get('passees') ? 'checked' : '' }}>
-                            <span><i class="fas fa-history"></i> Sorties passées</span>
-                        </label>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- Liste des sorties en timeline -->
-    <section class="sorties-section">
-        <div class="container-page">
-            {% if sorties is defined and sorties|length > 0 %}
-                <div class="sorties-count">
-                    <p><strong>{{ sorties|length }}</strong> sortie(s) trouvée(s)</p>
-                </div>
-
-                <div class="timeline">
-                    {% for sortie in sorties %}
-                        {% set now = date() %}
-                        {% set sortieDate = sortie.dateHeureDebut %}
-                        {% set isToday = sortieDate|date('Y-m-d') == now|date('Y-m-d') %}
-                        {% set isNow = isToday and sortieDate|date('H:i') <= now|date('H:i') and (sortieDate|date_modify('+' ~ sortie.duree ~ ' minutes'))|date('H:i') >= now|date('H:i') %}
-
-                        <div class="event-item">
-                            <!-- Boîte de date -->
-                            <div class="date-box">
-                                <div class="date-number">{{ sortieDate|date('d') }}</div>
-                                <div class="date-month">{{ sortieDate|date('M') }}</div>
-                                {% if isNow %}
-                                    <span class="date-badge">Now!</span>
-                                {% elseif isToday %}
-                                    <span class="date-badge today">Today</span>
-                                {% endif %}
-                            </div>
-
-                            <!-- Contenu de l'événement -->
-                            <div class="event-content-timeline">
-                                <h3 class="event-title-timeline">{{ sortie.nom }}</h3>
-
-                                <div class="event-time">
-                                    <i class="fas fa-clock"></i>
-                                    {{ sortieDate|date('H:i') }} -
-                                    {{ sortieDate|date_modify('+' ~ sortie.duree ~ ' minutes')|date('H:i') }}
-                                    ({{ sortie.duree }} min)
-                                </div>
-
-                                <div class="event-details">
-                                    <div class="event-detail">
-                                        <i class="fas fa-tag"></i>
-                                        <span>État: {{ sortie.etat.value }}</span>
-                                    </div>
-                                    <div class="event-detail">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span>{{ sortie.lieu.nom ?? 'Lieu à définir' }}</span>
-                                    </div>
-                                    <div class="event-detail">
-                                        <i class="fas fa-users"></i>
-                                        <span>{{ sortie.nbInscrits }} / {{ sortie.nbInscriptionMax }} participants</span>
-                                    </div>
-                                    <div class="event-detail">
-                                        <i class="fas fa-info-circle"></i>
-                                        <span>{{ sortie.infoSortie|length > 80 ? sortie.infoSortie|slice(0, 80) ~ '...' : sortie.infoSortie }}</span>
-                                    </div>
-                                </div>
-
-                                <!-- Footer avec organisateur et boutons -->
-                                <div class="sortie-footer">
-                                    <div class="sortie-organizer">
-                                        <div class="organizer-avatar">
-                                            {% if sortie.organisateur %}
-                                                {{ sortie.organisateur.prenom|first|upper }}{{ sortie.organisateur.nom|first|upper }}
-                                            {% else %}
-                                                <i class="fas fa-user"></i>
-                                            {% endif %}
-                                        </div>
-                                        <span>
-                                            {% if sortie.organisateur %}
-                                                {{ sortie.organisateur.prenom }} {{ sortie.organisateur.nom }}
-                                            {% else %}
-                                                Organisateur inconnu
-                                            {% endif %}
-                                        </span>
-                                    </div>
-
-                                    {% if app.user %}
-                                        {% set isInscrit = sortie.participants.contains(app.user) %}
-                                        {% set isOrganisateur = sortie.organisateur == app.user %}
-                                        {% set isComplet = sortie.nbInscrits >= sortie.nbInscriptionMax %}
-                                        {% set etatValue = sortie.etat.value %}
-
-                                        {% if isOrganisateur %}
-                                            <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn-join">
-                                                <i class="fas fa-edit"></i> Gérer
-                                            </a>
-                                        {% elseif isInscrit %}
-                                            <div class="inscription-actions">
-                                                <span class="btn-inscrit-info">
-                                                    <i class="fas fa-check"></i> Inscrit
-                                                </span>
-                                                <form method="post"
-                                                      action="{{ path('sortie_inscrire', {'id': sortie.id}) }}"
-                                                      class="form-inline"
-                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir vous désinscrire ?');">
-                                                    <button type="submit" class="btn-desinscrire" title="Se désinscrire">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        {% elseif sortie.etat != constant('App\\Enum\\Etat::OPEN') %}
-                                            <button class="btn-join btn-ferme" disabled>
-                                                <i class="fas fa-lock"></i>
-                                                {{ etatValue }}
-                                            </button>
-                                        {% elseif isComplet %}
-                                            <button class="btn-join btn-complet" disabled>
-                                                <i class="fas fa-user-times"></i> Complet
-                                            </button>
-                                        {% else %}
-                                            <form method="post"
-                                                  action="{{ path('sortie_inscrire', {'id': sortie.id}) }}"
-                                                  class="form-inline">
-                                                <button type="submit" class="btn-join">
-                                                    <i class="fas fa-user-plus"></i> S'inscrire
-                                                </button>
-                                            </form>
-                                        {% endif %}
-                                    {% else %}
-                                        <a href="{{ path('app_login') }}" class="btn-join btn-login">
-                                            <i class="fas fa-sign-in-alt"></i> Connexion
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="no-sorties">
-                    <i class="fas fa-inbox fa-4x"></i>
-                    <h3>Aucune sortie disponible</h3>
-                    <p>Soyez le premier à créer une sortie !</p>
-                    {% if app.user %}
-                        <a href="{{ path('sortie_create') }}" class="btn-primary-large">
-                            <i class="fas fa-plus-circle"></i> Créer une sortie
-                        </a>
-                    {% endif %}
-                </div>
-            {% endif %}
-        </div>
-    </section>
     {% include 'partials/_footer.html.twig' %}
 {% endblock %}
 
