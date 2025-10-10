@@ -1,62 +1,86 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Modifier mon profil{% endblock %}
+
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/profil.css') }}">
 {% endblock %}
 
-{% block title %}Modifier mon profil{% endblock %}
-
 {% block body %}
-    <div class="profile-container">
+    <div class="profile-wrapper">
         <div class="profile-card">
-            <h2 class="profile-title">Mon profil</h2>
-
-            {% for message in app.flashes('success') %}
-                <div class="alert alert-success text-center">{{ message }}</div>
-            {% endfor %}
-
-            {{ form_start(form, {'attr': {'class': 'profile-form'}}) }}
-            {% if participant.photoProfil %}
-                <div class="field-group">
-                    <label>Photo actuelle</label><br>
-                    <img src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil" class="img-thumbnail" width="150">
-                </div>
-            {% else %}
-                <div class="field-group">
-                    <label>Photo actuelle</label><br>
-                    <p>Aucune photo de profil</p>
-                </div>
-            {% endif %}
-            <div class="profile-fields">
-                <div class="field-group">
-                    {{ form_label(form.pseudo, 'Pseudo') }}
-                    {{ form_widget(form.pseudo) }}
-                </div>
-                <div class="field-group">
-                    {{ form_label(form.nom, 'Nom') }}
-                    {{ form_widget(form.nom) }}
-                </div>
-                <div class="field-group">
-                    {{ form_label(form.prenom, 'Prénom') }}
-                    {{ form_widget(form.prenom) }}
-                </div>
-                <div class="field-group">
-                    {{ form_label(form.telephone, 'Téléphone') }}
-                    {{ form_widget(form.telephone) }}
-                </div>
-                <div class="field-group">
-                    {{ form_label(form.email, 'Email') }}
-                    {{ form_widget(form.email) }}
+            <div class="profile-left">
+                <div class="photo-section">
+                    <div class="photo-preview">
+                        {% if participant.photoProfil %}
+                            <img id="preview-image" src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil">
+                        {% else %}
+                            <img id="preview-image" src="{{ asset('assets/images/default-avatar.png') }}" alt="Photo de profil">
+                        {% endif %}
+                    </div>
+                    <label class="upload-btn">
+                        <i class="fa-solid fa-camera"></i> Changer la photo
+                        {{ form_widget(form.photoProfil, {'attr': {'id': 'photo-input', 'accept': 'image/*'}}) }}
+                    </label>
                 </div>
             </div>
 
+            <div class="profile-right">
+                <h2>Modifier mon profil</h2>
 
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success text-center">{{ message }}</div>
+                {% endfor %}
 
-            <div class="text-center mt-4">
-                {{ form_widget(form.submit) }}
+                {{ form_start(form, {'attr': {'class': 'profile-form'}}) }}
+                <div class="fields-grid">
+                    <div class="field">
+                        {{ form_label(form.pseudo, 'Pseudo') }}
+                        {{ form_widget(form.pseudo) }}
+                    </div>
+                    <div class="field">
+                        {{ form_label(form.nom, 'Nom') }}
+                        {{ form_widget(form.nom) }}
+                    </div>
+                    <div class="field">
+                        {{ form_label(form.prenom, 'Prénom') }}
+                        {{ form_widget(form.prenom) }}
+                    </div>
+                    <div class="field">
+                        {{ form_label(form.telephone, 'Téléphone') }}
+                        {{ form_widget(form.telephone) }}
+                    </div>
+                    <div class="field">
+                        {{ form_label(form.email, 'Email') }}
+                        {{ form_widget(form.email) }}
+                    </div>
+                </div>
+
+                <div class="submit-wrapper">
+                    {{ form_widget(form.submit) }}
+                </div>
+
+                {{ form_end(form) }}
             </div>
-
-            {{ form_end(form) }}
         </div>
     </div>
+
+    <script>
+        // Prévisualisation dynamique de la photo
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('photo-input');
+            const preview = document.getElementById('preview-image');
+
+            if (input) {
+                input.addEventListener('change', e => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = ev => preview.src = ev.target.result;
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+    </script>
 {% endblock %}
