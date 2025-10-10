@@ -16,10 +16,10 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 final class ParticipantController extends AbstractController
 {
     #[Route('/update', name: 'app_profil_update')]
-    public function index(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function updateProfil(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
         $participant = $this->getUser();
-        $form = $this->createForm(UpdateProfilType::class, $participant);
+        $form = $this->createForm(ProfilType::class, $participant, ['is_create' => false]);
         $form -> handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
