@@ -33,16 +33,28 @@ class ParticipantRepository extends ServiceEntityRepository implements PasswordU
         $this->getEntityManager()->flush();
     }
 
-    public function findWithSorties(int $id): ?Participant
-    {
-        return $this->createQueryBuilder('p')
-            ->leftJoin('p.sorties', 's')
-            ->addSelect('s')
-            ->leftJoin('p.sortiesOrganisees', 'so')
-            ->addSelect('so')
-            ->where('p.id = :id')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
+    //    /**
+    //     * @return Participant[] Returns an array of Participant objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('u')
+    //            ->andWhere('u.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('u.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?Participant
+    //    {
+    //        return $this->createQueryBuilder('u')
+    //            ->andWhere('u.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

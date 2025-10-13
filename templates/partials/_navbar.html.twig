@@ -19,7 +19,7 @@
             {% if app.user %}
                 <a href="{{ path('sortie_create') }}" class="become-host"><i class="fas fa-plus-circle"></i> Créer une sortie</a>
 
-                <!-- Menu toggle avec checkbox pour la sidebar -->
+                {# Menu toggle avec checkbox pour la sidebar #}
                 <input type="checkbox" id="sidebar-toggle" class="sidebar-checkbox" />
                 <label for="sidebar-toggle" class="menu-toggle">
                     <div class="hamburger">
@@ -34,6 +34,7 @@
                             {{ app.user.email|slice(0, 1)|upper }}
                         {% endif %}
                     </div >
+
                 </label>
 
                 {# Sidebar intégrée dans le dropdown #}
@@ -45,6 +46,7 @@
                                  alt="Avatar" />
                             <div>
                                 <p class="sidebar-user-name">{{ app.user.email|split('@')|first }}</p>
+                                <p class="sidebar-user-role">Membre</p>
                             </div>
                         </div>
                     </div>
@@ -53,12 +55,10 @@
                         <!-- Section Compte -->
                         <div class="sidebar-section">
                             <h3 class="sidebar-section-title">Compte</h3>
-                            {% if app.user %}
-                                <a href="{{ path('app_profil_participant', {id: app.user.id}) }}" class="sidebar-dropdown-item">
-                                    <i class="fas fa-user-circle"></i>
-                                    <span>Mon profil</span>
-                                </a>
-                            {% endif %}
+                            <a href="#" class="sidebar-dropdown-item">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Mon profil</span>
+                            </a>
                             <a href="{{ path('app_profil_update') }}" class="sidebar-dropdown-item">
                                 <i class="fas fa-cog"></i>
                                 <span>Gérer son profil</span>

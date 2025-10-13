@@ -1,169 +1,60 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Profil de {{ participant.pseudo ?? participant.prenom ~ ' ' ~ participant.nom }} | BougeTonCrew{% endblock %}
-
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('css/sortie.css') }}">
-    <style>
-        .organizer-avatar-large {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        .organizer-avatar-large img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-info {
-            flex: 1;
-        }
-
-        .profile-info h2 {
-            margin-bottom: 0.25rem;
-            font-size: 1.6rem;
-            font-weight: 600;
-        }
-
-        .profile-info p {
-            margin-bottom: 0.3rem;
-        }
-
-        .event-content-timeline {
-            padding: 1.5rem 2rem;
-        }
-
-        .list-group-item {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #eaeaea;
-            padding: 0.8rem 0;
-        }
-    </style>
-{% endblock %}
-
 {% block body %}
-    <section class="search-section-page">
-        <div class="container-page">
-            <div class="page-header">
-                <h1 class="page-title">
-                    <i class="fas fa-user-circle"></i>
-                    Profil de {{ participant.pseudo ?? participant.prenom ~ ' ' ~ participant.nom }}
-                </h1>
-                {% if app.user and app.user.id == participant.id %}
-                    <a href="{{ path('app_profil_update') }}" class="btn-primary-large">
-                        <i class="fas fa-edit"></i> Modifier mon profil
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-    </section>
+    <h2>Profil du participant</h2>
 
-    <section class="sorties-section">
-        <div class="container-page">
-            <div class="timeline">
-                <!-- Carte principale du profil -->
-                <div class="event-item">
-                    <div class="date-box">
-                        <div class="date-number">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="date-month">Profil</div>
-                    </div>
+    <table class="table table-bordered">
+        <tr>
+            <th>Pseudo</th>
+            <td>{{ participant.pseudo ?? 'Non renseigné' }}</td>
+        </tr>
+        <tr>
+            <th>Nom</th>
+            <td>{{ participant.nom ?? 'Non renseigné' }}</td>
+        </tr>
+        <tr>
+            <th>Prénom</th>
+            <td>{{ participant.prenom ?? 'Non renseigné' }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ participant.email }}</td>
+        </tr>
+        <tr>
+            <th>Téléphone</th>
+            <td>{{ participant.telephone ?? 'Non renseigné' }}</td>
+        </tr>
+        <tr>
+            <th>Administrateur</th>
+            <td>{{ participant.administrateur ? 'Oui' : 'Non' }}</td>
+        </tr>
+        <tr>
+            <th>Actif</th>
+            <td>{{ participant.actif ? 'Oui' : 'Non' }}</td>
+        </tr>
+        {% if participant.photoProfil %}
+            <img src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil" class="img-thumbnail" width="150">
+        {% else %}
+            <p>Aucune photo de profil</p>
+        {% endif %}
 
-                    <div class="event-content-timeline d-flex flex-column">
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="organizer-avatar-large me-4">
-                                {% if participant.photoProfil %}
-                                    <img src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil">
-                                {% else %}
-                                    <img src="{{ asset('assets/images/default-avatar.png') }}" alt="Avatar par défaut">
-                                {% endif %}
-                            </div>
-                            <div class="profile-info">
-                                <h2>{{ participant.pseudo ?? 'Utilisateur' }}</h2>
-                                <p class="text-muted">{{ participant.prenom }} {{ participant.nom }}</p>
-                                <p><i class="fas fa-envelope"></i> {{ participant.email }}</p>
-                                <p><i class="fas fa-phone"></i> {{ participant.telephone ?? 'Non renseigné' }}</p>
-                            </div>
-                        </div>
+        {#        <tr>#}
+{#            <th>Rôles</th>#}
+{#            <td>{{ participant.roles|join(', ') }}</td>#}
+{#        </tr>#}
+    </table>
 
-                        <div class="event-details">
-                            <div class="event-detail">
-                                <i class="fas fa-shield-alt"></i>
-                                Administrateur : <strong>{{ participant.administrateur ? 'Oui' : 'Non' }}</strong>
-                            </div>
-                            <div class="event-detail">
-                                <i class="fas fa-toggle-on"></i>
-                                Actif : <strong>{{ participant.actif ? 'Oui' : 'Non' }}</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <h3>Sorties auxquelles il participe</h3>
+    <ul>
+        {% for sortie in participant.sorties %}
+            <li>
+                <a href="{{ path('sortie_detail', {id: sortie.id}) }}">
+                    {{ sortie.nom }} – {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}
+                </a>
+            </li>
+        {% else %}
+            <li>Aucune sortie enregistrée</li>
+        {% endfor %}
+    </ul>
 
-                <!-- Sorties organisées -->
-                <div class="event-item">
-                    <div class="date-box">
-                        <div class="date-number">
-                            <i class="fas fa-calendar-plus"></i>
-                        </div>
-                        <div class="date-month">Organisées</div>
-                    </div>
-
-                    <div class="event-content-timeline">
-                        <h3 class="event-title-timeline">Sorties organisées</h3>
-                        {% if participant.sortiesOrganisees|length > 0 %}
-                            <ul class="list-group list-group-flush">
-                                {% for sortie in participant.sortiesOrganisees %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <a href="{{ path('sortie_detail', {id: sortie.id}) }}" class="text-decoration-none fw-bold">
-                                            {{ sortie.nom }}
-                                        </a>
-                                        <span class="text-muted">{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p class="text-muted mb-0">Aucune sortie organisée.</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Sorties auxquelles il participe -->
-                <div class="event-item">
-                    <div class="date-box">
-                        <div class="date-number">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="date-month">Participations</div>
-                    </div>
-
-                    <div class="event-content-timeline">
-                        <h3 class="event-title-timeline">Sorties auxquelles il participe</h3>
-                        {% if participant.sorties|length > 0 %}
-                            <ul class="list-group list-group-flush">
-                                {% for sortie in participant.sorties %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <a href="{{ path('sortie_detail', {id: sortie.id}) }}" class="text-decoration-none fw-bold">
-                                            {{ sortie.nom }}
-                                        </a>
-                                        <span class="text-muted">{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p class="text-muted mb-0">Aucune sortie enregistrée.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {% include 'partials/_footer.html.twig' %}
 {% endblock %}
