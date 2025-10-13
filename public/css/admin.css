@@ -41,7 +41,7 @@
 }
 
 .search-bar i {
-    color: #717171;
+    color: var(--background);
     font-size: 16px;
 }
 
@@ -262,7 +262,7 @@
 /* Bouton secondaire gris */
 .btn-secondary {
     padding: 10px 20px;
-    background: #6c757d;
+    background: var(--background);
     color: white;
     border: none;
     border-radius: 8px;
