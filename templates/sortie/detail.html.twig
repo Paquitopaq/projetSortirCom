@@ -128,28 +128,33 @@
                 <!-- Bouton d'action -->
                 {% if app.user %}
                     <div class="detail-actions">
-                        {% if app.user in sortie.participants %}
+                        {% set user = app.user %}
+
+                        {% if user == sortie.organisateur %}
+                            <!-- Organisateur : bouton désactivé -->
+                            <button class="btn-action btn-disabled" disabled>
+                                <i class="fas fa-ban"></i> Vous êtes l'organisateur
+                            </button>
+                        {% elseif user in sortie.participants %}
+                            <!-- Déjà inscrit : bouton se désinscrire -->
                             <form method="post" action="{{ path('sortie_inscrire', {'id': sortie.id}) }}">
                                 <button type="submit" class="btn-action btn-unsubscribe">
                                     <i class="fas fa-times"></i> Se désinscrire
                                 </button>
                             </form>
-                        {% elseif sortie.participants|length < sortie.nbInscriptionMax and sortie.etat.value == 'Ouvert' %}
+                        {% elseif sortie.participants|length < sortie.nbInscriptionMax and sortie.etat.value == 'Ouverte' %}
+                            <!-- Non inscrit : bouton s'inscrire -->
                             <form method="post" action="{{ path('sortie_inscrire', {'id': sortie.id}) }}">
                                 <button type="submit" class="btn-action btn-join">
                                     <i class="fas fa-check"></i> S'inscrire à cette sortie
                                 </button>
                             </form>
                         {% else %}
+                            <!-- Sinon : inscriptions closes -->
                             <button class="btn-action btn-disabled" disabled>
                                 <i class="fas fa-ban"></i> Inscriptions closes
                             </button>
                         {% endif %}
-                    </div>
-                {% else %}
-                    <div class="detail-login-prompt">
-                        <p>Vous devez être connecté pour vous inscrire.</p>
-                        <a href="{{ path('app_login') }}" class="btn-action btn-join">Se connecter</a>
                     </div>
                 {% endif %}
             </div>
