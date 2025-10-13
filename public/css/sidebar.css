@@ -16,7 +16,6 @@
     cursor: pointer;
     transition: all 0.2s;
     position: relative;
-    z-index: 1002; /* au-dessus de la navbar */
 }
 
 .menu-toggle:hover {
@@ -45,9 +44,11 @@
 .sidebar-checkbox:checked ~ .menu-toggle .hamburger span:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
 }
+
 .sidebar-checkbox:checked ~ .menu-toggle .hamburger span:nth-child(2) {
     opacity: 0;
 }
+
 .sidebar-checkbox:checked ~ .menu-toggle .hamburger span:nth-child(3) {
     transform: translateY(-7px) rotate(-45deg);
 }
@@ -56,9 +57,9 @@
 .sidebar-dropdown {
     position: fixed;
     right: -400px;
-    top: 80px; /* décalée sous la navbar */
+    top: 0;
     width: 380px;
-    height: calc(100vh - 80px); /* prend tout l’espace sous la navbar */
+    height: 100vh;
     background: var(--background);
     box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
     z-index: 1001;
@@ -66,7 +67,6 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    border-top: 1px solid #e8e8e8; /* pour une séparation propre */
 }
 
 .sidebar-checkbox:checked ~ .sidebar-dropdown {
@@ -176,7 +176,7 @@
 .sidebar-overlay {
     display: none;
     position: fixed;
-    top: 80px; /* aligné sous la navbar */
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
@@ -187,6 +187,11 @@
 
 .sidebar-checkbox:checked ~ .sidebar-overlay {
     display: block;
+}
+
+/* Fermer la sidebar en cliquant sur un lien */
+.sidebar-dropdown-item {
+    cursor: pointer;
 }
 
 /* Responsive */
