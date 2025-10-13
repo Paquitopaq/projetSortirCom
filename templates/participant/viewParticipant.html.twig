@@ -4,6 +4,7 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/view-profil.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 {% endblock %}
 
 {% block body %}
@@ -35,115 +36,113 @@
                             {% endif %}
                         </div>
 
-                        <h3 class="profile-card-name">{{ participant.pseudo ?? participant.prenom ~ ' ' ~ participant.nom }}</h3>
+                        <div class="greeting-section">
+                            <span class="greeting-text">HELLO I'M</span>
+                            <h1 class="profile-main-name">{{ participant.pseudo }}</h1>
+                            <p class="profile-subtitle">{{ participant.prenom }} {{ participant.nom }}</p>
+                        </div>
                         <p class="profile-card-role">{{ participant.administrateur ? 'Administrateur' : 'Membre' }}</p>
 
                         <div class="contact-info">
-
                             <div class="contact-item">
                                 <div class="contact-icon">
                                     <i class="fas fa-envelope"></i>
                                 </div>
                                 <span>{{ participant.email }}</span>
                             </div>
-                            {% if app.user and app.user.id == participant.id %}
-                                <button class="btn-download" onclick="window.location.href='{{ path('app_profil_update') }}'">
-                                    <i class="fas fa-edit"></i>
-                                    Modifier mon profil
-                                </button>
-                            {% endif %}
                         </div>
+
+                        <!-- Bouton modifier en dehors du contact-info -->
+                        {% if app.user and app.user.id == participant.id %}
+                            <button class="btn-download" onclick="window.location.href='{{ path('app_profil_update') }}'">
+                                <i class="fas fa-edit"></i>
+                                Modifier mon profil
+                            </button>
+                        {% endif %}
                     </div>
 
                     <!-- Section droite : Informations principales -->
                     <div class="profile-right">
-                        <div class="greeting-section">
-                            <span class="greeting-text">HELLO I'M</span>
-                            <h1 class="profile-main-name">{{ participant.pseudo }}</h1>
-                            <p class="profile-subtitle">{{ participant.prenom }} {{ participant.nom }}</p>
-                        </div>
+                        <!-- Sections des sorties -->
+                        <div class="activities-section">
+                            <!-- Sorties organisées -->
+                            <div class="activity-card">
+                                <div class="activity-header">
+                                    <h2>
+                                        <i class="fas fa-calendar-plus"></i>
+                                        Sorties organisées
+                                    </h2>
+                                    <span class="activity-count">{{ participant.sortiesOrganisees|length }}</span>
+                                </div>
 
-                    <!-- Sections des sorties -->
-                    <div class="activities-section">
-                        <!-- Sorties organisées -->
-                        <div class="activity-card">
-                            <div class="activity-header">
-                                <h2>
-                                    <i class="fas fa-calendar-plus"></i>
-                                    Sorties organisées
-                                </h2>
-                                <span class="activity-count">{{ participant.sortiesOrganisees|length }}</span>
+                                {% if participant.sortiesOrganisees|length > 0 %}
+                                    <div class="activities-list">
+                                        {% for sortie in participant.sortiesOrganisees %}
+                                            <a href="{{ path('sortie_detail', {id: sortie.id}) }}" class="activity-item">
+                                                <div class="activity-icon">
+                                                    <i class="fas fa-calendar-check"></i>
+                                                </div>
+                                                <div class="activity-info">
+                                                    <h3>{{ sortie.nom }}</h3>
+                                                    <div class="activity-meta">
+                                                        <span><i class="fas fa-clock"></i> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
+                                                        <span><i class="fas fa-users"></i> {{ sortie.participants|length }}/{{ sortie.nbInscriptionMax }}</span>
+                                                    </div>
+                                                </div>
+                                                <span class="activity-badge status-{{ sortie.etat.value|lower|replace({' ': '-'}) }}">
+                                                    {{ sortie.etat.value }}
+                                                </span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="empty-activities">
+                                        <i class="fas fa-calendar-times"></i>
+                                        <p>Aucune sortie organisée</p>
+                                    </div>
+                                {% endif %}
                             </div>
 
-                            {% if participant.sortiesOrganisees|length > 0 %}
-                                <div class="activities-list">
-                                    {% for sortie in participant.sortiesOrganisees %}
-                                        <a href="{{ path('sortie_detail', {id: sortie.id}) }}" class="activity-item">
-                                            <div class="activity-icon">
-                                                <i class="fas fa-calendar-check"></i>
-                                            </div>
-                                            <div class="activity-info">
-                                                <h3>{{ sortie.nom }}</h3>
-                                                <div class="activity-meta">
-                                                    <span><i class="fas fa-clock"></i> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
-                                                    <span><i class="fas fa-users"></i> {{ sortie.participants|length }}/{{ sortie.nbInscriptionMax }}</span>
-                                                </div>
-                                            </div>
-                                            <span class="activity-badge status-{{ sortie.etat.value|lower|replace({' ': '-'}) }}">
-                                    {{ sortie.etat.value }}
-                                </span>
-                                        </a>
-                                    {% endfor %}
+                            <!-- Participations -->
+                            <div class="activity-card">
+                                <div class="activity-header">
+                                    <h2>
+                                        <i class="fas fa-ticket-alt"></i>
+                                        Participations
+                                    </h2>
+                                    <span class="activity-count">{{ participant.sorties|length }}</span>
                                 </div>
-                            {% else %}
-                                <div class="empty-activities">
-                                    <i class="fas fa-calendar-times"></i>
-                                    <p>Aucune sortie organisée</p>
-                                </div>
-                            {% endif %}
-                        </div>
 
-                        <!-- Participations -->
-                        <div class="activity-card">
-                            <div class="activity-header">
-                                <h2>
-                                    <i class="fas fa-ticket-alt"></i>
-                                    Participations
-                                </h2>
-                                <span class="activity-count">{{ participant.sorties|length }}</span>
+                                {% if participant.sorties|length > 0 %}
+                                    <div class="activities-list">
+                                        {% for sortie in participant.sorties %}
+                                            <a href="{{ path('sortie_detail', {id: sortie.id}) }}" class="activity-item">
+                                                <div class="activity-icon">
+                                                    <i class="fas fa-ticket-alt"></i>
+                                                </div>
+                                                <div class="activity-info">
+                                                    <h3>{{ sortie.nom }}</h3>
+                                                    <div class="activity-meta">
+                                                        <span><i class="fas fa-clock"></i> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
+                                                        <span><i class="fas fa-user"></i> {{ sortie.organisateur.pseudo ?? sortie.organisateur.prenom }}</span>
+                                                    </div>
+                                                </div>
+                                                <span class="activity-badge status-{{ sortie.etat.value|lower|replace({' ': '-'}) }}">
+                                                    {{ sortie.etat.value }}
+                                                </span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="empty-activities">
+                                        <i class="fas fa-inbox"></i>
+                                        <p>Aucune participation</p>
+                                    </div>
+                                {% endif %}
                             </div>
-
-                            {% if participant.sorties|length > 0 %}
-                                <div class="activities-list">
-                                    {% for sortie in participant.sorties %}
-                                        <a href="{{ path('sortie_detail', {id: sortie.id}) }}" class="activity-item">
-                                            <div class="activity-icon">
-                                                <i class="fas fa-ticket-alt"></i>
-                                            </div>
-                                            <div class="activity-info">
-                                                <h3>{{ sortie.nom }}</h3>
-                                                <div class="activity-meta">
-                                                    <span><i class="fas fa-clock"></i> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
-                                                    <span><i class="fas fa-user"></i> {{ sortie.organisateur.pseudo ?? sortie.organisateur.prenom }}</span>
-                                                </div>
-                                            </div>
-                                            <span class="activity-badge status-{{ sortie.etat.value|lower|replace({' ': '-'}) }}">
-                                    {{ sortie.etat.value }}
-                                </span>
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                <div class="empty-activities">
-                                    <i class="fas fa-inbox"></i>
-                                    <p>Aucune participation</p>
-                                </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
-            </div>
-
             </div>
         </div>
     </div>
