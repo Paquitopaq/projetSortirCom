@@ -56,12 +56,13 @@ class SortieService
     {
         // Vérifier que l'utilisateur est l'organisateur
         if (method_exists($sortie, 'getOrganisateur') && $sortie->getOrganisateur() !== $user) {
-            return [
-                'success' => false,
-                'message' => 'Vous n’êtes pas autorisé à annuler cette sortie.',
-            ];
+            if (!$user || !in_array('ROLE_ADMIN', $user->getRoles())) {
+                return [
+                    'success' => false,
+                    'message' => 'Vous n’êtes pas autorisé à annuler cette sortie.',
+                ];
+            }
         }
-
         // Vérifier que la sortie n’est pas encore commencée
         if ($sortie->getDateHeureDebut() <= new \DateTime()) {
             return [
@@ -147,6 +148,8 @@ class SortieService
     public function clotureSorties(): void{
         $this->sortieRepository->clotureSortie();
     }
+
+
 
 
 }

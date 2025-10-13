@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Form\DeleteSortieType;
 use App\Form\ImportParticipantType;
 use App\Form\ProfilType;
 use App\Repository\ParticipantRepository;
@@ -176,6 +177,35 @@ class AdminController extends AbstractController
         return $this->render('sortie/import.html.twig', [
             'form' => $form->createView(),
             'sortie' => $sortie,
+        ]);
+    }
+
+    #[Route('/sortie/{id}/delete', name: 'sortie_delete_admin', methods: ['GET', 'POST'])]
+    public function delete(
+        Sortie $sortie,
+        Request $request,
+        SortieService $sortieService
+    ): Response {
+        $form = $this->createForm(DeleteSortieType::class, $sortie);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getUser();
+            $motif = $form->get('motifAnnulation')->getData();
+            $result = $sortieService->deleteSortie($sortie, $user, $motif);
+
+            if ($result['success']) {
+                $this->addFlash('success', $result['message']);
+            } else {
+                $this->addFlash('danger', $result['message']);
+            }
+
+            return $this->redirectToRoute('app_home');
+        }
+
+        return $this->render('sortie/delete.html.twig', [
+            'sortie' => $sortie,
+            'form' => $form->createView(),
         ]);
     }
 }
