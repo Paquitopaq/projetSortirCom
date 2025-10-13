@@ -169,7 +169,7 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/{id}/edit', name: 'sortie_edit')]
-    public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager): Response
+    public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
     {
         // Vérification des droits
         $user = $this->getUser();
@@ -185,15 +185,20 @@ final class SortieController extends AbstractController
 
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
+        $publication = $request->request->get('action') === 'publier';
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->sortieService->createSortie($sortie, $publication);
             $entityManager->flush();
-            $this->addFlash('success', 'Sortie modifiée avec succès.');
+
+            $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
+            $this->addFlash('success', $message);
             return $this->redirectToRoute('app_sortie');
         }
 
         return $this->render('sortie/edit.html.twig', [
             'form' => $form->createView(),
+            'lieux' => $lieuRepository->findAll(),
             'sortie' => $sortie,
         ]);
     }

@@ -1,111 +1,128 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Modifier une Sortie | BougeTonCrew{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/sortie.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sortie-create.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
 {% block body %}
-    <div class="form-card">
-        <h1 class="text-center mb-4">Modifier la sortie : {{ sortie.nom }}</h1>
-
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="alert alert-{{ label }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-
-        <!-- Section Informations générales -->
-        <div class="form-section">
-            <div class="form-section-title">
-                <i class="fas fa-info-circle"></i> Informations générales
-            </div>
-
-            <div class="form-group">
-                {{ form_label(form.nom, 'Nom de la sortie') }}
-                {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.nom) }}
-            </div>
-
-            <div class="form-group">
-                {{ form_label(form.infoSortie, 'Description') }}
-                {{ form_widget(form.infoSortie, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.infoSortie) }}
-            </div>
+    <section class="create-section">
+        <div class="create-header">
+            <h1 class="create-title">
+                <i class="fas fa-edit"></i> Modifier la Sortie
+            </h1>
+            <p class="create-subtitle">Mettez à jour les informations de votre sortie.</p>
         </div>
 
-        <!-- Section Date et durée -->
-        <div class="form-section">
-            <div class="form-section-title">
-                <i class="fas fa-calendar-alt"></i> Date et durée
-            </div>
+        <div class="form-card">
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-            <div class="form-row">
-                <div class="form-group">
-                    {{ form_label(form.dateHeureDebut) }}
-                    {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'form-control'}}) }}
-                    {{ form_errors(form.dateHeureDebut) }}
+            <!-- Section Informations générales -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-info-circle"></i>
+                    Informations générales
                 </div>
 
                 <div class="form-group">
-                    {{ form_label(form.dateLimiteInscription) }}
-                    {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'form-control'}}) }}
-                    {{ form_errors(form.dateLimiteInscription) }}
+                    {{ form_label(form.nom, 'Nom de la sortie', {'label_attr': {'class': 'form-label required'}}) }}
+                    {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.nom) }}
                 </div>
 
                 <div class="form-group">
-                    {{ form_label(form.duree) }}
-                    {{ form_widget(form.duree, {'attr': {'class': 'form-control'}}) }}
-                    {{ form_errors(form.duree) }}
+                    {{ form_label(form.infoSortie, 'Description', {'label_attr': {'class': 'form-label required'}}) }}
+                    {{ form_widget(form.infoSortie, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.infoSortie) }}
                 </div>
             </div>
-        </div>
 
-        <!-- Section Lieu -->
-        <div class="form-section">
-            <div class="form-section-title">
-                <i class="fas fa-map-marker-alt"></i> Lieu
+            <!-- Section Date et durée -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Date et durée
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ form_label(form.dateHeureDebut, 'Date et heure de début', {'label_attr': {'class': 'form-label required'}}) }}
+                        {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.dateHeureDebut) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.dateLimiteInscription, 'Date limite d\'inscription', {'label_attr': {'class': 'form-label required'}}) }}
+                        {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.dateLimiteInscription) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.duree, 'Durée (en minutes)', {'label_attr': {'class': 'form-label required'}}) }}
+                        {{ form_widget(form.duree, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.duree) }}
+                    </div>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label for="sortie_lieu">Lieu existant :</label>
-                {{ form_widget(form.lieu) }}
+            <!-- Section Lieu -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Lieu de rendez-vous
+                </div>
 
-                <button type="button" id="btn-nouveau-lieu" class="btn btn-outline-success btn-sm ms-2">
-                    <i class="fa fa-plus"></i> Ajouter un nouveau lieu
+                <div class="mb-3">
+                    <label for="sortie_lieu">Lieu existant :</label>
+                    {{ form_widget(form.lieu) }}
+
+                    <button type="button" id="btn-nouveau-lieu" class="btn btn-outline-success btn-sm ms-2">
+                        <i class="fa fa-plus"></i> Ajouter un nouveau lieu
+                    </button>
+                </div>
+
+                <div id="nouveau-lieu-form" style="display:none; margin-top: 1rem;">
+                    <h5>Créer un nouveau lieu</h5>
+                    {{ form_widget(form.nouveauLieu) }}
+                </div>
+            </div>
+
+            <!-- Section Participants -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-users"></i>
+                    Participants
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.nbInscriptionMax, 'Nombre maximum de participants', {'label_attr': {'class': 'form-label required'}}) }}
+                    {{ form_widget(form.nbInscriptionMax, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.nbInscriptionMax) }}
+                </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="form-actions">
+                <a href="{{ path('app_sortie') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Annuler
+                </a>
+                <button type="submit" name="action" value="enregistrer" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Enregistrer en brouillon
+                </button>
+                <button type="submit" name="action" value="publier" class="btn btn-success">
+                    <i class="fas fa-paper-plane"></i>
+                    Publier maintenant
                 </button>
             </div>
 
-            <div id="nouveau-lieu-form" style="display:none; margin-top: 1rem;">
-                <h5>Créer un nouveau lieu</h5>
-                {{ form_widget(form.nouveauLieu) }}
-            </div>
+            {{ form_end(form) }}
         </div>
-
-        <!-- Section Participants -->
-        <div class="form-section">
-            <div class="form-section-title">
-                <i class="fas fa-users"></i> Participants
-            </div>
-
-            <div class="form-group">
-                {{ form_label(form.nbInscriptionMax) }}
-                {{ form_widget(form.nbInscriptionMax, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.nbInscriptionMax) }}
-            </div>
-        </div>
-
-        <!-- Boutons d'action -->
-        <div class="form-actions mt-4">
-            <a href="{{ path('app_sortie') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Retour
-            </a>
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Enregistrer les modifications
-            </button>
-        </div>
-
-        {{ form_end(form) }}
-    </div>
+    </section>
 {% endblock %}
 
 {% block javascripts %}
@@ -125,6 +142,64 @@
                     ? '<i class="fa fa-minus"></i> Annuler le nouveau lieu'
                     : '<i class="fa fa-plus"></i> Ajouter un nouveau lieu';
             });
+        });
+    </script>
+
+    <script>
+        const lieux = {
+            {% for lieu in lieux %}
+            "{{ lieu.id }}": {
+                ville: "{{ lieu.ville.nom|e('js') }}",
+                rue: "{{ lieu.rue|e('js') }}",
+                codePostal: "{{ lieu.ville.codePostal|e('js') }}",
+                latitude: "{{ lieu.latitude }}",
+                longitude: "{{ lieu.longitude }}"
+            },
+            {% endfor %}
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const dateHeureDebut = document.querySelector('input[name="sortie[dateHeureDebut]"]');
+            if (dateHeureDebut) {
+                flatpickr(dateHeureDebut, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    time_24hr: true,
+                    locale: "fr",
+                    minDate: "today"
+                });
+            }
+
+            const dateLimite = document.querySelector('input[name="sortie[dateLimiteInscription]"]');
+            if (dateLimite) {
+                flatpickr(dateLimite, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    time_24hr: true,
+                    locale: "fr",
+                    minDate: "today"
+                });
+            }
+
+            const lieuSelect = document.getElementById('sortie_lieu');
+            if (lieuSelect) {
+                lieuSelect.addEventListener('change', function () {
+                    const selectedId = this.value;
+                    const details = lieux[selectedId];
+                    const detailsDiv = document.getElementById('lieu-details');
+
+                    if (details) {
+                        document.getElementById('lieu-ville').textContent = details.ville;
+                        document.getElementById('lieu-rue').textContent = details.rue;
+                        document.getElementById('lieu-code-postal').textContent = details.codePostal;
+                        document.getElementById('lieu-latitude').textContent = details.latitude;
+                        document.getElementById('lieu-longitude').textContent = details.longitude;
+                        detailsDiv.style.display = 'block';
+                    } else {
+                        detailsDiv.style.display = 'none';
+                    }
+                });
+            }
         });
     </script>
 {% endblock %}
