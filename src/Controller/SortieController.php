@@ -6,10 +6,8 @@ use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Enum\Etat;
 use App\Form\DeleteSortieType;
-use App\Form\ImportParticipantType;
 use App\Form\SortieType;
 use App\Repository\LieuRepository;
-use App\Service\ImportService;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,12 +22,10 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie', name: 'app_sortie')]
-    public function index(Request $request): Response
+    public function index(): Response
     {
-        $data = $this->sortieService->getFilteredSorties($request);
-
         return $this->render('sortie/index.html.twig', [
-            'sorties' => $data['sorties'],
+            'controller_name' => 'SortieController',
         ]);
     }
 
@@ -89,47 +85,21 @@ final class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
     }
 
-
     #[Route('/sortie/{id}/detail', name: 'sortie_detail')]
-    public function detailsortie(
-        Request                $request,
-        ?Sortie                $sortie,
-        SortieService          $sortieService,
-        ImportService          $importService,
-        EntityManagerInterface $em
-    ): Response {
+    public function detailsortie(?Sortie $sortie): Response
+    {
         if (!$sortie) {
-            $this->addFlash('danger', "Cette sortie n'existe pas.");
-            return $this->redirectToRoute('app_home');
+            $this->addFlash('danger',"Cette sortie n'existe pas.");
         }
-
         if ($sortie->getEtat() === Etat::ARCHIVEE) {
-            $this->addFlash('danger', "Cette sortie n'est plus consultable.");
+            $this->addFlash('danger',"Cette sortie n'est plus consultable.");
             return $this->redirectToRoute('app_home');
-        }
-
-        $form = $this->createForm(ImportParticipantType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid() && $this->getUser()?->getAdministrateur()) {
-            $csvFile = $form->get('csv_file')->getData();
-
-            $messages = $importService->importerEtInscrire($csvFile, $sortie);
-
-            foreach ($messages as $msg) {
-                $this->addFlash($msg['type'], $msg['text']);
-            }
-
-            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
         return $this->render('sortie/detail.html.twig', [
             'sortie' => $sortie,
-            'form' => $form->createView(),
         ]);
     }
-
-
 
     #[Route('/sortie/{id}/delete', name: 'sortie_delete', methods: ['GET', 'POST'])]
     public function delete(
