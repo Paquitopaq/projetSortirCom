@@ -77,39 +77,19 @@
                     Lieu de rendez-vous
                 </div>
 
-                <div class="form-group">
-                    {{ form_label(form.lieu, 'Sélectionnez un lieu', {'label_attr': {'class': 'form-label required'}}) }}
-                    {{ form_widget(form.lieu, {'attr': {'class': 'form-control', 'id': 'sortie_lieu'}}) }}
-                    {{ form_errors(form.lieu) }}
+                <div class="mb-3">
+                    <label for="sortie_lieu">Lieu existant :</label>
+                    {{ form_widget(form.lieu) }}
+
+                    <button type="button" id="btn-nouveau-lieu" class="btn btn-outline-success btn-sm ms-2">
+                        <i class="fa fa-plus"></i> Ajouter un nouveau lieu
+                    </button>
                 </div>
 
-                <div id="lieu-details" class="lieu-details" style="display: none;">
-                    <div class="lieu-details-title">
-                        <i class="fas fa-info-circle"></i>
-                        Détails du lieu
-                    </div>
-                    <div class="lieu-detail-item">
-                        <i class="fas fa-city"></i>
-                        <strong>Ville :</strong>
-                        <span id="lieu-ville"></span>
-                    </div>
-                    <div class="lieu-detail-item">
-                        <i class="fas fa-road"></i>
-                        <strong>Rue :</strong>
-                        <span id="lieu-rue"></span>
-                    </div>
-                    <div class="lieu-detail-item">
-                        <i class="fas fa-mailbox"></i>
-                        <strong>Code postal :</strong>
-                        <span id="lieu-code-postal"></span>
-                    </div>
-                    <div class="lieu-detail-item">
-                        <i class="fas fa-map-pin"></i>
-                        <strong>Coordonnées :</strong>
-                        <span id="lieu-latitude"></span>, <span id="lieu-longitude"></span>
-                    </div>
+                <div id="nouveau-lieu-form" style="display:none; margin-top: 1rem;">
+                    <h5>Créer un nouveau lieu</h5>
+                    {{ form_widget(form.nouveauLieu) }}
                 </div>
-            </div>
 
             <!-- Section Participants -->
             <div class="form-section">
@@ -151,6 +131,23 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 
+    {# 🪄 Petit script JS pour afficher/masquer le sous-formulaire #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('btn-nouveau-lieu');
+            const formNouveauLieu = document.getElementById('nouveau-lieu-form');
+            let visible = false;
+
+            btn.addEventListener('click', function () {
+                visible = !visible;
+                formNouveauLieu.style.display = visible ? 'block' : 'none';
+                btn.innerHTML = visible
+                    ? '<i class="fa fa-minus"></i> Annuler le nouveau lieu'
+                    : '<i class="fa fa-plus"></i> Ajouter un nouveau lieu';
+            });
+        });
+    </script>
+
     <script>
         // Données des lieux
         const lieux = {
@@ -190,7 +187,7 @@
                     minDate: "today"
                 });
             }
-        });
+        }});
 
         // Affichage des détails du lieu
         document.getElementById('sortie_lieu').addEventListener('change', function () {
