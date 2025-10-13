@@ -56,6 +56,9 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $photoProfil = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $photoSource = null;
+
     #[ORM\ManyToMany(targetEntity: Sortie::class, mappedBy: 'participants')]
     private Collection $sorties;
 
@@ -190,6 +193,27 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setActif(?bool $actif): void
     {
         $this->actif = $actif;
+    }
+
+    public function getPhotoSource(): ?string
+    {
+        return $this->photoSource;
+    }
+
+    public function setPhotoSource(?string $photoSource): void
+    {
+        $this->photoSource = $photoSource;
+    }
+
+    public function getAvatarPath(): string
+    {
+        if (!$this->photoProfil) {
+            return 'assets/avatars/cchat.png';
+        }
+
+        return $this->photoSource === 'avatar'
+            ? 'assets/avatars/' . $this->photoProfil
+            : 'assets/images/' . $this->photoProfil;
     }
 
     public function getSorties(): Collection

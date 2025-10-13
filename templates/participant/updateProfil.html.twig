@@ -13,12 +13,12 @@
                 <div class="photo-section">
                     <div class="photo-preview">
                         {% if participant.photoProfil %}
-                            <img id="preview-image" src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil">
+                            <img id="preview-image" src="{{ asset(app.user.getAvatarPath()) }}" alt="Photo de profil">
                         {% else %}
-                            <img id="preview-image" src="{{ asset('assets/images/sunglasses.png') }}" alt="Photo de profil">
+                            <img id="preview-image" src="{{ asset('assets/avatars/cchat.png') }}" alt="Photo de profil">
                         {% endif %}
                     </div>
-                    <label class="upload-btn">
+                    <label for="profil_photoProfil" class="upload-btn">
                         <i class="fa-solid fa-camera"></i> Changer la photo
                     </label>
 
@@ -40,7 +40,9 @@
                 <!-- 🔹 Champ caché pour stocker le choix de l’avatar -->
                 <input type="hidden" name="selected_avatar" id="selected_avatar">
 
-                <input type="hidden" {{ form_widget(form.photoProfil, {'attr': {'id': 'photo-input', 'accept': 'image/*'}}) }}
+                <div style="display: none">
+                    {{ form_widget(form.photoProfil, {'attr': {'id': 'profil_photoProfil', 'accept': 'image/*'}}) }}
+                </div>
 
                 <div class="fields-grid">
                     <div class="field">
@@ -99,7 +101,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const input = document.getElementById('photo-input');
+            const input = document.getElementById('profil_photoProfil');
             const preview = document.getElementById('preview-image');
             const hiddenAvatar = document.getElementById('selected_avatar');
 

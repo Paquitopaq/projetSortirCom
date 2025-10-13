@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Participant;
 use App\Form\ProfilType;
 use App\Repository\ParticipantRepository;
-use App\Form\UpdateProfilType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -40,11 +38,13 @@ final class ParticipantController extends AbstractController
                 try {
                     $photoFile->move($this->getParameter('photo_directory'), $newFilename);
                     $participant->setPhotoProfil($newFilename);
+                    $participant->setPhotoSource('image');
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors du téléchargement de la photo.');
                 }
             } elseif ($selectedAvatar) {
                 $participant->setPhotoProfil($selectedAvatar);
+                $participant->setPhotoSource('avatar');
             }
 
             $em->flush();

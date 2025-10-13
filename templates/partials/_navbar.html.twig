@@ -28,10 +28,10 @@
                         <span></span>
                     </div>
                     <div class="user-avatar">
-                        {% if app.user.photoProfil %}
-                            <img class="user-avatar" src="{{ asset('assets/images/' ~ app.user.photoProfil) }}" alt="Avatar">
+                        {% if app.user %}
+                            <img class="user-avatar" src="{{ asset(app.user.getAvatarPath()) }}" alt="Avatar">
                         {% else %}
-                            {{ app.user.email|slice(0, 1)|upper }}
+                            {{ asset('assets/avatars/cchat.png') }}
                         {% endif %}
                     </div>
                 </label>
@@ -40,9 +40,11 @@
                 <div class="sidebar-dropdown">
                     <div class="sidebar-dropdown-header">
                         <div class="sidebar-user-info">
-                            <img class="sidebar-user-avatar"
-                                 src="{{ app.user.photoProfil ? asset('assets/images/' ~ app.user.photoProfil) : asset('icons/default.png') }}"
-                                 alt="Avatar" />
+                            {% if app.user %}
+                                <img class="sidebar-user-avatar" src="{{ asset(app.user.getAvatarPath()) }}" alt="Avatar">
+                            {% else %}
+                                {{ asset('assets/avatars/cchat.png') }}
+                            {% endif %}
                             <div>
                                 <p class="sidebar-user-name">{{ app.user.email|split('@')|first }}</p>
                             </div>
