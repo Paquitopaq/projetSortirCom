@@ -42,6 +42,14 @@ final class SortieController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $nouveauLieu = $form->get('nouveauLieu')->getData();
+
+            if ($nouveauLieu && $nouveauLieu->getNom()) {
+                $entityManager->persist($nouveauLieu);
+                $sortie->setLieu($nouveauLieu);
+            }
+
             $publication = $request->request->get('action') === 'publier';
             $this->sortieService->createSortie($sortie, $publication);
 
