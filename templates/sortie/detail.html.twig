@@ -67,7 +67,24 @@
                     S'inscrire à cette sortie
                 </button>
             </form>
+            {% if sortie.etat.value == 'Créée' and (app.user == sortie.organisateur or app.user.administrateur) %}
+                <div class="text-center mt-4">
+                    <a href="{{ path('sortie_edit', {'id': sortie.id}) }}" class="btn btn-warning btn-lg">
+                        Modifier la sortie
+                    </a>
+                </div>
+            {% endif %}
+
+
         </div>
+        {% if app.user and (app.user == sortie.organisateur or app.user.administrateur) %}
+            <div class="text-center mt-4">
+                <a href="{{ path('sortie_delete', {'id': sortie.id}) }}" class="btn btn-danger btn-lg">
+                    Annuler la sortie
+                </a>
+            </div>
+        {% endif %}
+
     {% else %}
         <p class="text-center mt-4">Vous devez être connecté pour vous inscrire.</p>
     {% endif %}
