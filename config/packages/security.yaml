@@ -16,15 +16,19 @@ security:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
+
     main:
       lazy: true
       provider: app_user_provider
+      user_checker: App\Security\UserChecker
+
       form_login:
         login_path: app_login
         check_path: app_login
         username_parameter: email
         password_parameter: password
         enable_csrf: true
+
       logout:
         path: app_logout
         target: app_home  # Redirige vers la page d'accueil après logout
@@ -37,9 +41,7 @@ security:
 
   # ACTIVE LES ACCESS CONTROL
   access_control:
-    # Routes admin uniquement
     - { path: ^/admin, roles: ROLE_ADMIN }
-    # Routes pour utilisateurs connectés
     - { path: ^/sortie/create, roles: ROLE_USER }
     - { path: ^/profil/, roles: ROLE_USER }
 
