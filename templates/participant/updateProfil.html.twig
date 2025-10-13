@@ -15,13 +15,17 @@
                         {% if participant.photoProfil %}
                             <img id="preview-image" src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil">
                         {% else %}
-                            <img id="preview-image" src="{{ asset('assets/images/default-avatar.png') }}" alt="Photo de profil">
+                            <img id="preview-image" src="{{ asset('assets/images/sunglasses.png') }}" alt="Photo de profil">
                         {% endif %}
                     </div>
                     <label class="upload-btn">
                         <i class="fa-solid fa-camera"></i> Changer la photo
-                        {{ form_widget(form.photoProfil, {'attr': {'id': 'photo-input', 'accept': 'image/*'}}) }}
                     </label>
+
+                    <!-- 🔹 Bouton pour ouvrir le modal -->
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#avatarModal">
+                        Choisir une photo proposée
+                    </button>
                 </div>
             </div>
 
@@ -32,7 +36,12 @@
                     <div class="alert alert-success text-center">{{ message }}</div>
                 {% endfor %}
 
-                {{ form_start(form, {'attr': {'class': 'profile-form'}}) }}
+                {{ form_start(form, {'attr': {'class': 'profile-form'}, 'method': 'POST', 'enctype': 'multipart/form-data'}) }}
+                <!-- 🔹 Champ caché pour stocker le choix de l’avatar -->
+                <input type="hidden" name="selected_avatar" id="selected_avatar">
+
+                <input type="hidden" {{ form_widget(form.photoProfil, {'attr': {'id': 'photo-input', 'accept': 'image/*'}}) }}
+
                 <div class="fields-grid">
                     <div class="field">
                         {{ form_label(form.pseudo, 'Pseudo') }}
@@ -61,27 +70,67 @@
                 </div>
 
                 {{ form_end(form) }}
+
+                <!-- 🔹 Modal avec les avatars -->
+                <div class="modal fade" id="avatarModal" tabindex="-1" aria-labelledby="avatarModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="avatarModalLabel">Choisir un avatar</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <div class="d-flex flex-wrap justify-content-center">
+                                    {% for avatar in avatars %}
+                                        <img src="{{ asset('assets/avatars/' ~ avatar) }}"
+                                             alt="Avatar"
+                                             class="m-2 border rounded avatar-choice"
+                                             style="width:80px; height:80px; cursor:pointer;">
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     {% include 'partials/_footer.html.twig' %}
 
     <script>
-        // Prévisualisation dynamique de la photo
         document.addEventListener('DOMContentLoaded', () => {
             const input = document.getElementById('photo-input');
             const preview = document.getElementById('preview-image');
+            const hiddenAvatar = document.getElementById('selected_avatar');
 
             if (input) {
                 input.addEventListener('change', e => {
                     const file = e.target.files[0];
                     if (file) {
                         const reader = new FileReader();
-                        reader.onload = ev => preview.src = ev.target.result;
+                        reader.onload = ev => {
+                            preview.src = ev.target.result;
+                            hiddenAvatar.value = ''; // 🔹 On réinitialise l’avatar choisi
+                        };
                         reader.readAsDataURL(file);
                     }
                 });
             }
+        });
+    </script>
+
+    <script>
+        document.querySelectorAll('.avatar-choice').forEach(img => {
+            img.addEventListener('click', e => {
+                document.getElementById('selected_avatar').value = e.target.getAttribute('src').split('/').pop();
+
+                // 🔹 Mettre à jour l'image de prévisualisation
+                document.getElementById('preview-image').src = e.target.src;
+
+                // 🔹 Fermer le modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('avatarModal'));
+                modal.hide();
+            });
         });
     </script>
 {% endblock %}
