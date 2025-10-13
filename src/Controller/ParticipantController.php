@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Form\ProfilType;
+use App\Repository\ParticipantRepository;
 use App\Form\UpdateProfilType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -57,11 +58,23 @@ final class ParticipantController extends AbstractController
 
     #[Route('/{id}', name: 'app_profil_participant', requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_USER')]
-    public function participantProfil(Participant $participant): Response
+    public function participantProfil(int $id, ParticipantRepository $participantRepository): Response
     {
+        // Récupérer le participant avec ses sorties et sorties organisées
+        $participant = $participantRepository->findWithSorties($id);
+
+        if (!$participant) {
+            throw $this->createNotFoundException('Participant introuvable.');
+        }
+
+        $participant->getSorties()->count();
+        $participant->getSortiesOrganisees()->count();
+
         return $this->render('participant/viewParticipant.html.twig', [
             'participant' => $participant,
         ]);
     }
+
+
 
 }

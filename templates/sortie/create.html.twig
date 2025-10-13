@@ -1,29 +1,155 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer une Sortie{% endblock %}
+{% block title %}Créer une Sortie | BougeTonCrew{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/sortie.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sortie-create.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h1>Créer une Sortie</h1>
-
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <div id="lieu-details" class="mt-3">
-            <p><strong>Ville :</strong> <span id="lieu-ville"></span></p>
-            <p><strong>Rue :</strong> <span id="lieu-rue"></span></p>
-            <p><strong>Code postal :</strong> <span id="lieu-code-postal"></span></p>
-            <p><strong>Latitude :</strong> <span id="lieu-latitude"></span></p>
-            <p><strong>Longitude :</strong> <span id="lieu-longitude"></span></p>
+    <section class="create-section">
+        <div class="create-header">
+            <h1 class="create-title">
+                <i class="fas fa-plus-circle"></i> Créer une Sortie
+            </h1>
+            <p class="create-subtitle">Organisez votre prochaine sortie et invitez votre crew !</p>
         </div>
 
+        <div class="form-card">
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-        <button type="submit" name="action" value="enregistrer" class="btn btn-primary">Enregistrer</button>
-        <button type="submit" name="action" value="publier" class="btn btn-success">Publier</button>
-        <button class="btn btn-primary">Annuler</button>
-        {{ form_end(form) }}
+            <!-- Section Informations générales -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-info-circle"></i>
+                    Informations générales
+                </div>
 
-    </div>
+                <div class="form-group">
+                    {{ form_label(form.nom, 'Nom de la sortie', {'label_attr': {'class': 'form-label required'}}) }}
+                    {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Randonnée en forêt'}}) }}
+                    {{ form_errors(form.nom) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.infoSortie, 'Description', {'label_attr': {'class': 'form-label required'}}) }}
+                    {{ form_widget(form.infoSortie, {'attr': {'class': 'form-control', 'placeholder': 'Décrivez votre sortie...'}}) }}
+                    <div class="form-help">Donnez un maximum d'informations pour donner envie de participer !</div>
+                    {{ form_errors(form.infoSortie) }}
+                </div>
+            </div>
+
+            <!-- Section Date et durée -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Date et durée
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ form_label(form.dateHeureDebut, 'Date et heure de début', {'label_attr': {'class': 'form-label required'}}) }}
+                        {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.dateHeureDebut) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.dateLimiteInscription, 'Date limite d\'inscription', {'label_attr': {'class': 'form-label required'}}) }}
+                        {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'form-control'}}) }}
+                        <div class="form-help">Les participants ne pourront plus s'inscrire après cette date</div>
+                        {{ form_errors(form.dateLimiteInscription) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.duree, 'Durée (en minutes)', {'label_attr': {'class': 'form-label required'}}) }}
+                        {{ form_widget(form.duree, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 120'}}) }}
+                        {{ form_errors(form.duree) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Lieu -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Lieu de rendez-vous
+                </div>
+
+                <div class="mb-3">
+                    <label for="sortie_lieu">Lieu existant :</label>
+                    {{ form_widget(form.lieu) }}
+
+                    <button type="button" id="btn-nouveau-lieu" class="btn btn-outline-success btn-sm ms-2">
+                        <i class="fa fa-plus"></i> Ajouter un nouveau lieu
+                    </button>
+                </div>
+
+                <div id="nouveau-lieu-form" style="display:none; margin-top: 1rem;">
+                    <h5>Créer un nouveau lieu</h5>
+                    {{ form_widget(form.nouveauLieu) }}
+                </div>
+
+            <!-- Section Participants -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-users"></i>
+                    Participants
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.nbInscriptionMax, 'Nombre maximum de participants', {'label_attr': {'class': 'form-label required'}}) }}
+                    {{ form_widget(form.nbInscriptionMax, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 10'}}) }}
+                    <div class="form-help">Vous compris</div>
+                    {{ form_errors(form.nbInscriptionMax) }}
+                </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="form-actions">
+                <a href="{{ path('app_sortie') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Annuler
+                </a>
+                <button type="submit" name="action" value="enregistrer" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Enregistrer en brouillon
+                </button>
+                <button type="submit" name="action" value="publier" class="btn btn-success">
+                    <i class="fas fa-paper-plane"></i>
+                    Publier maintenant
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+
+    {# 🪄 Petit script JS pour afficher/masquer le sous-formulaire #}
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('btn-nouveau-lieu');
+            const formNouveauLieu = document.getElementById('nouveau-lieu-form');
+            let visible = false;
+
+            btn.addEventListener('click', function () {
+                visible = !visible;
+                formNouveauLieu.style.display = visible ? 'block' : 'none';
+                btn.innerHTML = visible
+                    ? '<i class="fa fa-minus"></i> Annuler le nouveau lieu'
+                    : '<i class="fa fa-plus"></i> Ajouter un nouveau lieu';
+            });
+        });
+    </script>
+
+    <script>
+        // Données des lieux
         const lieux = {
             {% for lieu in lieux %}
             "{{ lieu.id }}": {
@@ -36,9 +162,38 @@
             {% endfor %}
         };
 
+        // Initialisation Flatpickr pour les dates
+        document.addEventListener('DOMContentLoaded', function() {
+            // Date et heure de début
+            const dateHeureDebut = document.querySelector('input[name="sortie[dateHeureDebut]"]');
+            if (dateHeureDebut) {
+                flatpickr(dateHeureDebut, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    time_24hr: true,
+                    locale: "fr",
+                    minDate: "today"
+                });
+            }
+
+            // Date limite d'inscription
+            const dateLimite = document.querySelector('input[name="sortie[dateLimiteInscription]"]');
+            if (dateLimite) {
+                flatpickr(dateLimite, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    time_24hr: true,
+                    locale: "fr",
+                    minDate: "today"
+                });
+            }
+        }});
+
+        // Affichage des détails du lieu
         document.getElementById('sortie_lieu').addEventListener('change', function () {
             const selectedId = this.value;
             const details = lieux[selectedId];
+            const detailsDiv = document.getElementById('lieu-details');
 
             if (details) {
                 document.getElementById('lieu-ville').textContent = details.ville;
@@ -46,12 +201,9 @@
                 document.getElementById('lieu-code-postal').textContent = details.codePostal;
                 document.getElementById('lieu-latitude').textContent = details.latitude;
                 document.getElementById('lieu-longitude').textContent = details.longitude;
+                detailsDiv.style.display = 'block';
             } else {
-                document.getElementById('lieu-ville').textContent = details.ville;
-                document.getElementById('lieu-rue').textContent = details.rue;
-                document.getElementById('lieu-code-postal').textContent = details.codePostal;                document.getElementById('lieu-latitude').textContent = '';
-                document.getElementById('lieu-latitude').textContent = details.latitude;
-                document.getElementById('lieu-longitude').textContent = '';
+                detailsDiv.style.display = 'none';
             }
         });
     </script>

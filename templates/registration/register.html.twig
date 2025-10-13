@@ -31,7 +31,6 @@
                         </div>
                     {% endfor %}
 
-                    <!-- Formulaire -->
                     {{ form_start(registrationForm, {'attr': {'class': 'auth-form'}}) }}
 
                     <!-- Champ Email -->
@@ -72,21 +71,22 @@
                         {% endif %}
                     </div>
 
-                    <!-- Case à cocher Conditions -->
-                    {% if registrationForm.agreeTerms is defined %}
-                        <div class="form-check-wrapper">
-                            <label class="custom-checkbox">
+                    <!-- Checkbox Conditions -->
+                    <div class="form-check-wrapper">
+                        {% if registrationForm.agreeTerms is defined %}
+                            <label class="container">
                                 {{ form_widget(registrationForm.agreeTerms, { 'attr': { 'class': 'checkbox-input' } }) }}
-                                <span class="checkbox-label">{{ form_label(registrationForm.agreeTerms) }} Accepter les conditions d'utilisation.</span>
+                                <span class="checkmark"></span>
+                                <span class="checkbox-label">Accepter les conditions d'utilisation</span>
                             </label>
+
                             {% if form_errors(registrationForm.agreeTerms) %}
                                 <div class="field-error mt-2">
-                                    <small>{{ form_errors(registrationForm.agreeTerms) }}
-                                    </small>
+                                    <small>{{ form_errors(registrationForm.agreeTerms) }}</small>
                                 </div>
                             {% endif %}
-                        </div>
-                    {% endif %}
+                        {% endif %}
+                    </div>
 
                     <!-- Bouton inscription -->
                     <button type="submit" class="btn-submit">
