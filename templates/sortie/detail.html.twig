@@ -85,16 +85,5 @@
         </ul>
 
     {% endif %}
-    {% if app.user and app.user.administrateur %}
-
-        <div class="text-center mt-5">
-            <h3>Importer des participants via CSV</h3>
-            {{ form_start(form) }}
-            {{ form_widget(form['csv_file']) }}
-            <button type="submit" class="btn btn-success btn-lg">Importer le fichier</button>
-            {{ form_end(form) }}
-        </div>
-    {% endif %}
-
 
 {% endblock %}

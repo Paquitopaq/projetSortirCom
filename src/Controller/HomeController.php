@@ -28,7 +28,6 @@ final class HomeController extends AbstractController
             'lieux' => $data['lieux'] ?? [],
             'dateDebut' => $data['dateDebut'] ?? null,
             'dateFin' => $data['dateFin'] ?? null,
-            'participant' => $this->getUser(),
         ]);
     }
 }
