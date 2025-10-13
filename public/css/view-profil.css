@@ -1,0 +1,490 @@
+/* Styles pour la carte de profil moderne */
+:root {
+    --orange: #FF6B00;
+    --blue-dark: #0B2447;
+    --background: #FCFBF9;
+    --card-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.profile-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: 40px;
+}
+
+/* Carte de profil principale */
+.profile-card-wrapper {
+    margin-bottom: 40px;
+}
+
+/* Header de la carte */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 40px;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--blue-dark);
+}
+
+.brand-logo i {
+    font-size: 24px;
+    color: var(--orange);
+}
+
+.btn-back-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--orange);
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.btn-back-circle:hover {
+    background: var(--orange);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Contenu principal */
+.card-content {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 60px;
+    padding: 0 40px 40px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Section gauche : Avatar et contact */
+.profile-left {
+    text-align: center;
+}
+
+.avatar-section {
+    margin-bottom: 20px;
+}
+
+.avatar-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 6px solid white;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.avatar-placeholder {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: var(--orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 6px solid white;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    margin: 0 auto;
+}
+
+.avatar-placeholder i {
+    font-size: 70px;
+    color: white;
+}
+
+.profile-card-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--blue-dark);
+    margin-bottom: 4px;
+}
+
+.profile-card-role {
+    font-size: 14px;
+    color: #717171;
+    margin-bottom: 30px;
+}
+
+.contact-info {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+}
+
+.contact-item:last-child {
+    border-bottom: none;
+}
+
+.contact-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--orange);
+    flex-shrink: 0;
+}
+
+.contact-item span {
+    font-size: 13px;
+    color: var(--blue-dark);
+    word-break: break-word;
+}
+
+/* Section droite : Infos principales */
+.profile-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.greeting-section {
+    margin-bottom: 20px;
+}
+
+.greeting-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--orange);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.profile-main-name {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--blue-dark);
+    margin: 8px 0;
+    line-height: 1.1;
+}
+
+.profile-subtitle {
+    font-size: 18px;
+    color: #717171;
+    margin-bottom: 16px;
+}
+
+.btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+    margin-bottom: 32px;
+    margin-top: 16px;
+}
+
+.btn-download:hover {
+    background: #e55f00;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+}
+
+.social-section {
+    margin-bottom: 32px;
+}
+
+.follow-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--blue-dark);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.social-stats {
+    display: flex;
+    gap: 12px;
+}
+
+.stat-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: var(--orange);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+
+.stat-circle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.stat-circle i {
+    font-size: 16px;
+}
+
+.stat-circle span {
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+
+.navigation-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+    transition: all 0.3s;
+}
+
+.dot.active {
+    background: var(--orange);
+    width: 24px;
+    border-radius: 4px;
+}
+
+/* Footer de la carte */
+.card-footer {
+    text-align: center;
+    padding: 16px;
+    background: rgba(255,255,255,0.5);
+    font-size: 13px;
+    color: #717171;
+}
+
+/* Sections d'activités */
+.activities-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 24px;
+}
+
+.activity-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--background);
+}
+
+.activity-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--blue-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.activity-count {
+    background: var(--orange);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.activities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--background);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--blue-dark);
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.activity-item:hover {
+    border-color: var(--orange);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(255, 107, 0, 0.2);
+}
+
+.activity-icon {
+    width: 48px;
+    height: 48px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--orange);
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.activity-info {
+    flex: 1;
+}
+
+.activity-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--blue-dark);
+    margin-bottom: 6px;
+}
+
+.activity-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: #717171;
+    flex-wrap: wrap;
+}
+
+.activity-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.activity-badge {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-ouvert, .status-open {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-fermé, .status-closed, .status-cloturée {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-créée {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-en-cours {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-passée {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.empty-activities {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}
+
+.empty-activities i {
+    font-size: 48px;
+    margin-bottom: 12px;
+    display: block;
+    opacity: 0.5;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .card-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .activities-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 20px 10px;
+    }
+
+    .card-header {
+        padding: 20px;
+    }
+
+    .card-content {
+        padding: 0 20px 20px;
+    }
+
+    .profile-main-name {
+        font-size: 32px;
+    }
+
+    .activity-card {
+        padding: 20px;
+    }
+
+    .activity-item {
+        flex-wrap: wrap;
+    }
+
+    .activity-badge {
+        width: 100%;
+        text-align: center;
+    }
+}

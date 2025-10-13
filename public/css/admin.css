@@ -214,109 +214,27 @@
     gap: 8px;
 }
 
-/* Boutons d'action uniformes */
-.btn-action, .btn-disable-user, .btn-admin-toggle {
+/* 🔹 Boutons uniformes et petits */
+.btn-action,
+.btn-disable-user,
+.btn-admin-toggle,
+.btn-manage,
+.btn-create-user {
     padding: 6px 12px;
     font-size: 12px;
     border-radius: 6px;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
     cursor: pointer;
     transition: all 0.2s;
-    min-width: 100px;
-    justify-content: center;
+    min-width: 120px;
+    text-align: center;
 }
 
-.btn-action {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-/* Modifier */
-.btn-manage {
-    background: var(--blue-dark);
-    color: var(--background);
-}
-
-.btn-manage:hover {
-    background: #081829;
-    transform: translateY(-1px);
-}
-
-/* Bouton principal orange */
-.btn-create {
-    padding: 10px 20px;
-    background: var(--orange);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-create:hover {
-    background: #e55f00;
-    transform: translateY(-1px);
-}
-
-/* Bouton secondaire gris */
-.btn-secondary {
-    padding: 10px 20px;
-    background: var(--background);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
-}
-
-.btn-secondary:hover {
-    background: #5a6268;
-    transform: translateY(-1px);
-}
-
-/* Créer un utilisateur */
-.btn-create-user {
-    padding: 10px 20px;
-    background: var(--orange);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-}
-
-.btn-create-user:hover {
-    background: #e55f00;
-    transform: translateY(-1px);
-}
-
-/* Activer / Désactiver */
+/* Couleurs spécifiques */
 .btn-disable-user {
     background: #dc3545;
     color: white;
@@ -326,11 +244,6 @@
     background: #28a745;
 }
 
-.btn-disable-user:hover {
-    transform: translateY(-1px);
-}
-
-/* Admin toggle */
 .btn-admin-toggle {
     background: #ffc107;
     color: #212529;
@@ -338,6 +251,32 @@
 
 .btn-admin-toggle:hover {
     background: #e0a800;
+}
+
+.btn-manage {
+    background: var(--blue-dark);
+    color: var(--background);
+}
+
+.btn-manage:hover {
+    background: #081829;
+}
+
+.btn-create-user {
+    background: var(--orange);
+    color: white;
+}
+
+.btn-create-user:hover {
+    background: #e55f00;
+}
+
+/* Hover commun */
+.btn-action:hover,
+.btn-disable-user:hover,
+.btn-admin-toggle:hover,
+.btn-manage:hover,
+.btn-create-user:hover {
     transform: translateY(-1px);
 }
 
@@ -429,12 +368,20 @@
         gap: 8px;
     }
 
-    .user-status, .user-actions {
+    .user-status,
+    .user-actions {
         margin-right: 0;
         width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        gap: 8px;
     }
 
-    .btn-action {
+    .btn-action,
+    .btn-disable-user,
+    .btn-admin-toggle,
+    .btn-manage,
+    .btn-create-user {
         width: 100%;
         justify-content: center;
     }
