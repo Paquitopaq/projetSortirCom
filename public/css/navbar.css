@@ -444,3 +444,97 @@
 .btn-auth-outline:hover {
     background: var(--background);
 }
+
+/* ---------- RESPONSIVE MOBILE ---------- */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0 16px;
+    }
+
+    .nav-content {
+        height: 64px;
+        gap: 12px;
+        grid-template-columns: auto 1fr auto;
+    }
+
+    .logo-img {
+        height: 36px;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .search-bar {
+        display: none;
+    }
+
+    .user-menu {
+        gap: 8px;
+    }
+
+    .become-host {
+        display: none;
+    }
+
+    .btn-auth,
+    .btn-auth-outline {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .menu-toggle {
+        padding: 4px 4px 4px 10px;
+        gap: 8px;
+    }
+
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .globe-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .dropdown-menu {
+        right: -16px;
+        left: -16px;
+        width: calc(100vw - 32px);
+        min-width: unset;
+    }
+
+    .sidebar-dropdown {
+        right: 0;
+        left: 0;
+        width: 85vw;
+        max-width: 320px;
+    }
+}
+
+/* ---------- RESPONSIVE TABLETTE ---------- */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .nav-content {
+        gap: 24px;
+    }
+
+    .search-bar {
+        max-width: 600px;
+    }
+
+    .nav-links {
+        gap: 20px;
+    }
+
+    .nav-link {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .become-host {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+}

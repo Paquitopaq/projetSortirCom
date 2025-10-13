@@ -41,6 +41,11 @@ body {
     min-height: 600px;
 }
 
+.auth-subtitle {
+    display: flex;
+    padding-bottom: 30px;
+}
+
 /* ---------- SECTION ILLUSTRATION ---------- */
 .auth-illustration {
     flex: 1;
@@ -204,52 +209,16 @@ body {
     color: #e55f00;
 }
 
-/* ---------- SOCIAL LOGIN ---------- */
-.social-login {
-    margin-top: 1rem;
-    text-align: center;
+.forgot-password {
+    text-align: right;
+    margin-top: 0.5rem;
 }
 
-.social-text {
-    color: var(--text-gray);
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    display: block;
-}
-
-.social-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-}
-
-.social-btn {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    transition: all 0.3s;
+.forgot-link {
+    color: var(--blue-dark);
     text-decoration: none;
-}
-
-.social-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.social-btn.facebook {
-    background: #3b5998;
-}
-
-.social-btn.twitter {
-    background: #1DA1F2;
-}
-
-.social-btn.google {
-    background: #DB4437;
+    font-size: 0.9rem;
+    transition: color 0.3s;
 }
 
 /* ---------- ALERTES ---------- */
@@ -264,55 +233,29 @@ body {
 }
 
 /* ---------- RESPONSIVE MOBILE ---------- */
-@media (max-width: 400px) {
-
+@media (max-width: 768px) {
     .auth-illustration {
         display: none !important;
     }
 
+    .auth-container {
+        padding: 1rem;
+    }
+
     .auth-wrapper {
-        flex-direction: column;
-        min-height: auto;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         border-radius: 16px;
     }
 
+    .auth-title {
+        font-size: 2rem;
+    }
+
     .auth-form-section {
-        width: 100%;
         padding: 1.5rem 1rem;
     }
 
-    .auth-form-content {
-        max-width: 100%;
-    }
-
-    .auth-title {
-        font-size: 1.75rem;
-        margin-bottom: 1.5rem;
-        text-align: center;
-    }
-
-    .form-input {
-        padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-        font-size: 0.95rem;
-    }
-
-    .input-icon {
-        left: 0.75rem;
-    }
-
-    .btn-submit {
-        padding: 0.85rem;
-        font-size: 0.95rem;
-    }
-
-    .register-text, .register-link-btn, .checkbox-label {
+    .forgot-link {
         font-size: 0.85rem;
-    }
-
-    .social-btn {
-        width: 40px;
-        height: 40px;
     }
 }
 
@@ -386,11 +329,5 @@ body {
     /* Checkbox */
     .checkbox-label {
         font-size: 0.9rem;
-    }
-
-    /* Social buttons */
-    .social-btn {
-        width: 44px;
-        height: 44px;
     }
 }
