@@ -1,29 +1,25 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('assets/css/sortie-details.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sortie-details.css') }}">
 {% endblock %}
-
 
 {% block body %}
     <div class="container">
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="alert alert-{{ label }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-
         <!-- En-tête de la sortie -->
         <div class="detail-header">
             <a href="{{ path('app_sortie') }}" class="btn-back">
                 <i class="fas fa-arrow-left"></i> Retour aux sorties
             </a>
-            {% if app.user and app.user == sortie.organisateur %}
-                <a href="{{ path('sortie_modifier', {'id': sortie.id}) }}" class="btn-edit">
-                    <i class="fas fa-edit"></i> Modifier
-                </a>
+            {% if app.user and (app.user == sortie.organisateur or app.user.administrateur) %}
+                <div class="header-actions">
+                    <a href="{{ path('sortie_edit', {'id': sortie.id}) }}" class="btn-edit">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    <a href="{{ path('sortie_delete', {'id': sortie.id}) }}" class="btn-delete">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                </div>
             {% endif %}
         </div>
 
@@ -42,13 +38,13 @@
                 <h1 class="detail-title">{{ sortie.nom }}</h1>
 
                 <div class="detail-meta">
-                <span class="status-badge status-{{ sortie.etat.value|lower }}">
-                    {{ sortie.etat.value }}
-                </span>
+                    <span class="status-badge status-{{ sortie.etat.value|lower|replace({' ': '-'}) }}">
+                        {{ sortie.etat.value }}
+                    </span>
                     <span class="detail-participants">
-                    <i class="fas fa-users"></i>
-                    {{ sortie.participants|length }}/{{ sortie.nbInscriptionMax }} participants
-                </span>
+                        <i class="fas fa-users"></i>
+                        {{ sortie.participants|length }}/{{ sortie.nbInscriptionMax }} participants
+                    </span>
                 </div>
 
                 <!-- Informations principales -->
@@ -133,7 +129,7 @@
                 {% if app.user %}
                     <div class="detail-actions">
                         {% if app.user in sortie.participants %}
-                            <form method="post" action="{{ path('sortie_desinscrire', {'id': sortie.id}) }}">
+                            <form method="post" action="{{ path('sortie_inscrire', {'id': sortie.id}) }}">
                                 <button type="submit" class="btn-action btn-unsubscribe">
                                     <i class="fas fa-times"></i> Se désinscrire
                                 </button>
@@ -194,5 +190,22 @@
         {% endif %}
     </div>
     {% include 'partials/_footer.html.twig' %}
+{% endblock %}
 
+{% block javascripts %}
+    <script>
+        // Affichage des messages flash avec SweetAlert2
+        {% for label, messages in app.flashes %}
+        {% for message in messages %}
+        Swal.fire({
+            icon: '{{ label == 'success' ? 'success' : (label == 'danger' or label == 'error' ? 'error' : 'info') }}',
+            title: '{{ label == 'success' ? 'Succès' : (label == 'danger' or label == 'error' ? 'Erreur' : 'Information') }}',
+            text: '{{ message|raw }}',
+            confirmButtonColor: '#FF6B00',
+            timer: 3000,
+            timerProgressBar: true
+        });
+        {% endfor %}
+        {% endfor %}
+    </script>
 {% endblock %}
