@@ -56,8 +56,8 @@ final class SortieController extends AbstractController
 
             $entityManager->persist($sortie);
             $entityManager->flush();
-
-            $this->addFlash('success', 'Sortie enregistrée en brouillon.');
+            $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
+            $this->addFlash('success', $message);
             return $this->redirectToRoute('app_sortie');
         }
 
