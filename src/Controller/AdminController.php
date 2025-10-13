@@ -26,12 +26,57 @@ class AdminController extends AbstractController
     #[Route('', name: 'admin_dashboard')]
     public function dashboard(EntityManagerInterface $em): Response
     {
-        $nbUsers = $em->getRepository(Participant::class)->count([]);
-        $nbSorties = $em->getRepository(Sortie::class)->count([]);
+        // Statistiques globales
+        $participantRepo = $em->getRepository(Participant::class);
+        $sortieRepo = $em->getRepository(Sortie::class);
+
+        $nbUsers = $participantRepo->count([]);
+        $nbUsersActifs = $participantRepo->count(['actif' => true]);
+        $nbSorties = $sortieRepo->count([]);
+
+        //Statistiques temporelles
+        $now = new \DateTime();
+
+        // Sorties à venir
+        $nbSortiesAVenir = $sortieRepo->createQueryBuilder('s')
+            ->select('count(s.id)')
+            ->where('s.dateHeureDebut > :now')
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Sorties passées
+        $nbSortiesPassees = $sortieRepo->createQueryBuilder('s')
+            ->select('count(s.id)')
+            ->where('s.dateHeureDebut <= :now')
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Dernières activités
+        $dernieresSorties = $sortieRepo->createQueryBuilder('s')
+            ->orderBy('s.dateHeureDebut', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+
+        $derniersParticipants = $participantRepo->createQueryBuilder('p')
+            ->orderBy('p.id', 'DESC') // ou p.dateCreation si tu as ce champ
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+
+        $nbUsersInactifs = $nbUsers - $nbUsersActifs;
 
         return $this->render('admin/dashboard.html.twig', [
             'nbUsers' => $nbUsers,
+            'nbUsersActifs' => $nbUsersActifs,
+            'nbUsersInactifs' => $nbUsersInactifs,
             'nbSorties' => $nbSorties,
+            'nbSortiesAVenir' => $nbSortiesAVenir,
+            'nbSortiesPassees' => $nbSortiesPassees,
+            'dernieresSorties' => $dernieresSorties,
+            'derniersParticipants' => $derniersParticipants,
         ]);
     }
 
