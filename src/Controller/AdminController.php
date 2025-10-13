@@ -102,6 +102,9 @@ class AdminController extends AbstractController
         $form = $this->createForm(ProfilType::class, $participant, ['is_create' => true]);
         $form->handleRequest($request);
 
+        $avatarDirectory = $this->getParameter('kernel.project_dir') . '/public/assets/avatars';
+        $avatars = array_diff(scandir($avatarDirectory), ['..', '.']);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = $form->get('plainPassword')->getData();
             if ($plainPassword) {
@@ -109,6 +112,7 @@ class AdminController extends AbstractController
                 $participant->setPassword($hashedPassword);
             }
 
+            $selectedAvatar = $request->request->get('selected_avatar');
             $photoFile = $form->get('photoProfil')->getData();
             if ($photoFile) {
                 $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -117,11 +121,15 @@ class AdminController extends AbstractController
 
                 try {
                     $photoFile->move($this->getParameter('photo_directory'), $newFilename);
+                    $participant->setPhotoProfil($newFilename);
+                    $participant->setPhotoSource('image');
                 } catch (FileException $e) {
                     $this->addFlash('danger', 'Erreur lors du téléchargement de la photo.');
                 }
 
-                $participant->setPhotoProfil($newFilename);
+            } elseif ($selectedAvatar) {
+                $participant->setPhotoProfil($selectedAvatar);
+                $participant->setPhotoSource('avatar');
             }
 
             $em->persist($participant);
@@ -131,9 +139,10 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('admin_users');
         }
 
-        return $this->render('participant/createProfil.html.twig', [
+        return $this->render('admin/createProfil.html.twig', [
             'form' => $form->createView(),
             'participant' => $participant,
+            'avatars' => $avatars,
         ]);
     }
 

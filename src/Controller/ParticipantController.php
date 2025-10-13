@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Participant;
 use App\Form\ProfilType;
 use App\Repository\ParticipantRepository;
-use App\Form\UpdateProfilType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -25,24 +23,30 @@ final class ParticipantController extends AbstractController
         $form = $this->createForm(ProfilType::class, $participant, ['is_create' => false]);
         $form -> handleRequest($request);
 
+        $avatarDirectory = $this->getParameter('kernel.project_dir') . '/public/assets/avatars';
+        $avatars = array_diff(scandir($avatarDirectory), ['..', '.']);
+
         if ($form->isSubmitted() && $form->isValid()) {
+            $selectedAvatar = $request->request->get('selected_avatar');
             $photoFile = $form->get('photoProfil')->getData();
+
             if ($photoFile) {
                 $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$photoFile->guessExtension();
 
                 try {
-                    $photoFile->move(
-                        $this->getParameter('photo_directory'),
-                        $newFilename
-                    );
+                    $photoFile->move($this->getParameter('photo_directory'), $newFilename);
+                    $participant->setPhotoProfil($newFilename);
+                    $participant->setPhotoSource('image');
                 } catch (FileException $e) {
-                    $e->getMessage();
+                    $this->addFlash('error', 'Erreur lors du téléchargement de la photo.');
                 }
-
-                $participant->setPhotoProfil($newFilename);
+            } elseif ($selectedAvatar) {
+                $participant->setPhotoProfil($selectedAvatar);
+                $participant->setPhotoSource('avatar');
             }
+
             $em->flush();
             $this->addFlash('success', 'Profil mis à jour avec succès.');
 
@@ -53,6 +57,7 @@ final class ParticipantController extends AbstractController
         return $this->render('participant/updateProfil.html.twig', [
             'form' => $form->createView(),
             'participant' => $participant,
+            'avatars' => $avatars,
         ]);
     }
 
