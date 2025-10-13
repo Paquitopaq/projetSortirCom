@@ -1,11 +1,8 @@
-{% extends 'base.html.twig' %}
-
 {% block stylesheets %}
-    {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 {% endblock %}
 
-{% block title %}Se connecter{% endblock %}
+<title>{% block title %}Se connecter{% endblock %}</title>
 
 {% block body %}
     <div class="auth-container">
@@ -96,7 +93,6 @@
 {% endblock %}
 
 {% block javascripts %}
-    {{ parent() }}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {# Erreur de connexion (email, mot de passe ou compte désactivé) #}
