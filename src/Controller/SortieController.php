@@ -167,4 +167,35 @@ final class SortieController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/sortie/{id}/edit', name: 'sortie_edit')]
+    public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        // Vérification des droits
+        $user = $this->getUser();
+        if ($sortie->getOrganisateur() !== $user && !$user->isAdministrateur()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette sortie.');
+        }
+
+        // Vérification de l’état
+        if ($sortie->getEtat()->value !== 'Créée') {
+            $this->addFlash('danger', 'Seules les sorties en état "Créée" peuvent être modifiées.');
+            return $this->redirectToRoute('app_sortie');
+        }
+
+        $form = $this->createForm(SortieType::class, $sortie);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'Sortie modifiée avec succès.');
+            return $this->redirectToRoute('app_sortie');
+        }
+
+        return $this->render('sortie/edit.html.twig', [
+            'form' => $form->createView(),
+            'sortie' => $sortie,
+        ]);
+    }
+
 }

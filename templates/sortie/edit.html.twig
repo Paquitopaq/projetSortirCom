@@ -1,0 +1,130 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="form-card">
+        <h1 class="text-center mb-4">Modifier la sortie : {{ sortie.nom }}</h1>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+        <!-- Section Informations générales -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-info-circle"></i> Informations générales
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.nom, 'Nom de la sortie') }}
+                {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.nom) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.infoSortie, 'Description') }}
+                {{ form_widget(form.infoSortie, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.infoSortie) }}
+            </div>
+        </div>
+
+        <!-- Section Date et durée -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-calendar-alt"></i> Date et durée
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form_label(form.dateHeureDebut) }}
+                    {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.dateHeureDebut) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.dateLimiteInscription) }}
+                    {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.dateLimiteInscription) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.duree) }}
+                    {{ form_widget(form.duree, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.duree) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Lieu -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-map-marker-alt"></i> Lieu
+            </div>
+
+            <div class="mb-3">
+                <label for="sortie_lieu">Lieu existant :</label>
+                {{ form_widget(form.lieu) }}
+
+                <button type="button" id="btn-nouveau-lieu" class="btn btn-outline-success btn-sm ms-2">
+                    <i class="fa fa-plus"></i> Ajouter un nouveau lieu
+                </button>
+            </div>
+
+            <div id="nouveau-lieu-form" style="display:none; margin-top: 1rem;">
+                <h5>Créer un nouveau lieu</h5>
+                {{ form_widget(form.nouveauLieu) }}
+            </div>
+        </div>
+
+        <!-- Section Participants -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-users"></i> Participants
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.nbInscriptionMax) }}
+                {{ form_widget(form.nbInscriptionMax, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.nbInscriptionMax) }}
+            </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="form-actions mt-4">
+            <a href="{{ path('app_sortie') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Enregistrer les modifications
+            </button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('btn-nouveau-lieu');
+            const formNouveauLieu = document.getElementById('nouveau-lieu-form');
+            let visible = false;
+
+            btn.addEventListener('click', function () {
+                visible = !visible;
+                formNouveauLieu.style.display = visible ? 'block' : 'none';
+                btn.innerHTML = visible
+                    ? '<i class="fa fa-minus"></i> Annuler le nouveau lieu'
+                    : '<i class="fa fa-plus"></i> Ajouter un nouveau lieu';
+            });
+        });
+    </script>
+{% endblock %}
