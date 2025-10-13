@@ -11,19 +11,27 @@
     <div class="auth-container">
         <div class="auth-wrapper">
 
-            <!-- Illustration gauche -->
+            <!-- Section gauche avec illustration -->
             <div class="auth-illustration">
                 <img src="{{ asset('assets/images/illustration.png') }}" alt="Illustration">
             </div>
 
-            <!-- Formulaire de connexion -->
+            <!-- Section droite avec formulaire -->
             <div class="auth-form-section">
                 <div class="auth-form-content">
 
                     <h1 class="auth-title">Connexion</h1>
 
+                    {# Messages d'erreur #}
+                    {% if error %}
+                        <div class="alert alert-danger custom-alert">
+                            <small>{{ error.messageKey|trans(error.messageData, 'security') }}</small>
+                        </div>
+                    {% endif %}
+
                     <!-- Formulaire -->
                     <form method="post" class="auth-form">
+
                         <!-- Email -->
                         <div class="form-group">
                             <div class="input-wrapper">
@@ -72,7 +80,7 @@
                             </label>
                         </div>
 
-                        <!-- CSRF Token -->
+                        <!-- Token CSRF -->
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
                         <!-- Bouton connexion -->
@@ -80,60 +88,19 @@
                             Se connecter
                         </button>
 
-                        <!-- Lien mot de passe oublié -->
-                        <div class="forgot-password">
-                            <a href="{{ path('app_forgot_password') }}" class="forgot-link">
-                                Mot de passe oublié ?
-                            </a>
-                        </div>
                     </form>
+
+                    <!-- Lien création de compte -->
+                    <div class="register-link">
+                        <p class="register-text">
+                            Vous n'avez pas de compte ?
+                            <a href="{{ path('app_register') }}" class="register-link-btn">Créer un compte</a>
+                        </p>
+                    </div>
 
                 </div>
             </div>
+
         </div>
     </div>
-
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    {# Erreur de connexion (email, mot de passe ou compte désactivé) #}
-    {% if error %}
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Erreur de connexion',
-                text: '{{ error.messageKey|trans(error.messageData, "security")|e("js") }}',
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Réessayer'
-            });
-        </script>
-    {% endif %}
-
-    {# Messages flash (succès / erreur) #}
-    {% for message in app.flashes('success') %}
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Succès',
-                text: '{{ message|e('js') }}',
-                confirmButtonColor: '#28a745',
-                confirmButtonText: 'OK'
-            });
-        </script>
-    {% endfor %}
-
-    {% for message in app.flashes('error') %}
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Erreur',
-                text: '{{ message|e('js') }}',
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'OK'
-            });
-        </script>
-    {% endfor %}
 {% endblock %}

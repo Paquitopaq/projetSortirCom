@@ -68,28 +68,6 @@
                                 <span>Déconnexion</span>
                             </a>
                         </div>
-
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <!-- Section Administration -->
-                            <div class="sidebar-section mt-3">
-                                <h3 class="sidebar-section-title">Administration</h3>
-
-                                <a href="{{ path('admin_dashboard') }}" class="sidebar-dropdown-item">
-                                    <i class="fas fa-tachometer-alt"></i>
-                                    <span>Dashboard</span>
-                                </a>
-
-                                <a href="{{ path('admin_users') }}" class="sidebar-dropdown-item">
-                                    <i class="fas fa-users"></i>
-                                    <span>Utilisateurs</span>
-                                </a>
-
-                                <a href="{{ path('admin_create_profil') }}" class="sidebar-dropdown-item">
-                                    <i class="fas fa-user-plus"></i>
-                                    <span>Créer un compte</span>
-                                </a>
-                            </div>
-                        {% endif %}
                     </div>
                 </div>
 
