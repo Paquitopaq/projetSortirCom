@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\DeleteSortieType;
+use App\Form\DeleteUserType;
 use App\Form\ImportParticipantType;
 use App\Form\ProfilType;
 use App\Repository\ParticipantRepository;
+use App\Service\AdminUserService;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -131,6 +133,22 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('admin_users');
     }
 
+
+    #[Route('/admin/user/{id}/toggle-admin', name: 'admin_user_toggle_admin', methods: ['POST'])]
+    public function toggleAdmin(
+        Participant $participant,
+        AdminUserService $adminUserService
+    ): Response {
+        $adminUserService->toggleAdmin($participant);
+
+        $this->addFlash(
+            'success',
+            in_array('ROLE_ADMIN', $participant->getRoles()) ? 'Utilisateur promu admin.' : 'Utilisateur rétrogradé.'
+        );
+
+        return $this->redirectToRoute('admin_users');
+    }
+
     #[Route('/sorties', name: 'admin_sorties')]
     public function sorties(EntityManagerInterface $em): Response
     {
@@ -250,6 +268,30 @@ class AdminController extends AbstractController
 
         return $this->render('sortie/delete.html.twig', [
             'sortie' => $sortie,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['GET','POST'])]
+    public function deleteUser(
+        Participant $participant,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+        $form = $this->createForm(DeleteUserType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Supprimer définitivement l'utilisateur
+            $em->remove($participant);
+            $em->flush();
+
+            $this->addFlash('success', 'Utilisateur supprimé avec succès.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        return $this->render('admin/delete_user.html.twig', [
+            'participant' => $participant,
             'form' => $form->createView(),
         ]);
     }

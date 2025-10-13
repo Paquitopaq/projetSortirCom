@@ -214,7 +214,21 @@
     gap: 8px;
 }
 
-/* Boutons d'action */
+/* Boutons d'action uniformes */
+.btn-action, .btn-disable-user, .btn-admin-toggle {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 100px;
+    justify-content: center;
+}
+
 .btn-action {
     padding: 10px 20px;
     border: none;
@@ -228,9 +242,10 @@
     gap: 6px;
 }
 
+/* Modifier */
 .btn-manage {
     background: var(--blue-dark);
-    color: white;
+    color: var(--background);
 }
 
 .btn-manage:hover {
@@ -301,20 +316,10 @@
     transform: translateY(-1px);
 }
 
-/* Désactiver / Activer */
+/* Activer / Désactiver */
 .btn-disable-user {
-    padding: 8px 16px;
     background: #dc3545;
     color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 12px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    transition: all 0.2s;
 }
 
 .btn-disable-user.active {
@@ -325,6 +330,16 @@
     transform: translateY(-1px);
 }
 
+/* Admin toggle */
+.btn-admin-toggle {
+    background: #ffc107;
+    color: #212529;
+}
+
+.btn-admin-toggle:hover {
+    background: #e0a800;
+    transform: translateY(-1px);
+}
 
 /* Message vide */
 .no-sorties {

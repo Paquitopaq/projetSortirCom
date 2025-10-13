@@ -60,10 +60,12 @@
                             {% endif %}
 
                             <div class="d-flex gap-2">
+                                <!-- Bouton Modifier -->
                                 <button type="button" class="btn-action btn-manage" data-bs-toggle="modal" data-bs-target="#modal-{{ participant.id }}">
                                     <i class="fas fa-edit"></i> Modifier
                                 </button>
 
+                                <!-- Formulaire Activer/Désactiver -->
                                 <form class="form-toggle-user"
                                       action="{{ path('admin_user_desactived', {'id': participant.id}) }}"
                                       method="POST"
@@ -74,6 +76,22 @@
                                         {% else %}
                                             <i class="fas fa-user-check"></i> Activer
                                         {% endif %}
+                                    </button>
+                                </form>
+
+                                <!-- Formulaire Supprimer -->
+                                <form class="form-delete-user"
+                                      action="{{ path('admin_user_delete', {'id': participant.id}) }}"
+                                      method="POST"
+                                      style="display:inline;">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-user-times"></i> Supprimer
+                                    </button>
+                                </form>
+
+                                <form action="{{ path('admin_user_toggle_admin', {'id': participant.id}) }}" method="post" style="display:inline;">
+                                    <button class="btn btn-sm btn-warning">
+                                        {{ 'ROLE_ADMIN' in participant.roles ? 'Retirer admin' : 'Promouvoir admin' }}
                                     </button>
                                 </form>
 
@@ -124,6 +142,7 @@
         </div>
     </div>
 
+    <!-- Scripts -->
     <script>
         // Recherche en temps réel
         document.getElementById('searchInput').addEventListener('input', function (e) {
@@ -146,17 +165,15 @@
 
             noResults.style.display = (visibleCount === 0 && searchTerm !== '') ? 'block' : 'none';
         });
-    </script>
-    <script>
+
+        // Activer/Désactiver avec confirmation
         document.querySelectorAll('.form-toggle-user').forEach(form => {
             form.addEventListener('submit', function (e) {
-                e.preventDefault(); // Empêche l’envoi immédiat
-
+                e.preventDefault();
                 const isActive = !this.querySelector('.btn-disable-user').classList.contains('btn-success');
                 const message = isActive
                     ? "Voulez-vous vraiment <b>désactiver</b> ce compte ?"
                     : "Voulez-vous vraiment <b>réactiver</b> ce compte ?";
-
                 Swal.fire({
                     title: 'Êtes-vous sûr ?',
                     html: message,
@@ -165,6 +182,27 @@
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Oui, confirmer',
+                    cancelButtonText: 'Annuler'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        // Supprimer utilisateur avec confirmation
+        document.querySelectorAll('.form-delete-user').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Êtes-vous sûr ?',
+                    html: "La suppression de cet utilisateur est <b>définitive</b> et irréversible.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Oui, supprimer',
                     cancelButtonText: 'Annuler'
                 }).then((result) => {
                     if (result.isConfirmed) {
