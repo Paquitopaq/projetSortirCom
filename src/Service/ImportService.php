@@ -27,41 +27,49 @@ class ImportService
 
         $lines = file($csvFile->getPathname(), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
+        if (!$lines) {
+            $messages[] = ['type' => 'danger', 'text' => "Le fichier CSV est vide ou illisible."];
+            return $messages;
+        }
+
+        // Suppression éventuelle BOM UTF-8
+        $lines[0] = preg_replace('/\x{FEFF}/u', '', $lines[0]);
+
         foreach ($lines as $index => $line) {
-            // Ignorer l'en-tête
-            if ($index === 0) continue;
+            if ($index === 0) continue; // Ignorer l'en-tête
 
-            // Nettoyage manuel de la ligne CSV
             $line = trim($line);
-            $line = preg_replace('/^"(.*)"$/', '$1', $line); // Supprime les guillemets extérieurs
-            $line = str_replace('""', '"', $line); // Corrige les guillemets doublés
-
             $row = str_getcsv($line, ',', '"');
-            if (count($row) !== 9) {
-                $messages[] = ['type' => 'danger', 'text' => "Ligne CSV invalide : " . $line];
+
+            if (!is_array($row) || count($row) < 10) {
+                $messages[] = ['type' => 'danger', 'text' => "Ligne CSV invalide ($index) : " . $line];
                 continue;
             }
 
-            [$email, $roles, $password, $pseudo, $nom, $prenom, $telephone, $actif, $photoProfil] = $row;
+            [$email, $roles, $password, $pseudo, $nom, $prenom, $telephone, /* $administrateur */, $actif, $photoProfil] = $row;
+
+            if (!$email) {
+                $messages[] = ['type' => 'danger', 'text' => "Email manquant à la ligne $index"];
+                continue;
+            }
 
             $participant = $this->em->getRepository(Participant::class)->findOneBy(['email' => $email]);
 
             if (!$participant) {
-                $decodedRoles = json_decode($roles, true);
-                if (!is_array($decodedRoles)) {
-                    $messages[] = ['type' => 'danger', 'text' => "Rôles invalides pour $email : $roles"];
-                    continue;
-                }
+                $decodedRoles = json_decode($roles, true) ?: ['ROLE_USER'];
 
                 $participant = new Participant();
                 $participant->setEmail($email);
                 $participant->setRoles($decodedRoles);
-                $participant->setPassword($password);
+
+                // Hasher le mot de passe si nécessaire
+                $participant->setPassword(password_hash($password, PASSWORD_BCRYPT));
+
                 $participant->setPseudo($pseudo);
                 $participant->setNom($nom);
                 $participant->setPrenom($prenom);
                 $participant->setTelephone($telephone);
-                $participant->setActif(filter_var($actif, FILTER_VALIDATE_BOOLEAN));
+                $participant->setActif(true);
                 $participant->setPhotoProfil($photoProfil !== "" ? $photoProfil : null);
 
                 $this->em->persist($participant);
