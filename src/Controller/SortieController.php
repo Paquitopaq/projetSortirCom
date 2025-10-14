@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\GroupePrive;
 use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Enum\Etat;
 use App\Form\DeleteSortieType;
+use App\Form\GroupePriveType;
 use App\Form\ImportParticipantType;
 use App\Form\SortieType;
 use App\Repository\LieuRepository;
@@ -45,7 +47,7 @@ final class SortieController extends AbstractController
     {
         $sortie = new Sortie();
 
-        $form = $this->createForm(SortieType::class, $sortie);
+        $form = $this->createForm(SortieType::class, $sortie,['organisateur' => $this->getUser(),]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -136,7 +138,7 @@ final class SortieController extends AbstractController
             $this->addFlash('danger', "Cette sortie n'est plus consultable.");
             return $this->redirectToRoute('app_home');
         }
-        
+
         $form = $this->createForm(ImportParticipantType::class);
         $form->handleRequest($request);
         $sortie->updateEtat();

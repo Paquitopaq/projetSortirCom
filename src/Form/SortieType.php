@@ -2,8 +2,10 @@
 
 namespace App\Form;
 
+use App\Entity\GroupePrive;
 use App\Entity\Lieu;
 use App\Entity\Sortie;
+use App\Repository\GroupePriveRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -19,6 +21,7 @@ class SortieType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $organisateur = $options['organisateur'];
         $builder
             ->add('nom')
             ->add('dateHeureDebut', DateType::class, [
@@ -48,7 +51,29 @@ class SortieType extends AbstractType
             ->add('nouveauLieu', LieuType::class, [
                 'mapped' => false,
                 'required' => false,
+            ])
+
+            ->add('groupePrive', EntityType::class, [
+                'class' => GroupePrive::class,
+                'choice_label' => 'nomGroupe',
+                'required' => false,
+                'label' => 'Groupe privé existant',
+                'placeholder' => 'Sélectionnez un groupe privé',
+                'query_builder' => function (GroupePriveRepository $repo) use ($organisateur) {
+                    return $repo->createQueryBuilder('g')
+                        ->where('g.organisateur = :organisateur')
+                        ->setParameter('organisateur', $organisateur);
+                },
+            ])
+
+
+            ->add('nouveauGroupePrive', GroupePriveType::class, [
+                'required' => false,
+                'mapped' => false,
+                'label' => false,
             ]);
+
+
 //
 //            // Validation : au moins un des deux doit être rempli
 //            $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
@@ -68,6 +93,7 @@ class SortieType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Sortie::class,
+            'organisateur' => null,
         ]);
     }
 }

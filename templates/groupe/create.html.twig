@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un groupe privé{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Créer un groupe privé pour la sortie : {{ sortie.nom }}</h1>
+
+        {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_label(form.nomGroupe) }}
+            {{ form_widget(form.nomGroupe, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.nomGroupe) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.membres) }}
+            {{ form_widget(form.membres) }}
+            {{ form_errors(form.membres) }}
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-user-lock"></i> Créer le groupe
+        </button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
