@@ -230,7 +230,7 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/{id}/edit', name: 'sortie_edit')]
-    public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
+    public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager, LieuRepository $lieuRepository): Response
     {
         // Vérification des droits
         $user = $this->getUser();
