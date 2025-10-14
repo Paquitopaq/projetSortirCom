@@ -29,7 +29,7 @@ class GroupePrive
     private Collection $membres;
 
     #[ORM\ManyToOne(inversedBy: 'groupePrives')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Sortie $sortie = null;
 
     public function __construct()

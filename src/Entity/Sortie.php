@@ -64,6 +64,7 @@ class Sortie
      * @var Collection<int, GroupePrive>
      */
     #[ORM\ManyToOne(targetEntity: GroupePrive::class)]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?GroupePrive $groupePrive = null;
 
     public function __construct()
@@ -298,25 +299,14 @@ class Sortie
         return $this;
     }
 
-//    public function addGroupePrive(GroupePrive $groupePrive): static
-//    {
-//        if (!$this->groupePrives->contains($groupePrive)) {
-//            $this->groupePrives->add($groupePrive);
-//            $groupePrive->setSortie($this);
-//        }
-//
-//        return $this;
-//    }
-//
-//    public function removeGroupePrive(GroupePrive $groupePrive): static
-//    {
-//        if ($this->groupePrives->removeElement($groupePrive)) {
-//            if ($groupePrive->getSortie() === $this) {
-//                $groupePrive->setSortie(null);
-//            }
-//        }
-//
-//        return $this;
-//    }
+    public function isUserAllowedToRegister(Participant $user): bool
+    {
+        if ($this->groupePrive === null) {
+            return true;
+        }
+
+        return $this->groupePrive->getMembres()->contains($user);
+    }
+
 
 }

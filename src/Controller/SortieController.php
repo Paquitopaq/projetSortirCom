@@ -10,6 +10,7 @@ use App\Form\DeleteSortieType;
 use App\Form\GroupePriveType;
 use App\Form\ImportParticipantType;
 use App\Form\SortieType;
+use App\Repository\GroupePriveRepository;
 use App\Repository\LieuRepository;
 use App\Service\ImportService;
 use App\Service\SortieService;
@@ -43,7 +44,7 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/create', name: 'sortie_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager, LieuRepository $lieuRepository): Response
+    public function create(Request $request, EntityManagerInterface $entityManager, LieuRepository $lieuRepository, GroupePriveRepository $groupePriveRepository): Response
     {
         $sortie = new Sortie();
 
@@ -57,6 +58,10 @@ final class SortieController extends AbstractController
             if ($nouveauLieu && $nouveauLieu->getNom()) {
                 $entityManager->persist($nouveauLieu);
                 $sortie->setLieu($nouveauLieu);
+            }
+            $groupePrive = $form->get('groupePrive')->getData();
+            if ($groupePrive) {
+                $sortie->setGroupePrive($groupePrive);
             }
 
             $publication = $request->request->get('action') === 'publier';
@@ -73,6 +78,7 @@ final class SortieController extends AbstractController
         return $this->render('sortie/create.html.twig', [
             'form' => $form->createView(),
             'lieux' => $lieuRepository->findAll(),
+            'groupes' => $groupePriveRepository->findAll(),
         ]);
     }
 
@@ -94,7 +100,10 @@ final class SortieController extends AbstractController
     public function inscription(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em): Response
     {
         $participant = $em->getRepository(Participant::class)->find($this->getUser()->getId());
-
+        if(!$sortie->isUserAllowedToRegister($participant)) {
+            $this->addFlash('danger', "Vous ne faites pas partie du groupe privé associé à cette sortie.");
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
         if ($sortieService->inscrireParticipant($sortie, $participant)) {
             $this->addFlash('success', 'Inscription à la sortie réussie !');
         }else if ($sortieService->removeParticipant($sortie, $participant)) {
@@ -212,39 +221,7 @@ final class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/sortie/{id}/groupe-prive/create', name: 'groupe_prive_create')]
-    public function createGroup(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_USER');
-        $user = $this->getUser();
 
-        if ($sortie->getOrganisateur() !== $user) {
-            throw $this->createAccessDeniedException('Seul l’organisateur peut créer un groupe privé.');
-        }
-
-        $groupe = new GroupePrive();
-        $groupe->setSortie($sortie);
-        $groupe->setOrganisateur($user);
-        $sortie->setGroupePrive($groupe);
-
-
-        $form = $this->createForm(GroupePriveType::class, $groupe);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $em->persist($groupe);
-            $em->flush();
-
-            $this->addFlash('success', 'Groupe privé créé avec succès.');
-            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
-        }
-
-        return $this->render('groupe/create.html.twig', [
-            'form' => $form->createView(),
-            'sortie' => $sortie,
-        ]);
-    }
 
 
 }
