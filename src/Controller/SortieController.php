@@ -44,26 +44,18 @@ final class SortieController extends AbstractController
     public function create(Request $request, EntityManagerInterface $entityManager, LieuRepository $lieuRepository): Response
     {
         $sortie = new Sortie();
-
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $nouveauLieu = $form->get('nouveauLieu')->getData();
-
-            if ($nouveauLieu && $nouveauLieu->getNom()) {
-                $entityManager->persist($nouveauLieu);
-                $sortie->setLieu($nouveauLieu);
-            }
-
             $publication = $request->request->get('action') === 'publier';
-            $this->sortieService->createSortie($sortie, $publication);
+            $this->sortieService->createSortie($sortie, $form, $publication);
 
+            $message = $publication
+                ? 'Sortie publiée avec succès.'
+                : 'Sortie enregistrée en brouillon.';
 
-            $entityManager->persist($sortie);
-            $entityManager->flush();
-            $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
             $this->addFlash('success', $message);
             return $this->redirectToRoute('app_sortie');
         }
@@ -219,30 +211,26 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/{id}/edit', name: 'sortie_edit')]
-    public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
+    public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager, LieuRepository $lieuRepository): Response
     {
-        // Vérification des droits
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
+        // Vérification des droits
         if ($sortie->getOrganisateur() !== $user && !$isAdmin) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette sortie.');
         }
 
-        // Vérification de l'état - Admin peut modifier "Créée" et "Ouverte", organisateur seulement "Créée"
+        // Vérification de l'état
         $etatValue = $sortie->getEtat()->value;
-
-        if ($isAdmin) {
-            if ($etatValue !== 'Créée' && $etatValue !== 'Ouverte') {
-                $this->addFlash('danger', 'Seules les sorties en état "Créée" ou "Ouverte" peuvent être modifiées.');
-                return $this->redirectToRoute('app_sortie');
-            }
-        } else {
-            // Organisateur peut modifier seulement si l'état est "Créée"
-            if ($etatValue !== 'Créée') {
-                $this->addFlash('danger', 'Seules les sorties en état "Créée" peuvent être modifiées.');
-                return $this->redirectToRoute('app_sortie');
-            }
+        if (($isAdmin && !in_array($etatValue, ['Créée', 'Ouverte'])) ||
+            (!$isAdmin && $etatValue !== 'Créée'))
+        {
+            $this->addFlash('danger', $isAdmin
+                ? 'Seules les sorties en état "Créée" ou "Ouverte" peuvent être modifiées.'
+                : 'Seules les sorties en état "Créée" peuvent être modifiées.'
+            );
+            return $this->redirectToRoute('app_sortie');
         }
 
         $form = $this->createForm(SortieType::class, $sortie);
@@ -250,19 +238,12 @@ final class SortieController extends AbstractController
         $publication = $request->request->get('action') === 'publier';
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->sortieService->createSortie($sortie, $publication);
 
-            // Création d'un nouveau lieu
-            $nouveauLieu = $form->get('nouveauLieu')->getData();
-            if ($nouveauLieu && $nouveauLieu->getNom()) {
-                $entityManager->persist($nouveauLieu);
-                $sortie->setLieu($nouveauLieu);
-            }
-
-            $entityManager->flush();
+            $this->sortieService->createSortie($sortie, $form, $publication, false);
 
             $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
             $this->addFlash('success', $message);
+
             return $this->redirectToRoute('app_sortie');
         }
 
