@@ -24,12 +24,19 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie', name: 'app_sortie')]
-    public function index(Request $request): Response
+    public function index(Request $request,EntityManagerInterface $entityManager): Response
     {
         $data = $this->sortieService->getFilteredSorties($request);
+        $sorties = $data['sorties'];
+
+        foreach ($sorties as $sortie) {
+            $sortie->updateEtat();
+        }
+
+        $entityManager->flush();
 
         return $this->render('sortie/index.html.twig', [
-            'sorties' => $data['sorties'],
+            'sorties' => $sorties,
         ]);
     }
 
@@ -118,7 +125,7 @@ final class SortieController extends AbstractController
 
         $form = $this->createForm(ImportParticipantType::class);
         $form->handleRequest($request);
-
+        $sortie->updateEtat();
         if ($form->isSubmitted() && $form->isValid() && $this->getUser()?->getAdministrateur()) {
             $csvFile = $form->get('csv_file')->getData();
 

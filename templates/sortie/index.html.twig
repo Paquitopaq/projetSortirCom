@@ -643,23 +643,28 @@
                         <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" style="text-decoration: none; color: inherit;">
                             <div class="sortie-image">
                                 {# Badge de statut en haut à droite #}
-                                {% if isNow %}
-                                    <span class="status-badge-top status-now">En cours</span>
-                                {% elseif isToday %}
-                                    <span class="status-badge-top status-today">Aujourd'hui</span>
-                                {% elseif sortie.etat == constant('App\\Enum\\Etat::OPEN') %}
-                                    <span class="status-badge-top status-open">{{ etatValue }}</span>
-                                {% elseif isComplet %}
+                                    {% if sortie.etat == constant('App\\Enum\\Etat::OPEN') %}
+                                    <span class="status-badge-top status-now">Ouverte</span>
+                                    {% elseif sortie.etat == constant('App\\Enum\\Etat::PASSED') %}
+                                    <span class="status-badge-top status-passed">Passée</span>
+                                    {% elseif sortie.etat == constant('App\\Enum\\Etat::IN_PROGRESS') %}
+                                    <span class="status-badge-top status-today">Activité en cours</span>
+                                    {% elseif sortie.etat == constant('App\\Enum\\Etat::CREATED') %}
+                                    <span class="status-badge-top status-open">Créée</span>
+                                    {% elseif isComplet %}
                                     <span class="status-badge-top status-full">Complet</span>
-                                {% else %}
-                                    <span class="status-badge-top status-closed">{{ etatValue }}</span>
-                                {% endif %}
+                                    {% elseif sortie.etat == constant('App\\Enum\\Etat::CLOSED') %}
+                                    <span class="status-badge-top status-closed">Clôturée</span>
+                                    {% endif %}}}
+
 
                                 {# Icônes thématiques basées sur le nom ou aléatoire #}
                                 {% set icons = ['hiking', 'music', 'utensils', 'film', 'gamepad', 'paint-brush', 'bicycle', 'camera', 'book', 'coffee'] %}
                                 <i class="fas fa-{{ icons[random(0, icons|length - 1)] }}"></i>
                             </div>
                         </a>
+
+
 
                         <div class="sortie-content">
                             <div class="sortie-header">

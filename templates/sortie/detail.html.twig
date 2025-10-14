@@ -77,7 +77,7 @@
 
 
         </div>
-        {% if app.user and (app.user == sortie.organisateur or app.user.administrateur) %}
+        {% if app.user and (app.user == sortie.organisateur or app.user.administrateur) and sortie.etat != constant('App\\Enum\\Etat::CANCELLED')  %}
             <div class="text-center mt-4">
                 <a href="{{ path('sortie_delete', {'id': sortie.id}) }}" class="btn btn-danger btn-lg">
                     Annuler la sortie
