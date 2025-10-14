@@ -63,10 +63,6 @@
                                 <i class="fas fa-cog"></i>
                                 <span>Gérer son profil</span>
                             </a>
-                            <a href="{{ path('app_logout') }}" class="sidebar-dropdown-item danger">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>Déconnexion</span>
-                            </a>
                         </div>
 
                         {% if is_granted('ROLE_ADMIN') %}
@@ -90,6 +86,11 @@
                                 </a>
                             </div>
                         {% endif %}
+
+                        <a href="{{ path('app_logout') }}" class="sidebar-dropdown-item danger">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span>
+                        </a>
                     </div>
                 </div>
 
