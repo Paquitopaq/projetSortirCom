@@ -123,7 +123,7 @@
                                                     <h3>{{ sortie.nom }}</h3>
                                                     <div class="activity-meta">
                                                         <span><i class="fas fa-clock"></i> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
-                                                        <span><i class="fas fa-user"></i> {{ sortie.organisateur.pseudo ?? sortie.organisateur.prenom }}</span>
+                                                        <span><i class="fas fa-user"></i> {{ participant.pseudo ?? participant.prenom }}</span>
                                                     </div>
                                                 </div>
                                                 <span class="activity-badge status-{{ sortie.etat.value|lower|replace({' ': '-'}) }}">
