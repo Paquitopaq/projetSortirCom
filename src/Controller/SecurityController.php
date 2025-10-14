@@ -25,20 +25,6 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('/forgot-password', name: 'app_forgot_password')]
-    public function forgotPassword(): Response
-    {
-        return $this->render('security/forgot_password.html.twig');
-    }
-
-
-    #[Route('/forgot-password/send', name: 'app_forgot_password_send', methods: ['POST'])]
-    public function sendResetEmail(Request $request): Response
-    {
-        // TODO: vérifier que l'email existe dans la base et envoyer un lien
-        // TODO : rajouter le système de Mailer pour simuler l'envoi d'email
-    }
-
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
