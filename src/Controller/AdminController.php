@@ -272,27 +272,23 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['GET','POST'])]
+    #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
     public function deleteUser(
         Participant $participant,
         Request $request,
         EntityManagerInterface $em
     ): Response {
-        $form = $this->createForm(DeleteUserType::class);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Supprimer définitivement l'utilisateur
+        // Sécurité CSRF
+        if ($this->isCsrfTokenValid('delete'.$participant->getId(), $request->request->get('_token'))) {
             $em->remove($participant);
             $em->flush();
 
             $this->addFlash('success', 'Utilisateur supprimé avec succès.');
-            return $this->redirectToRoute('admin_users');
+        } else {
+            $this->addFlash('danger', 'Action non autorisée.');
         }
 
-        return $this->render('admin/delete_user.html.twig', [
-            'participant' => $participant,
-            'form' => $form->createView(),
-        ]);
+        return $this->redirectToRoute('admin_users');
     }
 }
