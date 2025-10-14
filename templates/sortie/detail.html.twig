@@ -35,7 +35,9 @@
             <!-- Image -->
             <div class="image-card">
                 <div class="detail-image">
-                    <i class="fas fa-mountain"></i>
+                    {% if sortie.photoSortie %}
+                        <img src="{{ asset('uploads/sorties/' ~ sortie.photoSortie) }}" alt="{{ sortie.nom }}" class="img-fluid">
+                    {% endif %}
 
                     {% if sortie.lieu or sortie.site %}
                         <div class="location-badge">
@@ -188,16 +190,22 @@
             </div>
 
             <!-- Participants -->
-            {% if sortie.participants|length > 0 %}
-                <div class="participants-card">
-                    <div class="participants-header">
-                        <h2>Participants inscrits ({{ sortie.participants|length }})</h2>
-                        {% if is_granted('ROLE_ADMIN') %}
+            <div class="participants-card">
+                <div class="participants-header">
+                    <h2>Participants inscrits ({{ sortie.participants|length }})</h2>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <div class="admin-buttons">
                             <button class="btn-admin-action" onclick="openAddParticipantModal()">
                                 <i class="fas fa-user-plus"></i> Ajouter un participant
                             </button>
-                        {% endif %}
-                    </div>
+                            <button class="btn-admin-action" id="toggleCsvImport">
+                                <i class="fas fa-file-csv"></i> Importer CSV
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if sortie.participants|length > 0 %}
                     <div class="participants-grid">
                         {% for participant in sortie.participants %}
                             <div class="participant-wrapper">
@@ -222,36 +230,25 @@
                             </div>
                         {% endfor %}
                     </div>
-                </div>
-            {% else %}
-                <div class="participants-card">
-                    <div class="participants-header">
-                        <h2>Participants inscrits (0)</h2>
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <button class="btn-admin-action" onclick="openAddParticipantModal()">
-                                <i class="fas fa-user-plus"></i> Ajouter un participant
-                            </button>
-                        {% endif %}
-                    </div>
+                {% else %}
                     <p style="color: #888;">Aucun participant pour le moment.</p>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-    <!-- Import CSV (admin uniquement) -->
-    {% if is_granted ('ROLE_ADMIN') %}
-        <div class="admin-section">
-            <h3><i class="fas fa-file-csv"></i> Importer des participants via CSV</h3>
-            {{ form_start(form, {'attr': {'class': 'csv-form'}}) }}
-            <div class="csv-upload">
-                {{ form_widget(form['csv_file']) }}
-                <button type="submit" class="btn-action btn-join">
-                    <i class="fas fa-upload"></i> Importer le fichier
-                </button>
+                {% endif %}
+
+                <!-- Formulaire CSV masqué par défaut -->
+                {% if app.user and app.user.administrateur %}
+                    <div class="admin-section" id="csvImportSection" style="display:none; margin-top: 20px;">
+                        <h3><i class="fas fa-file-csv"></i> Importer des participants via CSV</h3>
+                        {{ form_start(form, {'attr': {'class': 'csv-form'}}) }}
+                        <div class="csv-upload">
+                            {{ form_widget(form['csv_file']) }}
+                            <button type="submit" class="btn-action btn-join">
+                                <i class="fas fa-upload"></i> Importer le fichier
+                            </button>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                {% endif %}
             </div>
-            {{ form_end(form) }}
-        </div>
-    {% endif %}
 
     {% include 'partials/_footer.html.twig' %}
 {% endblock %}
@@ -275,6 +272,17 @@
                     if (!dropdownMenu.contains(event.target) && !dotsButton.contains(event.target)) {
                         dropdownMenu.classList.remove('show');
                     }
+                });
+            }
+        });
+
+        // Toggle affichage du formulaire CSV
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleCsvBtn = document.getElementById('toggleCsvImport');
+            const csvSection = document.getElementById('csvImportSection');
+            if (toggleCsvBtn && csvSection) {
+                toggleCsvBtn.addEventListener('click', () => {
+                    csvSection.style.display = csvSection.style.display === 'none' ? 'block' : 'none';
                 });
             }
         });

@@ -72,6 +72,10 @@ class Sortie
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?GroupePrive $groupePrive = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photoSortie = null;
+
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
@@ -313,5 +317,17 @@ class Sortie
         return $this->groupePrive->getMembres()->contains($user);
     }
 
+
+
+    public function getPhotoSortie(): ?string
+    {
+        return $this->photoSortie;
+    }
+
+    public function setPhotoSortie(?string $photoSortie): static
+    {
+        $this->photoSortie = $photoSortie;
+        return $this;
+    }
 
 }
