@@ -24,8 +24,9 @@ class GroupePriveController extends AbstractController
         $groupes = $em->getRepository(GroupePrive::class)
             ->findBy(['organisateur' => $user]);
 
-        return $this->render('groupe_prive/index.html.twig', [
+        return $this->render('participant/viewParticipant.html.twig', [
             'groupes' => $groupes,
+            'participant' => $user,
         ]);
     }
 

@@ -176,6 +176,13 @@
                                                     <a href="{{ path('modifier_groupe', {id: groupe.id}) }}" class="activity-badge status-edit">
                                                         Modifier
                                                     </a>
+                                                    <form method="post" action="{{ path('supprimer_groupe', {id: groupe.id}) }}" onsubmit="return confirm('Supprimer ce groupe ?');">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_groupe_prive_' ~ groupe.id) }}">
+                                                        <button class="btn btn-sm btn-outline-danger">
+                                                            <i class="fas fa-trash-alt"></i> Supprimer
+                                                        </button>
+                                                    </form>
+
                                                 {% endif %}
                                             </div>
                                         {% endfor %}
