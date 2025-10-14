@@ -88,7 +88,14 @@
 
                 <div id="nouveau-lieu-form" style="display:none; margin-top: 1rem;">
                     <h5>Créer un nouveau lieu</h5>
+
                     {{ form_widget(form.nouveauLieu) }}
+
+                    <div class="mt-2">
+                        <a href="{{ path('ville_ajouter') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fa fa-city"></i> Ajouter une nouvelle ville
+                        </a>
+                    </div>
                 </div>
 
             <!-- Section Participants -->
