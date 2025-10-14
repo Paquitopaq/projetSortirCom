@@ -13,11 +13,50 @@
     margin: 0 auto;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+}
+
+.page-header .search-bar {
+    margin-bottom: 0;
+    width: 260px;
+    border: 1px solid #ddd;
+    border-radius: 40px;
+    padding: 6px 14px;
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-header .search-bar input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    background: none;
+}
+
+.page-header .search-bar button {
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
 .page-title {
@@ -54,22 +93,39 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.search-bar button {
-    background: var(--orange);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
+.search-bar button:hover {
+    background: rgba(255, 107, 0, 0.05);
 }
 
-.search-bar button:hover {
-    background: #e55f00;
+/* --- Menu à trois points --- */
+.user-actions .btn {
+    background: transparent;
+    border: none;
+    color: var(--blue-dark);
+    font-size: 18px;
+    padding: 4px;
+}
+
+.user-actions .dropdown-menu {
+    min-width: 180px;
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    border: none;
+    padding: 8px 0;
+}
+
+.user-actions .dropdown-item {
+    font-size: 14px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.user-actions .dropdown-item:hover {
+    color: var(--orange);
+    background: rgba(255, 107, 0, 0.05);
 }
 
 /* Liste des utilisateurs */
@@ -80,7 +136,7 @@
 }
 
 .user-card {
-    background: white;
+    background: var(--background);
     border-radius: 12px;
     box-shadow: var(--card-shadow);
 }
@@ -160,11 +216,11 @@
 }
 
 .badge-admin {
-    padding: 4px 10px;
+    padding: 3px 8px;
     background: #fff3cd;
     color: #856404;
-    border-radius: 12px;
-    font-size: 12px;
+    border-radius: 8px;
+    font-size: 11px;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
@@ -218,7 +274,6 @@
 .btn-action,
 .btn-disable-user,
 .btn-admin-toggle,
-.btn-manage,
 .btn-create-user {
     padding: 6px 12px;
     font-size: 12px;
@@ -249,17 +304,14 @@
     color: #212529;
 }
 
-.btn-admin-toggle:hover {
-    background: #e0a800;
-}
-
 .btn-manage {
-    background: var(--blue-dark);
+    background: var(--background);
     color: var(--background);
 }
 
 .btn-manage:hover {
-    background: #081829;
+    color: var(--orange);
+    background: rgba(255, 107, 0, 0.05);
 }
 
 .btn-create-user {
@@ -268,7 +320,8 @@
 }
 
 .btn-create-user:hover {
-    background: #e55f00;
+    color: var(--orange);
+    background: var(--orange);
 }
 
 /* Hover commun */
@@ -277,7 +330,8 @@
 .btn-admin-toggle:hover,
 .btn-manage:hover,
 .btn-create-user:hover {
-    transform: translateY(-1px);
+    background: rgba(255, 107, 0, 0.05);
+    color: var(--orange);
 }
 
 /* Message vide */
