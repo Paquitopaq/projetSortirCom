@@ -131,9 +131,13 @@
                                     <span class="status-badge-top status-closed">Clôturée</span>
                                 {% endif %}
 
-                                {# Icône #}
-                                {% set icons = ['hiking', 'music', 'utensils', 'film', 'gamepad', 'paint-brush', 'bicycle', 'camera', 'book', 'coffee'] %}
-                                <i class="fas fa-{{ icons[random(0, icons|length - 1)] }}"></i>
+                                {# Affichage de la photo si disponible, sinon image par défaut #}
+                                {% if sortie.photoSortie %}
+                                    <img src="{{ asset('uploads/sorties/' ~ sortie.photoSortie) }}" alt="{{ sortie.nom }}" class="sortie-img">
+                                {% else %}
+                                    <img src="{{ asset('assets/images/default-sortie.jpg') }}" alt="Sortie sans image" class="sortie-img">
+                                {% endif %}
+
                             </div>
                         </a>
 
