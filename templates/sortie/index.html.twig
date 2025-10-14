@@ -6,512 +6,6 @@
     <link rel="stylesheet" href="{{ asset('css/sortie.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Styles spécifiques pour la vue grille */
-        :root {
-            --orange: #FF6B00;
-            --blue-dark: #0B2447;
-            --background: #FCFBF9;
-            --card-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--background);
-            color: var(--blue-dark);
-            padding: 20px;
-        }
-
-        .container {
-            padding-top: 60px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* En-tête */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .page-title {
-            font-size: 26px;
-            font-weight: 600;
-            color: var(--blue-dark);
-        }
-
-        .btn-primary-large {
-            padding: 12px 24px;
-            background: var(--orange);
-            color: var(--background);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            border-radius: 8px;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-
-        .btn-primary-large:hover {
-            background: #e55f00;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(255, 107, 0, 0.3);
-        }
-
-        /* Barre de recherche et filtres (styles originaux) */
-        .search-section-page {
-            padding: 20px 40px 10px;
-            background: var(--background);
-        }
-
-        .container-page {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .search-box {
-            background: var(--background);
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            border: 2px solid #e8e8e8;
-        }
-
-        .search-container {
-            display: flex;
-            gap: 8px;
-            background: var(--background);
-            padding: 8px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-
-        .search-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .search-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--blue-dark);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .search-input {
-            padding: 8px 12px;
-            border: 2px solid #e8e8e8;
-            border-radius: 6px;
-            font-size: 13px;
-            transition: all 0.3s;
-            background: var(--background);
-            color: var(--blue-dark);
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--orange);
-            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
-        }
-
-        .search-btn {
-            padding: 8px 20px;
-            background: var(--orange);
-            color: var(--background);
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-            align-self: flex-end;
-        }
-
-        .search-btn:hover {
-            background: #e55f00;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
-        }
-
-        .search-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 0;
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        .filter-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            padding: 6px 12px;
-            background: var(--background);
-            border: 2px solid #e8e8e8;
-            border-radius: 16px;
-            transition: all 0.3s;
-            font-size: 12px;
-            color: var(--blue-dark);
-            font-weight: 500;
-        }
-
-        .filter-checkbox:hover {
-            border-color: var(--orange);
-            background: rgba(255, 107, 0, 0.05);
-        }
-
-        .filter-checkbox input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            accent-color: var(--orange);
-        }
-
-        .sorties-count {
-            margin-bottom: 16px;
-            padding: 10px;
-            background: var(--background);
-            border-left: 4px solid var(--orange);
-            border-radius: 6px;
-        }
-
-        .sorties-count p {
-            margin: 0;
-            color: var(--blue-dark);
-            font-size: 14px;
-        }
-
-        .sorties-count strong {
-            color: var(--orange);
-            font-size: 16px;
-        }
-
-        .sorties-section {
-            padding: 20px 40px 40px;
-        }
-
-        /* Grille de sorties */
-        .sorties-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .sorties-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1025px) and (max-width: 1400px) {
-            .sorties-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (min-width: 1401px) {
-            .sorties-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sorties-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .sortie-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.2s;
-            cursor: pointer;
-            box-shadow: var(--card-shadow);
-        }
-
-        .sortie-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-        }
-
-        .sortie-image {
-            width: 100%;
-            height: 240px;
-            background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80');
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sortie-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255, 107, 0, 0.7), rgba(255, 133, 51, 0.7));
-        }
-
-        .sortie-image i {
-            position: relative;
-            z-index: 1;
-            color: white;
-            font-size: 48px;
-        }
-
-        .status-badge-top {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            background: white;
-            color: var(--blue-dark);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-
-        .status-badge-top.status-now {
-            background: var(--orange);
-            color: white;
-        }
-
-        .status-badge-top.status-today {
-            background: #28a745;
-            color: white;
-        }
-
-        .status-badge-top.status-open {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-badge-top.status-closed {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .status-badge-top.status-full {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .sortie-content {
-            padding: 16px;
-        }
-
-        .sortie-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-        }
-
-        .sortie-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--blue-dark);
-            margin-bottom: 4px;
-        }
-
-        .sortie-location {
-            font-size: 14px;
-            color: #717171;
-            margin-bottom: 8px;
-        }
-
-        .sortie-date {
-            font-size: 14px;
-            color: #717171;
-            margin-bottom: 8px;
-        }
-
-        .sortie-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
-            color: #717171;
-            margin-bottom: 12px;
-        }
-
-        .sortie-info span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .sortie-participants {
-            font-size: 14px;
-            color: var(--blue-dark);
-            font-weight: 500;
-        }
-
-        .sortie-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 12px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .organizer {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #717171;
-        }
-
-        .organizer-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--orange);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 11px;
-        }
-
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-open {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-closed {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .status-full {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        /* Boutons d'action */
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .btn-action {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .btn-join {
-            background: var(--orange);
-            color: white;
-        }
-
-        .btn-join:hover {
-            background: #e55f00;
-        }
-
-        .btn-manage {
-            background: var(--blue-dark);
-            color: white;
-        }
-
-        .btn-manage:hover {
-            background: #081829;
-        }
-
-        .btn-subscribed {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-disabled {
-            background: #e0e0e0;
-            color: #999;
-            cursor: not-allowed;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sorties-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .page-header {
-                flex-direction: column;
-                gap: 16px;
-                align-items: stretch;
-            }
-        }
-
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .sorties-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1440px) {
-            .sorties-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        /* Message vide */
-        .no-sorties {
-            text-align: center;
-            padding: 60px 20px;
-            color: #717171;
-        }
-
-        .no-sorties i {
-            font-size: 64px;
-            color: #ddd;
-            margin-bottom: 16px;
-        }
-
-        .no-sorties h3 {
-            font-size: 20px;
-            margin-bottom: 8px;
-            color: var(--blue-dark);
-        }
-    </style>
 {% endblock %}
 
 {% block body %}
@@ -529,7 +23,7 @@
 
         <!-- Barre de recherche -->
         <div class="search-bar">
-            <form action="{{ path('app_sortie') }}" method="get" style="display: flex; width: 100%; align-items: center; gap: 16px;">
+            <form action="{{ path('app_sortie') }}" method="get">
                 <input type="text"
                        name="nom_sortie"
                        placeholder="Rechercher une sortie..."
@@ -540,16 +34,14 @@
                        id="date-debut"
                        placeholder="Date de début"
                        value="{{ app.request.query.get('date_debut') }}"
-                       readonly
-                       style="width: 150px; border: none; outline: none; padding: 8px; font-size: 14px;">
+                       readonly>
 
                 <input type="text"
                        name="date_fin"
                        id="date-fin"
                        placeholder="Date de fin"
                        value="{{ app.request.query.get('date_fin') }}"
-                       readonly
-                       style="width: 150px; border: none; outline: none; padding: 8px; font-size: 14px;">
+                       readonly>
 
                 <button type="submit">
                     <i class="fas fa-search"></i>
@@ -610,66 +102,43 @@
 
         {% if sorties is defined and sorties|length > 0 %}
             <!-- Compteur de résultats -->
-            <div style="margin: 24px 0; color: #717171; font-size: 14px;">
-                <strong style="color: var(--blue-dark);">{{ sorties|length }}</strong> sortie(s) trouvée(s)
+            <div class="results-count">
+                <strong>{{ sorties|length }}</strong> sortie(s) trouvée(s)
             </div>
 
             <!-- Grille de sorties -->
             <div class="sorties-grid">
                 {% for sortie in sorties %}
-                    {% set now = date() %}
-                    {% set sortieDate = sortie.dateHeureDebut %}
-                    {% set isToday = sortieDate|date('Y-m-d') == now|date('Y-m-d') %}
-                    {% set isNow = isToday and sortieDate|date('H:i') <= now|date('H:i') and (sortieDate|date_modify('+' ~ sortie.duree ~ ' minutes'))|date('H:i') >= now|date('H:i') %}
                     {% set isInscrit = app.user and sortie.participants.contains(app.user) %}
                     {% set isOrganisateur = app.user and sortie.organisateur == app.user %}
                     {% set isComplet = sortie.nbInscrits >= sortie.nbInscriptionMax %}
-                    {% set etatValue = sortie.etat.value %}
-
-                    {# Couleurs aléatoires pour les images #}
-                    {% set gradients = [
-                        'linear-gradient(135deg, #FF6B00, #ff8533)',
-                        'linear-gradient(135deg, #667eea, #764ba2)',
-                        'linear-gradient(135deg, #f093fb, #f5576c)',
-                        'linear-gradient(135deg, #4facfe, #00f2fe)',
-                        'linear-gradient(135deg, #fa709a, #fee140)',
-                        'linear-gradient(135deg, #30cfd0, #330867)',
-                        'linear-gradient(135deg, #a8edea, #fed6e3)',
-                        'linear-gradient(135deg, #ff9a9e, #fecfef)'
-                    ] %}
-                    {% set randomGradient = gradients[random(0, gradients|length - 1)] %}
 
                     <div class="sortie-card">
-                        <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" style="text-decoration: none; color: inherit;">
+                        <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" style="text-decoration: none; color: inherit; display: contents;">
                             <div class="sortie-image">
-                                {# Badge de statut en haut à droite #}
-                                    {% if sortie.etat == constant('App\\Enum\\Etat::OPEN') %}
+                                {# Badge de statut #}
+                                {% if sortie.etat == constant('App\\Enum\\Etat::OPEN') %}
                                     <span class="status-badge-top status-now">Ouverte</span>
-                                    {% elseif sortie.etat == constant('App\\Enum\\Etat::PASSED') %}
+                                {% elseif sortie.etat == constant('App\\Enum\\Etat::PASSED') %}
                                     <span class="status-badge-top status-passed">Passée</span>
-                                    {% elseif sortie.etat == constant('App\\Enum\\Etat::IN_PROGRESS') %}
-                                    <span class="status-badge-top status-today">Activité en cours</span>
-                                    {% elseif sortie.etat == constant('App\\Enum\\Etat::CREATED') %}
+                                {% elseif sortie.etat == constant('App\\Enum\\Etat::IN_PROGRESS') %}
+                                    <span class="status-badge-top status-today">En cours</span>
+                                {% elseif sortie.etat == constant('App\\Enum\\Etat::CREATED') %}
                                     <span class="status-badge-top status-open">Créée</span>
-                                    {% elseif isComplet %}
+                                {% elseif isComplet %}
                                     <span class="status-badge-top status-full">Complet</span>
-                                    {% elseif sortie.etat == constant('App\\Enum\\Etat::CLOSED') %}
+                                {% elseif sortie.etat == constant('App\\Enum\\Etat::CLOSED') %}
                                     <span class="status-badge-top status-closed">Clôturée</span>
-                                    {% endif %}}}
+                                {% endif %}
 
-
-                                {# Icônes thématiques basées sur le nom ou aléatoire #}
+                                {# Icône #}
                                 {% set icons = ['hiking', 'music', 'utensils', 'film', 'gamepad', 'paint-brush', 'bicycle', 'camera', 'book', 'coffee'] %}
                                 <i class="fas fa-{{ icons[random(0, icons|length - 1)] }}"></i>
                             </div>
                         </a>
 
-
-
                         <div class="sortie-content">
-                            <div class="sortie-header">
-                                <h3 class="sortie-title">{{ sortie.nom }}</h3>
-                            </div>
+                            <h3 class="sortie-title">{{ sortie.nom }}</h3>
 
                             <p class="sortie-location">
                                 <i class="fas fa-map-marker-alt"></i>
@@ -677,7 +146,8 @@
                             </p>
 
                             <p class="sortie-date">
-                                {{ sortieDate|date('d M') }} · {{ sortieDate|date('H:i') }} - {{ sortieDate|date_modify('+' ~ sortie.duree ~ ' minutes')|date('H:i') }}
+                                <i class="fas fa-calendar"></i>
+                                {{ sortie.dateHeureDebut|date('d M Y') }} · {{ sortie.dateHeureDebut|date('H:i') }}
                             </p>
 
                             <div class="sortie-info">
@@ -685,7 +155,7 @@
                             </div>
 
                             <p class="sortie-participants">
-                                <i class="fas fa-users"></i> {{ sortie.nbInscrits }} / {{ sortie.nbInscriptionMax }} participants
+                                <i class="fas fa-users"></i> {{ sortie.nbInscrits }}/{{ sortie.nbInscriptionMax }} participants
                             </p>
 
                             <div class="sortie-footer">
@@ -694,16 +164,16 @@
                                         {% if sortie.organisateur %}
                                             {{ sortie.organisateur.prenom|first|upper }}{{ sortie.organisateur.nom|first|upper }}
                                         {% else %}
-                                            <i class="fas fa-user"></i>
+                                            ?
                                         {% endif %}
                                     </div>
                                     <span>
                                         {% if isOrganisateur %}
                                             Vous
                                         {% elseif sortie.organisateur %}
-                                            {{ sortie.organisateur.prenom }} {{ sortie.organisateur.nom }}
+                                            {{ sortie.organisateur.prenom }} {{ sortie.organisateur.nom|first }}.
                                         {% else %}
-                                            Organisateur inconnu
+                                            Inconnu
                                         {% endif %}
                                     </span>
                                 </div>
@@ -713,29 +183,24 @@
                                 {% if app.user %}
                                     {% if isOrganisateur %}
                                         <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn-action btn-manage">
-                                            <i class="fas fa-edit"></i> Gérer
+                                            <i class="fas fa-cog"></i> Gérer
                                         </a>
                                     {% elseif isInscrit %}
-                                        <form method="post"
-                                              action="{{ path('sortie_inscrire', {'id': sortie.id}) }}"
-                                              onsubmit="return confirm('Êtes-vous sûr de vouloir vous désinscrire ?');"
-                                              style="width: 100%;">
-                                            <button type="submit" class="btn-action btn-subscribed">
-                                                <i class="fas fa-check"></i> Inscrit
+                                        <form method="post" action="{{ path('sortie_inscrire', {'id': sortie.id}) }}">
+                                            <button type="submit" class="btn-action btn-unsubscribe">
+                                                <i class="fas fa-user-times"></i> Se désinscrire
                                             </button>
                                         </form>
                                     {% elseif sortie.etat != constant('App\\Enum\\Etat::OPEN') %}
                                         <button class="btn-action btn-disabled" disabled>
-                                            <i class="fas fa-lock"></i> {{ etatValue }}
+                                            <i class="fas fa-lock"></i> Fermée
                                         </button>
                                     {% elseif isComplet %}
                                         <button class="btn-action btn-disabled" disabled>
-                                            <i class="fas fa-user-times"></i> Complet
+                                            <i class="fas fa-users"></i> Complet
                                         </button>
                                     {% else %}
-                                        <form method="post"
-                                              action="{{ path('sortie_inscrire', {'id': sortie.id}) }}"
-                                              style="width: 100%;">
+                                        <form method="post" action="{{ path('sortie_inscrire', {'id': sortie.id}) }}">
                                             <button type="submit" class="btn-action btn-join">
                                                 <i class="fas fa-user-plus"></i> S'inscrire
                                             </button>
@@ -757,7 +222,7 @@
                 <h3>Aucune sortie disponible</h3>
                 <p>Soyez le premier à créer une sortie !</p>
                 {% if app.user %}
-                    <a href="{{ path('sortie_create') }}" class="btn-create" style="margin-top: 20px;">
+                    <a href="{{ path('sortie_create') }}" class="btn-create">
                         <i class="fas fa-plus-circle"></i> Créer une sortie
                     </a>
                 {% endif %}
@@ -771,30 +236,22 @@
 {% block javascripts %}
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialisation Flatpickr pour date début
-            const dateDebut = document.getElementById('date-debut');
-            if (dateDebut) {
-                flatpickr(dateDebut, {
-                    dateFormat: "Y-m-d",
-                    altInput: true,
-                    altFormat: "d/m/Y",
-                    locale: "fr"
-                });
-            }
+            // Flatpickr pour dates
+            flatpickr("#date-debut", {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d/m/Y",
+                locale: "fr"
+            });
 
-            // Initialisation Flatpickr pour date fin
-            const dateFin = document.getElementById('date-fin');
-            if (dateFin) {
-                flatpickr(dateFin, {
-                    dateFormat: "Y-m-d",
-                    altInput: true,
-                    altFormat: "d/m/Y",
-                    locale: "fr"
-                });
-            }
+            flatpickr("#date-fin", {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d/m/Y",
+                locale: "fr"
+            });
         });
     </script>
 {% endblock %}

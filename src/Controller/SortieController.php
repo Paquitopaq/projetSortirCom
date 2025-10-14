@@ -88,6 +88,21 @@ final class SortieController extends AbstractController
         return $this->redirectToRoute('app_sortie');
     }
 
+    #[Route('/sortie/{id}/valider', name: 'sortie_valider', methods: ['POST'])]
+    public function valider(Sortie $sortie): Response
+    {
+        $user = $this->getUser();
+        $result = $this->sortieService->validerSortie($sortie, $user);
+
+        if ($result['success']) {
+            $this->addFlash('success', $result['message']);
+        } else {
+            $this->addFlash('danger', $result['message']);
+        }
+
+        return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+    }
+
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire')]
     public function inscription(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em): Response
     {
@@ -151,21 +166,51 @@ final class SortieController extends AbstractController
         Request $request,
         SortieService $sortieService
     ): Response {
+        // Vérification des droits
+        $user = $this->getUser();
+
+        if (!$user) {
+            $this->addFlash('danger', 'Vous devez être connecté pour annuler une sortie.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Vérifier que l'utilisateur est soit l'organisateur soit un admin
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        $isOrganisateur = $sortie->getOrganisateur() === $user;
+
+        if (!$isOrganisateur && !$isAdmin) {
+            $this->addFlash('danger', 'Vous n\'avez pas le droit d\'annuler cette sortie.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
+        // Vérifier que la sortie n'est pas déjà annulée
+        if ($sortie->getEtat() === Etat::CANCELLED) {
+            $this->addFlash('warning', 'Cette sortie est déjà annulée.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
         $form = $this->createForm(DeleteSortieType::class, $sortie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->getUser();
             $motif = $form->get('motifAnnulation')->getData();
+
+            if (!$motif || trim($motif) === '') {
+                $this->addFlash('danger', 'Le motif d\'annulation est obligatoire.');
+                return $this->render('sortie/delete.html.twig', [
+                    'sortie' => $sortie,
+                    'form' => $form->createView(),
+                ]);
+            }
+
             $result = $sortieService->deleteSortie($sortie, $user, $motif);
 
             if ($result['success']) {
                 $this->addFlash('success', $result['message']);
+                return $this->redirectToRoute('app_sortie');
             } else {
                 $this->addFlash('danger', $result['message']);
             }
-
-            return $this->redirectToRoute('app_home');
         }
 
         return $this->render('sortie/delete.html.twig', [
