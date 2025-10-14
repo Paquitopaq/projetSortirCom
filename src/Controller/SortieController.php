@@ -24,12 +24,19 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie', name: 'app_sortie')]
-    public function index(Request $request): Response
+    public function index(Request $request,EntityManagerInterface $entityManager): Response
     {
         $data = $this->sortieService->getFilteredSorties($request);
+        $sorties = $data['sorties'];
+
+        foreach ($sorties as $sortie) {
+            $sortie->updateEtat();
+        }
+
+        $entityManager->flush();
 
         return $this->render('sortie/index.html.twig', [
-            'sorties' => $data['sorties'],
+            'sorties' => $sorties,
         ]);
     }
 
@@ -56,8 +63,8 @@ final class SortieController extends AbstractController
 
             $entityManager->persist($sortie);
             $entityManager->flush();
-
-            $this->addFlash('success', 'Sortie enregistrée en brouillon.');
+            $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
+            $this->addFlash('success', $message);
             return $this->redirectToRoute('app_sortie');
         }
 
@@ -118,7 +125,7 @@ final class SortieController extends AbstractController
 
         $form = $this->createForm(ImportParticipantType::class);
         $form->handleRequest($request);
-
+        $sortie->updateEtat();
         if ($form->isSubmitted() && $form->isValid() && $this->getUser()?->getAdministrateur()) {
             $csvFile = $form->get('csv_file')->getData();
 
@@ -167,4 +174,40 @@ final class SortieController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/sortie/{id}/edit', name: 'sortie_edit')]
+    public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
+    {
+        // Vérification des droits
+        $user = $this->getUser();
+        if ($sortie->getOrganisateur() !== $user && !$user->isAdministrateur()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette sortie.');
+        }
+
+        // Vérification de l’état
+        if ($sortie->getEtat()->value !== 'Créée') {
+            $this->addFlash('danger', 'Seules les sorties en état "Créée" peuvent être modifiées.');
+            return $this->redirectToRoute('app_sortie');
+        }
+
+        $form = $this->createForm(SortieType::class, $sortie);
+        $form->handleRequest($request);
+        $publication = $request->request->get('action') === 'publier';
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->sortieService->createSortie($sortie, $publication);
+            $entityManager->flush();
+
+            $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
+            $this->addFlash('success', $message);
+            return $this->redirectToRoute('app_sortie');
+        }
+
+        return $this->render('sortie/edit.html.twig', [
+            'form' => $form->createView(),
+            'lieux' => $lieuRepository->findAll(),
+            'sortie' => $sortie,
+        ]);
+    }
+
 }

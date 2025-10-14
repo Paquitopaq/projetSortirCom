@@ -1,0 +1,384 @@
+:root {
+    --orange: #FF6B00;
+    --blue-dark: #0B2447;
+    --background: #FCFBF9;
+    --card-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
+    --radius: 16px;
+    --transition: all 0.25s ease;
+}
+
+body {
+    background: var(--background);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--blue-dark);
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 20px 60px;
+}
+
+/* ===== En-tête ===== */
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--blue-dark);
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.btn-back i {
+    color: var(--orange);
+}
+
+.btn-back:hover {
+    color: var(--orange);
+}
+
+.header-actions a {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+.btn-edit {
+    background: var(--blue-dark);
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #081829;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #b32b37;
+    transform: translateY(-1px);
+}
+
+/* ===== Carte principale ===== */
+.detail-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    margin-bottom: 40px;
+}
+
+.detail-image {
+    background: linear-gradient(135deg, var(--blue-dark), #19376D);
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: white;
+    font-size: 3rem;
+}
+
+.detail-image i {
+    opacity: 0.15;
+}
+
+.badge-now {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    background: var(--orange);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+/* ===== Contenu principal ===== */
+.detail-content {
+    padding: 32px;
+}
+
+.detail-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--blue-dark);
+    margin-bottom: 12px;
+}
+
+.detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-ouvert {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-clôturé, .status-fermé {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.detail-participants {
+    color: #555;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ===== Grille d’infos ===== */
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.detail-info-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.detail-info-item i {
+    font-size: 20px;
+    color: var(--orange);
+}
+
+.info-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    color: #777;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-weight: 600;
+    color: var(--blue-dark);
+}
+
+/* ===== Description ===== */
+.detail-description {
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.detail-description h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: var(--blue-dark);
+}
+
+/* ===== Organisateur ===== */
+.detail-organizer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.organizer-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--orange), #ff8533);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== Boutons d’action ===== */
+.detail-actions {
+    margin-top: 16px;
+}
+
+.btn-action {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.btn-join {
+    background: var(--orange);
+    color: white;
+}
+
+.btn-join:hover {
+    background: #e55f00;
+    transform: translateY(-1px);
+}
+
+.btn-unsubscribe {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-unsubscribe:hover {
+    background: #b32b37;
+    transform: translateY(-1px);
+}
+
+.btn-disabled {
+    background: #ccc;
+    color: white;
+    cursor: not-allowed;
+}
+
+/* ===== Participants ===== */
+.participants-section {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    padding: 24px 32px;
+    margin-bottom: 40px;
+}
+
+.participants-section h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--blue-dark);
+    margin-bottom: 16px;
+}
+
+.participants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.participant-card {
+    text-decoration: none;
+    color: var(--blue-dark);
+    text-align: center;
+    padding: 12px;
+    border-radius: 12px;
+    background: #fafafa;
+    transition: var(--transition);
+}
+
+.participant-card:hover {
+    background: #f1f1f1;
+    transform: translateY(-2px);
+}
+
+.participant-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue-dark), #19376D);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+}
+
+/* ===== Admin CSV Section ===== */
+.admin-section {
+    background: #fff3cd;
+    border-radius: 12px;
+    padding: 20px 28px;
+    box-shadow: var(--card-shadow);
+}
+
+.admin-section h3 {
+    color: #856404;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.csv-form input[type="file"] {
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+}
+
+.csv-upload {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .detail-content {
+        padding: 20px;
+    }
+
+    .detail-title {
+        font-size: 22px;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .participants-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+    .csv-upload {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-action {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -4,9 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Form\DeleteSortieType;
+use App\Form\DeleteUserType;
 use App\Form\ImportParticipantType;
 use App\Form\ProfilType;
 use App\Repository\ParticipantRepository;
+use App\Service\AdminUserService;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,12 +28,57 @@ class AdminController extends AbstractController
     #[Route('', name: 'admin_dashboard')]
     public function dashboard(EntityManagerInterface $em): Response
     {
-        $nbUsers = $em->getRepository(Participant::class)->count([]);
-        $nbSorties = $em->getRepository(Sortie::class)->count([]);
+        // Statistiques globales
+        $participantRepo = $em->getRepository(Participant::class);
+        $sortieRepo = $em->getRepository(Sortie::class);
+
+        $nbUsers = $participantRepo->count([]);
+        $nbUsersActifs = $participantRepo->count(['actif' => true]);
+        $nbSorties = $sortieRepo->count([]);
+
+        //Statistiques temporelles
+        $now = new \DateTime();
+
+        // Sorties à venir
+        $nbSortiesAVenir = $sortieRepo->createQueryBuilder('s')
+            ->select('count(s.id)')
+            ->where('s.dateHeureDebut > :now')
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Sorties passées
+        $nbSortiesPassees = $sortieRepo->createQueryBuilder('s')
+            ->select('count(s.id)')
+            ->where('s.dateHeureDebut <= :now')
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Dernières activités
+        $dernieresSorties = $sortieRepo->createQueryBuilder('s')
+            ->orderBy('s.dateHeureDebut', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+
+        $derniersParticipants = $participantRepo->createQueryBuilder('p')
+            ->orderBy('p.id', 'DESC') // ou p.dateCreation si tu as ce champ
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+
+        $nbUsersInactifs = $nbUsers - $nbUsersActifs;
 
         return $this->render('admin/dashboard.html.twig', [
             'nbUsers' => $nbUsers,
+            'nbUsersActifs' => $nbUsersActifs,
+            'nbUsersInactifs' => $nbUsersInactifs,
             'nbSorties' => $nbSorties,
+            'nbSortiesAVenir' => $nbSortiesAVenir,
+            'nbSortiesPassees' => $nbSortiesPassees,
+            'dernieresSorties' => $dernieresSorties,
+            'derniersParticipants' => $derniersParticipants,
         ]);
     }
 
@@ -81,6 +129,22 @@ class AdminController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', $participant->getActif() ? 'Utilisateur activé avec succès.' : 'Utilisateur désactivé avec succès.');
+
+        return $this->redirectToRoute('admin_users');
+    }
+
+
+    #[Route('/admin/user/{id}/toggle-admin', name: 'admin_user_toggle_admin', methods: ['POST'])]
+    public function toggleAdmin(
+        Participant $participant,
+        AdminUserService $adminUserService
+    ): Response {
+        $adminUserService->toggleAdmin($participant);
+
+        $this->addFlash(
+            'success',
+            in_array('ROLE_ADMIN', $participant->getRoles()) ? 'Utilisateur promu admin.' : 'Utilisateur rétrogradé.'
+        );
 
         return $this->redirectToRoute('admin_users');
     }
@@ -176,6 +240,59 @@ class AdminController extends AbstractController
         return $this->render('sortie/import.html.twig', [
             'form' => $form->createView(),
             'sortie' => $sortie,
+        ]);
+    }
+
+    #[Route('/sortie/{id}/delete', name: 'sortie_delete_admin', methods: ['GET', 'POST'])]
+    public function delete(
+        Sortie $sortie,
+        Request $request,
+        SortieService $sortieService
+    ): Response {
+        $form = $this->createForm(DeleteSortieType::class, $sortie);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getUser();
+            $motif = $form->get('motifAnnulation')->getData();
+            $result = $sortieService->deleteSortie($sortie, $user, $motif);
+
+            if ($result['success']) {
+                $this->addFlash('success', $result['message']);
+            } else {
+                $this->addFlash('danger', $result['message']);
+            }
+
+            return $this->redirectToRoute('app_home');
+        }
+
+        return $this->render('sortie/delete.html.twig', [
+            'sortie' => $sortie,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['GET','POST'])]
+    public function deleteUser(
+        Participant $participant,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+        $form = $this->createForm(DeleteUserType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Supprimer définitivement l'utilisateur
+            $em->remove($participant);
+            $em->flush();
+
+            $this->addFlash('success', 'Utilisateur supprimé avec succès.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        return $this->render('admin/delete_user.html.twig', [
+            'participant' => $participant,
+            'form' => $form->createView(),
         ]);
     }
 }

@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="admin-dashboard">
+        <div class="dashboard-header">
+            <h1>Tableau de bord</h1>
+            <button class="btn-refresh">
+                <i class="fas fa-sync-alt"></i> Actualiser
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span class="stat-label">Utilisateurs inscrits</span>
+                    <span class="stat-value">{{ nbUsers }}</span>
+                </div>
+                <i class="fas fa-users stat-icon"></i>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span class="stat-label">Actifs</span>
+                    <span class="stat-value">{{ nbUsersActifs }}</span>
+                </div>
+                <i class="fas fa-user-check stat-icon"></i>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span class="stat-label">Sorties créées</span>
+                    <span class="stat-value">{{ nbSorties }}</span>
+                </div>
+                <i class="fas fa-calendar-alt stat-icon"></i>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span class="stat-label">Sorties à venir</span>
+                    <span class="stat-value">{{ nbSortiesAVenir }}</span>
+                </div>
+                <i class="fas fa-hourglass-half stat-icon"></i>
+            </div>
+        </div>
+
+        <h2 class="section-title"><i class="fas fa-running"></i> Dernières sorties</h2>
+        {% if dernieresSorties is not empty %}
+            <div class="cards-list">
+                {% for sortie in dernieresSorties %}
+                    <div class="list-card">
+                        <h4>{{ sortie.nom }}</h4>
+                        <div class="meta">
+                        <span><i class="fas fa-user"></i>
+                            {% if sortie.organisateur %}
+                                {{ sortie.organisateur.pseudo }}
+                            {% else %}
+                                Inconnu
+                            {% endif %}
+                        </span>
+                            <span><i class="far fa-calendar"></i> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                <p>Aucune sortie récente.</p>
+            </div>
+        {% endif %}
+
+        <h2 class="section-title"><i class="fas fa-user-friends"></i> Derniers inscrits</h2>
+        {% if derniersParticipants is not empty %}
+            <div class="cards-list">
+                {% for participant in derniersParticipants %}
+                    <div class="list-card">
+                        <h4>{{ participant.pseudo }}</h4>
+                        <div class="meta">
+                            <span><i class="far fa-envelope"></i> {{ participant.email }}</span>
+                            {% if participant.actif %}
+                                <span><i class="fas fa-check-circle" style="color:green"></i> Actif</span>
+                            {% else %}
+                                <span><i class="fas fa-times-circle" style="color:red"></i> Inactif</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-user-slash"></i>
+                <p>Aucun nouvel utilisateur.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
