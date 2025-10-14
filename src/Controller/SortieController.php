@@ -124,7 +124,6 @@ final class SortieController extends AbstractController
     public function detailsortie(
         Request                $request,
         ?Sortie                $sortie,
-        SortieService          $sortieService,
         ImportService          $importService,
         EntityManagerInterface $em
     ): Response {
@@ -137,7 +136,7 @@ final class SortieController extends AbstractController
             $this->addFlash('danger', "Cette sortie n'est plus consultable.");
             return $this->redirectToRoute('app_home');
         }
-
+        
         $form = $this->createForm(ImportParticipantType::class);
         $form->handleRequest($request);
         $sortie->updateEtat();

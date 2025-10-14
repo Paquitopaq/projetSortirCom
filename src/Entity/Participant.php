@@ -9,6 +9,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ParticipantRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -21,6 +22,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank(message: "L'email est obligatoire.")]
     private ?string $email = null;
 
     /**
@@ -46,9 +48,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $telephone = null;
-
-    #[ORM\Column]
-    private ?bool $administrateur = false;
 
     #[ORM\Column]
     private ?bool $actif = true;
@@ -173,16 +172,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTelephone(?string $telephone): void
     {
         $this->telephone = $telephone;
-    }
-
-    public function getAdministrateur(): ?bool
-    {
-        return $this->administrateur;
-    }
-
-    public function setAdministrateur(?bool $administrateur): void
-    {
-        $this->administrateur = $administrateur;
     }
 
     public function getActif(): ?bool

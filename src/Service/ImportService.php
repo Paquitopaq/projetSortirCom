@@ -37,12 +37,12 @@ class ImportService
             $line = str_replace('""', '"', $line); // Corrige les guillemets doublés
 
             $row = str_getcsv($line, ',', '"');
-            if (!is_array($row) || count($row) !== 10) {
+            if (count($row) !== 9) {
                 $messages[] = ['type' => 'danger', 'text' => "Ligne CSV invalide : " . $line];
                 continue;
             }
 
-            [$email, $roles, $password, $pseudo, $nom, $prenom, $telephone, $administrateur, $actif, $photoProfil] = $row;
+            [$email, $roles, $password, $pseudo, $nom, $prenom, $telephone, $actif, $photoProfil] = $row;
 
             $participant = $this->em->getRepository(Participant::class)->findOneBy(['email' => $email]);
 
@@ -61,7 +61,6 @@ class ImportService
                 $participant->setNom($nom);
                 $participant->setPrenom($prenom);
                 $participant->setTelephone($telephone);
-                $participant->setAdministrateur(filter_var($administrateur, FILTER_VALIDATE_BOOLEAN));
                 $participant->setActif(filter_var($actif, FILTER_VALIDATE_BOOLEAN));
                 $participant->setPhotoProfil($photoProfil !== "" ? $photoProfil : null);
 

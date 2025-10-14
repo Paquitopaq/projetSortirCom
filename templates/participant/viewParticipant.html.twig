@@ -49,7 +49,11 @@
                                 <p><i class="fas fa-phone"></i> {{ participant.telephone ?? 'Non renseigné' }}</p>
                             </div>
                         </div>
-                        <p class="profile-card-role">{{ participant.administrateur ? 'Administrateur' : 'Membre' }}</p>
+                        {% if is_granted ('ROLE_ADMIN') %}
+                        <p class="profile-card-role">Administrateur</p>
+                        {% else %}
+                        <p>Membre</p>
+                        {% endif %}
 
                         <div class="contact-info">
                             <div class="contact-item">
