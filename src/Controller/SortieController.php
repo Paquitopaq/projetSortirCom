@@ -126,7 +126,9 @@ final class SortieController extends AbstractController
         $form = $this->createForm(ImportParticipantType::class);
         $form->handleRequest($request);
         $sortie->updateEtat();
-        if ($form->isSubmitted() && $form->isValid() && $this->getUser()?->getAdministrateur()) {
+
+        // Utilisation de is_granted au lieu de getAdministrateur()
+        if ($form->isSubmitted() && $form->isValid() && $this->isGranted('ROLE_ADMIN')) {
             $csvFile = $form->get('csv_file')->getData();
 
             $messages = $importService->importerEtInscrire($csvFile, $sortie);
@@ -178,13 +180,13 @@ final class SortieController extends AbstractController
     #[Route('/sortie/{id}/edit', name: 'sortie_edit')]
     public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
     {
-        // Vérification des droits
+        // Vérification des droits - Utilisation de is_granted au lieu de isAdministrateur()
         $user = $this->getUser();
-        if ($sortie->getOrganisateur() !== $user && !$user->isAdministrateur()) {
+        if ($sortie->getOrganisateur() !== $user && !$this->isGranted('ROLE_ADMIN')) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette sortie.');
         }
 
-        // Vérification de l’état
+        // Vérification de l'état
         if ($sortie->getEtat()->value !== 'Créée') {
             $this->addFlash('danger', 'Seules les sorties en état "Créée" peuvent être modifiées.');
             return $this->redirectToRoute('app_sortie');
@@ -209,5 +211,4 @@ final class SortieController extends AbstractController
             'sortie' => $sortie,
         ]);
     }
-
 }
