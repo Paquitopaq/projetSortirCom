@@ -180,16 +180,26 @@ final class SortieController extends AbstractController
     #[Route('/sortie/{id}/edit', name: 'sortie_edit')]
     public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
     {
-        // Vérification des droits - Utilisation de is_granted au lieu de isAdministrateur()
         $user = $this->getUser();
-        if ($sortie->getOrganisateur() !== $user && !$this->isGranted('ROLE_ADMIN')) {
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+        if ($sortie->getOrganisateur() !== $user && !$isAdmin) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette sortie.');
         }
 
-        // Vérification de l'état
-        if ($sortie->getEtat()->value !== 'Créée') {
-            $this->addFlash('danger', 'Seules les sorties en état "Créée" peuvent être modifiées.');
-            return $this->redirectToRoute('app_sortie');
+        // Vérification de l'état - Admin peut modifier "Créée" et "Ouverte", organisateur seulement "Créée"
+        $etatValue = $sortie->getEtat()->value;
+
+        if ($isAdmin) {
+            if ($etatValue !== 'Créée' && $etatValue !== 'Ouverte') {
+                $this->addFlash('danger', 'Seules les sorties en état "Créée" ou "Ouverte" peuvent être modifiées.');
+                return $this->redirectToRoute('app_sortie');
+            }
+        } else {
+            if ($etatValue !== 'Créée') {
+                $this->addFlash('danger', 'Seules les sorties en état "Créée" peuvent être modifiées.');
+                return $this->redirectToRoute('app_sortie');
+            }
         }
 
         $form = $this->createForm(SortieType::class, $sortie);
