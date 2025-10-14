@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Enum\Etat;
 use App\Form\DeleteSortieType;
-use App\Form\DeleteUserType;
 use App\Form\ImportParticipantType;
 use App\Form\ProfilType;
 use App\Repository\ParticipantRepository;
@@ -279,20 +279,26 @@ class AdminController extends AbstractController
         EntityManagerInterface $em
     ): Response {
 
-        // Sécurité CSRF
-        if ($this->isCsrfTokenValid('delete'.$participant->getId(), $request->request->get('_token'))) {
-            $em->remove($participant);
-            $em->flush();
-
-            $this->addFlash('success', 'Utilisateur supprimé avec succès.');
-        } else {
+        if (!$this->isCsrfTokenValid('delete'.$participant->getId(), $request->request->get('_token'))) {
             $this->addFlash('danger', 'Action non autorisée.');
+            return $this->redirectToRoute('admin_users');
         }
+
+        // Archiver les sorties organisées par l'utilisateur
+        $sortiesOrganisees = $em->getRepository(Sortie::class)->findBy(['organisateur' => $participant]);
+
+        foreach ($sortiesOrganisees as $sortie) {
+            $sortie->setEtat(\App\Enum\Etat::ARCHIVEE);
+            $em->persist($sortie);
+        }
+
+        $em->remove($participant);
+        $em->flush();
+
+        $this->addFlash('success', 'Utilisateur supprimé et ses sorties archivées avec succès.');
 
         return $this->redirectToRoute('admin_users');
     }
-
-    // ===== GESTION DES PARTICIPANTS D'UNE SORTIE =====
 
     #[Route('/participants/all', name: 'admin_get_all_participants')]
     public function getAllParticipants(EntityManagerInterface $em): Response
