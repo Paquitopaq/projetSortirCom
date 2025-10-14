@@ -35,10 +35,21 @@
                             {% endif %}
                         </div>
 
-                        <div class="greeting-section">
-                            <span class="greeting-text">HELLO I'M</span>
-                            <h1 class="profile-main-name">{{ participant.pseudo }}</h1>
-                            <p class="profile-subtitle">{{ participant.prenom }} {{ participant.nom }}</p>
+                    <div class="event-content-timeline d-flex flex-column">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="organizer-avatar-large me-4">
+                                {% if app.user %}
+                                    <img src="{{ asset(app.user.getAvatarPath()) }}" alt="Photo de profil">
+                                {% else %}
+                                    {{ asset('assets/avatars/cchat.png') }}
+                                {% endif %}
+                            </div>
+                            <div class="profile-info">
+                                <h2>{{ participant.pseudo ?? 'Utilisateur' }}</h2>
+                                <p class="text-muted">{{ participant.prenom }} {{ participant.nom }}</p>
+                                <p><i class="fas fa-envelope"></i> {{ participant.email }}</p>
+                                <p><i class="fas fa-phone"></i> {{ participant.telephone ?? 'Non renseigné' }}</p>
+                            </div>
                         </div>
                         <p class="profile-card-role">{{ participant.administrateur ? 'Administrateur' : 'Membre' }}</p>
 
