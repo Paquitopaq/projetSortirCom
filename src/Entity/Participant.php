@@ -48,6 +48,9 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $telephone = null;
 
     #[ORM\Column]
+    private ?bool $administrateur = false;
+
+    #[ORM\Column]
     private ?bool $actif = true;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -170,6 +173,16 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTelephone(?string $telephone): void
     {
         $this->telephone = $telephone;
+    }
+
+    public function getAdministrateur(): ?bool
+    {
+        return $this->administrateur;
+    }
+
+    public function setAdministrateur(?bool $administrateur): void
+    {
+        $this->administrateur = $administrateur;
     }
 
     public function getActif(): ?bool
