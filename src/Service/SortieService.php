@@ -229,6 +229,8 @@ class SortieService
             $this->entityManager->flush();
             return true;
         }
+
+
         return false;
     }
 

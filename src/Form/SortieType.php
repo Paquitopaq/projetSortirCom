@@ -64,14 +64,9 @@ class SortieType extends AbstractType
                         ->where('g.organisateur = :organisateur')
                         ->setParameter('organisateur', $organisateur);
                 },
-            ])
-
-
-            ->add('nouveauGroupePrive', GroupePriveType::class, [
-                'required' => false,
-                'mapped' => false,
-                'label' => false,
             ]);
+
+
 
 
 //

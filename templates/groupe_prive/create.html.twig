@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ groupe.id ? 'Modifier le groupe' : 'Créer un groupe' }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>{{ groupe.id ? 'Modifier le groupe' : 'Créer un groupe' }}</h1>
+
+        {{ form_start(form) }}
+        {{ form_row(form.nomGroupe) }}
+        {{ form_row(form.membres) }}
+
+        <button class="btn btn-primary">
+            {{ groupe.id ? 'Mettre à jour' : 'Créer' }}
+        </button>
+        {{ form_end(form) }}
+
+        <a href="{{ path('groupe_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}
