@@ -26,12 +26,10 @@
                     <!-- Section gauche : Avatar et infos de contact -->
                     <div class="profile-left">
                         <div class="avatar-section">
-                            {% if participant.photoProfil %}
-                                <img src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil" class="avatar-image">
+                            {% if app.user %}
+                                <img class="avatar-image" src="{{ asset(app.user.getAvatarPath()) }}" alt="Avatar">
                             {% else %}
-                                <div class="avatar-placeholder">
-                                    <i class="fas fa-user"></i>
-                                </div>
+                                {{ asset('assets/avatars/cchat.png') }}
                             {% endif %}
                         </div>
 
