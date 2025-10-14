@@ -65,10 +65,24 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'organisateur')]
     private Collection $sortiesOrganisees;
 
+    /**
+     * @var Collection<int, GroupePrive>
+     */
+    #[ORM\OneToMany(targetEntity: GroupePrive::class, mappedBy: 'organisateur')]
+    private Collection $groupePrives;
+
+    /**
+     * @var Collection<int, GroupePrive>
+     */
+    #[ORM\ManyToMany(targetEntity: GroupePrive::class, mappedBy: 'membres')]
+    private Collection $membreGroupe;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
         $this->sortiesOrganisees = new ArrayCollection();
+        $this->groupePrives = new ArrayCollection();
+        $this->membreGroupe = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -259,6 +273,63 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhotoProfil(?string $photoProfil): static
     {
         $this->photoProfil = $photoProfil;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupePrive>
+     */
+    public function getGroupePrives(): Collection
+    {
+        return $this->groupePrives;
+    }
+
+    public function addGroupePrife(GroupePrive $groupePrife): static
+    {
+        if (!$this->groupePrives->contains($groupePrife)) {
+            $this->groupePrives->add($groupePrife);
+            $groupePrife->setOrganisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupePrife(GroupePrive $groupePrife): static
+    {
+        if ($this->groupePrives->removeElement($groupePrife)) {
+            // set the owning side to null (unless already changed)
+            if ($groupePrife->getOrganisateur() === $this) {
+                $groupePrife->setOrganisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupePrive>
+     */
+    public function getMembreGroupe(): Collection
+    {
+        return $this->membreGroupe;
+    }
+
+    public function addMembreGroupe(GroupePrive $membreGroupe): static
+    {
+        if (!$this->membreGroupe->contains($membreGroupe)) {
+            $this->membreGroupe->add($membreGroupe);
+            $membreGroupe->addMembre($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMembreGroupe(GroupePrive $membreGroupe): static
+    {
+        if ($this->membreGroupe->removeElement($membreGroupe)) {
+            $membreGroupe->removeMembre($this);
+        }
 
         return $this;
     }
