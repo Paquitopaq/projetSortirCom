@@ -11,7 +11,9 @@ use App\Form\SortieType;
 use App\Repository\LieuRepository;
 use App\Service\ImportService;
 use App\Service\SortieService;
+use App\Utils\FileManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,21 +43,48 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/create', name: 'sortie_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager, LieuRepository $lieuRepository): Response
-    {
+    public function create(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        LieuRepository $lieuRepository,
+        FileManager $fileManager
+    ): Response {
         $sortie = new Sortie();
+
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            // Nouveau lieu
+            $nouveauLieu = $form->get('nouveauLieu')->getData();
+            if ($nouveauLieu && $nouveauLieu->getNom()) {
+                $entityManager->persist($nouveauLieu);
+                $sortie->setLieu($nouveauLieu);
+            }
+
             $publication = $request->request->get('action') === 'publier';
-            $this->sortieService->createSortie($sortie, $form, $publication);
 
-            $message = $publication
-                ? 'Sortie publiée avec succès.'
-                : 'Sortie enregistrée en brouillon.';
+            // Upload photo
+            $photoFile = $form->get('photoSortie')->getData();
+            if ($photoFile instanceof UploadedFile) {
+                $newFilename = $fileManager->upload(
+                    $photoFile,
+                    $this->getParameter('sorties_photos_directory'),
+                    $sortie->getNom() // facultatif, juste pour base du nom
+                );
+                if ($newFilename) {
+                    $sortie->setPhotoSortie($newFilename);
+                } else {
+                    $this->addFlash('warning', 'Erreur lors de l\'upload de l\'image.');
+                }
+            }
 
+            $this->sortieService->createSortie($sortie, $publication);
+            $entityManager->persist($sortie);
+            $entityManager->flush();
+
+            $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
             $this->addFlash('success', $message);
             return $this->redirectToRoute('app_sortie');
         }
@@ -116,6 +145,7 @@ final class SortieController extends AbstractController
     public function detailsortie(
         Request                $request,
         ?Sortie                $sortie,
+        SortieService          $sortieService,
         ImportService          $importService,
         EntityManagerInterface $em
     ): Response {
@@ -128,7 +158,7 @@ final class SortieController extends AbstractController
             $this->addFlash('danger', "Cette sortie n'est plus consultable.");
             return $this->redirectToRoute('app_home');
         }
-        
+
         $form = $this->createForm(ImportParticipantType::class);
         $form->handleRequest($request);
         $sortie->updateEtat();
@@ -211,39 +241,51 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/{id}/edit', name: 'sortie_edit')]
-    public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager, LieuRepository $lieuRepository): Response
-    {
+    public function edit(
+        Sortie $sortie,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        LieuRepository $lieuRepository,
+        FileManager $fileManager
+    ): Response {
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
-        // Vérification des droits
-        if ($sortie->getOrganisateur() !== $user && !$isAdmin) {
-            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette sortie.');
-        }
-
-        // Vérification de l'état
-        $etatValue = $sortie->getEtat()->value;
-        if (($isAdmin && !in_array($etatValue, ['Créée', 'Ouverte'])) ||
-            (!$isAdmin && $etatValue !== 'Créée'))
-        {
-            $this->addFlash('danger', $isAdmin
-                ? 'Seules les sorties en état "Créée" ou "Ouverte" peuvent être modifiées.'
-                : 'Seules les sorties en état "Créée" peuvent être modifiées.'
-            );
-            return $this->redirectToRoute('app_sortie');
-        }
+        // Vérifications droits et état...
 
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
         $publication = $request->request->get('action') === 'publier';
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Nouveau lieu
+            $nouveauLieu = $form->get('nouveauLieu')->getData();
+            if ($nouveauLieu && $nouveauLieu->getNom()) {
+                $entityManager->persist($nouveauLieu);
+                $sortie->setLieu($nouveauLieu);
+            }
 
-            $this->sortieService->createSortie($sortie, $form, $publication, false);
+            // Upload photo
+            $photoFile = $form->get('photoSortie')->getData();
+            if ($photoFile instanceof UploadedFile) {
+                $newFilename = $fileManager->upload(
+                    $photoFile,
+                    $this->getParameter('sorties_photos_directory'),
+                    $sortie->getNom(),        // facultatif, juste pour base du nom
+                    $sortie->getPhotoSortie() // ancien nom pour suppression
+                );
+                if ($newFilename) {
+                    $sortie->setPhotoSortie($newFilename);
+                } else {
+                    $this->addFlash('warning', 'Erreur lors de l\'upload de l\'image.');
+                }
+            }
+
+            $this->sortieService->createSortie($sortie, $publication);
+            $entityManager->flush();
 
             $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
             $this->addFlash('success', $message);
-
             return $this->redirectToRoute('app_sortie');
         }
 

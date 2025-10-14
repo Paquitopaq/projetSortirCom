@@ -64,6 +64,10 @@ class Sortie
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $motifAnnulation = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photoSortie = null;
+
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
@@ -284,4 +288,16 @@ class Sortie
         $this->motifAnnulation = $motifAnnulation;
         return $this;
     }
+
+    public function getPhotoSortie(): ?string
+    {
+        return $this->photoSortie;
+    }
+
+    public function setPhotoSortie(?string $photoSortie): static
+    {
+        $this->photoSortie = $photoSortie;
+        return $this;
+    }
+
 }

@@ -35,7 +35,9 @@
             <!-- Image -->
             <div class="image-card">
                 <div class="detail-image">
-                    <i class="fas fa-mountain"></i>
+                    {% if sortie.photoSortie %}
+                        <img src="{{ asset('uploads/sorties/' ~ sortie.photoSortie) }}" alt="{{ sortie.nom }}" class="img-fluid">
+                    {% endif %}
 
                     {% if sortie.lieu or sortie.site %}
                         <div class="location-badge">
@@ -188,16 +190,19 @@
             </div>
 
             <!-- Participants -->
-            {% if sortie.participants|length > 0 %}
-                <div class="participants-card">
-                    <div class="participants-header">
-                        <h2>Participants inscrits ({{ sortie.participants|length }})</h2>
-                        {% if is_granted('ROLE_ADMIN') %}
+            <div class="participants-card">
+                <div class="participants-header">
+                    <h2>Participants inscrits ({{ sortie.participants|length }})</h2>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <div class="admin-buttons">
                             <button class="btn-admin-action" onclick="openAddParticipantModal()">
                                 <i class="fas fa-user-plus"></i> Ajouter un participant
                             </button>
-                        {% endif %}
-                    </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if sortie.participants|length > 0 %}
                     <div class="participants-grid">
                         {% for participant in sortie.participants %}
                             <div class="participant-wrapper">
@@ -222,36 +227,34 @@
                             </div>
                         {% endfor %}
                     </div>
-                </div>
-            {% else %}
-                <div class="participants-card">
-                    <div class="participants-header">
-                        <h2>Participants inscrits (0)</h2>
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <button class="btn-admin-action" onclick="openAddParticipantModal()">
-                                <i class="fas fa-user-plus"></i> Ajouter un participant
-                            </button>
-                        {% endif %}
-                    </div>
+                {% else %}
                     <p style="color: #888;">Aucun participant pour le moment.</p>
+                {% endif %}
+
+                {# Bouton CSV pour admin #}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div class="admin-buttons">
+                        <button class="btn-admin-action" id="openCsvModal">
+                            <i class="fas fa-file-csv"></i> Importer CSV
+                        </button>
+                    </div>
+                {% endif %}
+
+                {# Formulaire CSV caché pour être injecté dans le modal #}
+                <div id="csvFormWrapper" style="display:none;">
+                    {{ form_start(form, {'attr': {'id': 'csvForm', 'enctype': 'multipart/form-data'}}) }}
+                    <div style="margin-bottom: 10px;">
+                        {{ form_widget(form['csv_file']) }}
+                    </div>
+                    <button type="submit" class="btn-action btn-join">
+                        <i class="fas fa-upload"></i> Importer le fichier
+                    </button>
+                    {{ form_end(form) }}
                 </div>
-            {% endif %}
+
+            </div>
         </div>
     </div>
-    <!-- Import CSV (admin uniquement) -->
-    {% if is_granted ('ROLE_ADMIN') %}
-        <div class="admin-section">
-            <h3><i class="fas fa-file-csv"></i> Importer des participants via CSV</h3>
-            {{ form_start(form, {'attr': {'class': 'csv-form'}}) }}
-            <div class="csv-upload">
-                {{ form_widget(form['csv_file']) }}
-                <button type="submit" class="btn-action btn-join">
-                    <i class="fas fa-upload"></i> Importer le fichier
-                </button>
-            </div>
-            {{ form_end(form) }}
-        </div>
-    {% endif %}
 
     {% include 'partials/_footer.html.twig' %}
 {% endblock %}
@@ -279,18 +282,43 @@
             }
         });
 
-        // Messages flash avec SweetAlert2
-        {% for label, messages in app.flashes %}
-        {% for message in messages %}
-        Swal.fire({
-            icon: '{{ label == 'success' ? 'success' : (label == 'danger' or label == 'error' ? 'error' : 'info') }}',
-            title: '{{ label == 'success' ? 'Succès' : (label == 'danger' or label == 'error' ? 'Erreur' : 'Information') }}',
-            text: '{{ message|raw }}',
-            confirmButtonColor: '#FF6B00',
-            timer: 3000,
-            timerProgressBar: true
+        document.addEventListener('DOMContentLoaded', function() {
+            const openCsvBtn = document.getElementById('openCsvModal');
+            const csvFormWrapper = document.getElementById('csvFormWrapper');
+
+            if (openCsvBtn && csvFormWrapper) {
+                openCsvBtn.addEventListener('click', () => {
+                    Swal.fire({
+                        title: 'Importer un fichier CSV',
+                        html: csvFormWrapper.innerHTML,
+                        showConfirmButton: false,
+                        showCloseButton: true,
+                        didOpen: () => {
+                            const modalForm = Swal.getPopup().querySelector('form');
+                            if (modalForm) {
+                                // Le formulaire est soumis normalement vers Symfony
+                                modalForm.addEventListener('submit', (e) => {
+                                    // Pas besoin de JS, submission normale
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Messages flash avec SweetAlert2
+            {% for label, messages in app.flashes %}
+            {% for message in messages %}
+            Swal.fire({
+                icon: '{{ label == 'success' ? 'success' : (label == 'danger' or label == 'error' ? 'error' : 'info') }}',
+                title: '{{ label == 'success' ? 'Succès' : (label == 'danger' or label == 'error' ? 'Erreur' : 'Information') }}',
+                text: '{{ message|raw }}',
+                confirmButtonColor: '#FF6B00',
+                timer: 3000,
+                timerProgressBar: true
+            });
+            {% endfor %}
+            {% endfor %}
         });
-        {% endfor %}
-        {% endfor %}
     </script>
 {% endblock %}

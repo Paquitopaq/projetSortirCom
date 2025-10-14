@@ -171,11 +171,6 @@ body {
     flex-direction: column;
 }
 
-.sortie-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-}
-
 .sortie-image {
     width: 100%;
     height: 200px;
@@ -402,6 +397,21 @@ body {
     font-size: 16px;
     margin-bottom: 24px;
 }
+
+.sortie-image {
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+    border-radius: 10px;
+    position: relative;
+}
+
+.sortie-image img.sortie-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 
 /* ===== RESPONSIVE TABLETTE (Liste) ===== */
 @media (max-width: 1024px) and (min-width: 769px) {
