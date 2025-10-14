@@ -196,6 +196,14 @@ final class SortieController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->sortieService->createSortie($sortie, $publication);
+
+            // Création d'un nouveau lieu
+            $nouveauLieu = $form->get('nouveauLieu')->getData();
+            if ($nouveauLieu && $nouveauLieu->getNom()) {
+                $entityManager->persist($nouveauLieu);
+                $sortie->setLieu($nouveauLieu);
+            }
+
             $entityManager->flush();
 
             $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
