@@ -63,13 +63,12 @@ class Sortie
     /**
      * @var Collection<int, GroupePrive>
      */
-    #[ORM\OneToMany(targetEntity: GroupePrive::class, mappedBy: 'sortie')]
-    private Collection $groupePrives;
+    #[ORM\ManyToOne(targetEntity: GroupePrive::class)]
+    private ?GroupePrive $groupePrive = null;
 
     public function __construct()
     {
         $this->participants = new ArrayCollection();
-        $this->groupePrives = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -288,33 +287,36 @@ class Sortie
         return $this;
     }
 
-    /**
-     * @return Collection<int, GroupePrive>
-     */
-    public function getGroupePrives(): Collection
+    public function getGroupePrive(): ?GroupePrive
     {
-        return $this->groupePrives;
+        return $this->groupePrive;
     }
 
-    public function addGroupePrife(GroupePrive $groupePrife): static
+    public function setGroupePrive(?GroupePrive $groupePrive): static
     {
-        if (!$this->groupePrives->contains($groupePrife)) {
-            $this->groupePrives->add($groupePrife);
-            $groupePrife->setSortie($this);
-        }
-
+        $this->groupePrive = $groupePrive;
         return $this;
     }
 
-    public function removeGroupePrife(GroupePrive $groupePrife): static
-    {
-        if ($this->groupePrives->removeElement($groupePrife)) {
-            // set the owning side to null (unless already changed)
-            if ($groupePrife->getSortie() === $this) {
-                $groupePrife->setSortie(null);
-            }
-        }
+//    public function addGroupePrive(GroupePrive $groupePrive): static
+//    {
+//        if (!$this->groupePrives->contains($groupePrive)) {
+//            $this->groupePrives->add($groupePrive);
+//            $groupePrive->setSortie($this);
+//        }
+//
+//        return $this;
+//    }
+//
+//    public function removeGroupePrive(GroupePrive $groupePrive): static
+//    {
+//        if ($this->groupePrives->removeElement($groupePrive)) {
+//            if ($groupePrive->getSortie() === $this) {
+//                $groupePrive->setSortie(null);
+//            }
+//        }
+//
+//        return $this;
+//    }
 
-        return $this;
-    }
 }

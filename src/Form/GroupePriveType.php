@@ -15,20 +15,19 @@ class GroupePriveType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nomGroupe')
-            ->add('organisateur', EntityType::class, [
-                'class' => Participant::class,
-                'choice_label' => 'id',
+            ->add('nomGroupe', null, [
+                'label' => 'Nom du groupe',
+                'attr' => ['placeholder' => 'Ex: Groupe Randonnée']
             ])
+
             ->add('membres', EntityType::class, [
                 'class' => Participant::class,
-                'choice_label' => 'id',
+                'choice_label' => 'pseudo',
                 'multiple' => true,
+                'expanded' => true, // ou false pour un select multiple
+                'label' => 'Participants à inclure',
             ])
-            ->add('sortie', EntityType::class, [
-                'class' => Sortie::class,
-                'choice_label' => 'id',
-            ])
+
         ;
     }
 

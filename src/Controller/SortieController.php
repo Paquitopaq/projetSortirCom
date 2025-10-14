@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\GroupePrive;
 use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Enum\Etat;
 use App\Form\DeleteSortieType;
+use App\Form\GroupePriveType;
 use App\Form\ImportParticipantType;
 use App\Form\SortieType;
 use App\Repository\LieuRepository;
@@ -45,7 +47,7 @@ final class SortieController extends AbstractController
     {
         $sortie = new Sortie();
 
-        $form = $this->createForm(SortieType::class, $sortie);
+        $form = $this->createForm(SortieType::class, $sortie,['organisateur' => $this->getUser(),]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -209,5 +211,40 @@ final class SortieController extends AbstractController
             'sortie' => $sortie,
         ]);
     }
+
+    #[Route('/sortie/{id}/groupe-prive/create', name: 'groupe_prive_create')]
+    public function createGroup(Request $request, Sortie $sortie, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $user = $this->getUser();
+
+        if ($sortie->getOrganisateur() !== $user) {
+            throw $this->createAccessDeniedException('Seul l’organisateur peut créer un groupe privé.');
+        }
+
+        $groupe = new GroupePrive();
+        $groupe->setSortie($sortie);
+        $groupe->setOrganisateur($user);
+        $sortie->setGroupePrive($groupe);
+
+
+        $form = $this->createForm(GroupePriveType::class, $groupe);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $em->persist($groupe);
+            $em->flush();
+
+            $this->addFlash('success', 'Groupe privé créé avec succès.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
+        return $this->render('groupe/create.html.twig', [
+            'form' => $form->createView(),
+            'sortie' => $sortie,
+        ]);
+    }
+
 
 }

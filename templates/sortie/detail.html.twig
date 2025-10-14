@@ -124,6 +124,22 @@
                         </div>
                     </div>
                 </div>
+                {% if app.user == sortie.organisateur %}
+                    <h3 class="mt-5">Mes groupes privés</h3>
+                    {% for groupe in sortie.groupePrive %}
+                        <div class="card mb-3">
+                            <div class="card-header">{{ groupe.nomGroupe }}</div>
+                            <ul class="list-group list-group-flush">
+                                {% for membre in groupe.membres %}
+                                    <li class="list-group-item">{{ membre.pseudo }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <p><em>Aucun groupe privé créé pour cette sortie.</em></p>
+                    {% endfor %}
+                {% endif %}
+
 
                 <!-- Bouton d'action -->
                 {% if app.user %}
