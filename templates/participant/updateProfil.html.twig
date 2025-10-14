@@ -12,10 +12,10 @@
             <div class="profile-left">
                 <div class="photo-section">
                     <div class="photo-preview">
-                        {% if app.user %}
-                            <img class="user-avatar" src="{{ asset(app.user.getAvatarPath()) }}" alt="Avatar">
+                        {% if participant.photoProfil %}
+                            <img id="preview-image" src="{{ asset(app.user.getAvatarPath()) }}" alt="Photo de profil">
                         {% else %}
-                            {{ asset('assets/avatars/cchat.png') }}
+                            <img id="preview-image" src="{{ asset('assets/avatars/cchat.png') }}" alt="Photo de profil">
                         {% endif %}
                     </div>
                     <label for="profil_photoProfil" class="upload-btn">
