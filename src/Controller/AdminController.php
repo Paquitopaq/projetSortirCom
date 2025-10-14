@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Enum\Etat;
 use App\Form\DeleteSortieType;
-use App\Form\DeleteUserType;
 use App\Form\ImportParticipantType;
 use App\Form\ProfilType;
 use App\Repository\ParticipantRepository;
@@ -272,27 +272,182 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['GET','POST'])]
+    #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
     public function deleteUser(
         Participant $participant,
         Request $request,
         EntityManagerInterface $em
     ): Response {
-        $form = $this->createForm(DeleteUserType::class);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Supprimer définitivement l'utilisateur
-            $em->remove($participant);
-            $em->flush();
-
-            $this->addFlash('success', 'Utilisateur supprimé avec succès.');
+        if (!$this->isCsrfTokenValid('delete'.$participant->getId(), $request->request->get('_token'))) {
+            $this->addFlash('danger', 'Action non autorisée.');
             return $this->redirectToRoute('admin_users');
         }
 
-        return $this->render('admin/delete_user.html.twig', [
-            'participant' => $participant,
-            'form' => $form->createView(),
-        ]);
+        // Archiver les sorties organisées par l'utilisateur
+        $sortiesOrganisees = $em->getRepository(Sortie::class)->findBy(['organisateur' => $participant]);
+
+        foreach ($sortiesOrganisees as $sortie) {
+            $sortie->setEtat(\App\Enum\Etat::ARCHIVEE);
+            $em->persist($sortie);
+        }
+
+        $em->remove($participant);
+        $em->flush();
+
+        $this->addFlash('success', 'Utilisateur supprimé et ses sorties archivées avec succès.');
+
+        return $this->redirectToRoute('admin_users');
+    }
+
+    #[Route('/participants/all', name: 'admin_get_all_participants')]
+    public function getAllParticipants(EntityManagerInterface $em): Response
+    {
+        $participants = $em->getRepository(Participant::class)
+            ->createQueryBuilder('p')
+            ->where('p.actif = :actif')
+            ->setParameter('actif', true)
+            ->orderBy('p.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $results = array_map(function(Participant $p) {
+            return [
+                'id' => $p->getId(),
+                'email' => $p->getEmail(),
+                'pseudo' => $p->getPseudo(),
+                'nom' => $p->getNom(),
+                'prenom' => $p->getPrenom(),
+            ];
+        }, $participants);
+
+        return $this->json($results);
+    }
+
+    #[Route('/participants/search', name: 'admin_search_participants')]
+    public function searchParticipants(Request $request, EntityManagerInterface $em): Response
+    {
+        $query = $request->query->get('q', '');
+
+        if (strlen($query) < 2) {
+            return $this->json([]);
+        }
+
+        $participants = $em->getRepository(Participant::class)
+            ->createQueryBuilder('p')
+            ->where('p.email LIKE :query OR p.pseudo LIKE :query OR p.nom LIKE :query OR p.prenom LIKE :query')
+            ->setParameter('query', '%' . $query . '%')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+
+        $results = array_map(function(Participant $p) {
+            return [
+                'id' => $p->getId(),
+                'email' => $p->getEmail(),
+                'pseudo' => $p->getPseudo(),
+                'nom' => $p->getNom(),
+                'prenom' => $p->getPrenom(),
+            ];
+        }, $participants);
+
+        return $this->json($results);
+    }
+
+    #[Route('/sortie/{id}/add-participant', name: 'admin_add_participant', methods: ['POST'])]
+    public function addParticipant(Sortie $sortie, Request $request, EntityManagerInterface $em, SortieService $sortieService): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $participantId = $data['participantId'] ?? null;
+
+        if (!$participantId) {
+            return $this->json(['success' => false, 'message' => 'Participant non spécifié']);
+        }
+
+        $participant = $em->getRepository(Participant::class)->find($participantId);
+
+        if (!$participant) {
+            return $this->json(['success' => false, 'message' => 'Participant introuvable']);
+        }
+
+        if ($sortie->getParticipants()->contains($participant)) {
+            return $this->json(['success' => false, 'message' => 'Ce participant est déjà inscrit']);
+        }
+
+        if ($sortie->getParticipants()->count() >= $sortie->getNbInscriptionMax()) {
+            return $this->json(['success' => false, 'message' => 'La sortie est complète']);
+        }
+
+        if ($sortie->getEtat()->value !== 'Ouverte') {
+            $sortie->addParticipant($participant);
+            $em->persist($sortie);
+            $em->flush();
+        } else {
+            // Utiliser le service normal
+            if (!$sortieService->inscrireParticipant($sortie, $participant)) {
+                return $this->json(['success' => false, 'message' => 'Impossible d\'ajouter le participant']);
+            }
+        }
+
+        return $this->json(['success' => true, 'message' => 'Participant ajouté avec succès']);
+    }
+
+    #[Route('/sortie/{id}/change-organizer', name: 'admin_change_organizer', methods: ['POST'])]
+    public function changeOrganizer(Sortie $sortie, Request $request, EntityManagerInterface $em): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $participantId = $data['participantId'] ?? null;
+
+        if (!$participantId) {
+            return $this->json(['success' => false, 'message' => 'Participant non spécifié']);
+        }
+
+        $participant = $em->getRepository(Participant::class)->find($participantId);
+
+        if (!$participant) {
+            return $this->json(['success' => false, 'message' => 'Participant introuvable']);
+        }
+
+        $sortie->setOrganisateur($participant);
+
+        if (!$sortie->getParticipants()->contains($participant)) {
+            $sortie->addParticipant($participant);
+        }
+
+        $em->flush();
+
+        return $this->json(['success' => true, 'message' => 'Organisateur changé avec succès']);
+    }
+
+    #[Route('/sortie/{id}/remove-participant', name: 'admin_remove_participant', methods: ['POST'])]
+    public function removeParticipant(Sortie $sortie, Request $request, EntityManagerInterface $em): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $participantId = $data['participantId'] ?? null;
+        $motif = $data['motif'] ?? null;
+
+        if (!$participantId || !$motif) {
+            return $this->json(['success' => false, 'message' => 'Données manquantes']);
+        }
+
+        $participant = $em->getRepository(Participant::class)->find($participantId);
+
+        if (!$participant) {
+            return $this->json(['success' => false, 'message' => 'Participant introuvable']);
+        }
+
+        if (!$sortie->getParticipants()->contains($participant)) {
+            return $this->json(['success' => false, 'message' => 'Ce participant n\'est pas inscrit à cette sortie']);
+        }
+
+        if ($sortie->getOrganisateur() === $participant) {
+            return $this->json(['success' => false, 'message' => 'Impossible de retirer l\'organisateur de la sortie']);
+        }
+
+        $sortie->removeParticipant($participant);
+
+        $em->flush();
+
+        return $this->json(['success' => true, 'message' => 'Participant retiré avec succès. Motif: ' . $motif]);
     }
 }

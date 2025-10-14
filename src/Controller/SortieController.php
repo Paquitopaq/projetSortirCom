@@ -88,6 +88,21 @@ final class SortieController extends AbstractController
         return $this->redirectToRoute('app_sortie');
     }
 
+    #[Route('/sortie/{id}/valider', name: 'sortie_valider', methods: ['POST'])]
+    public function valider(Sortie $sortie): Response
+    {
+        $user = $this->getUser();
+        $result = $this->sortieService->validerSortie($sortie, $user);
+
+        if ($result['success']) {
+            $this->addFlash('success', $result['message']);
+        } else {
+            $this->addFlash('danger', $result['message']);
+        }
+
+        return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+    }
+
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire')]
     public function inscription(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em): Response
     {
@@ -126,7 +141,8 @@ final class SortieController extends AbstractController
         $form = $this->createForm(ImportParticipantType::class);
         $form->handleRequest($request);
         $sortie->updateEtat();
-        if ($form->isSubmitted() && $form->isValid() && $this->getUser()?->getAdministrateur()) {
+
+        if ($form->isSubmitted() && $form->isValid() && $this->isGranted('ROLE_ADMIN')) {
             $csvFile = $form->get('csv_file')->getData();
 
             $messages = $importService->importerEtInscrire($csvFile, $sortie);
@@ -144,29 +160,57 @@ final class SortieController extends AbstractController
         ]);
     }
 
-
-
     #[Route('/sortie/{id}/delete', name: 'sortie_delete', methods: ['GET', 'POST'])]
     public function delete(
         Sortie $sortie,
         Request $request,
         SortieService $sortieService
     ): Response {
+        // Vérification des droits
+        $user = $this->getUser();
+
+        if (!$user) {
+            $this->addFlash('danger', 'Vous devez être connecté pour annuler une sortie.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Vérifier que l'utilisateur est soit l'organisateur soit un admin
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        $isOrganisateur = $sortie->getOrganisateur() === $user;
+
+        if (!$isOrganisateur && !$isAdmin) {
+            $this->addFlash('danger', 'Vous n\'avez pas le droit d\'annuler cette sortie.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
+        // Vérifier que la sortie n'est pas déjà annulée
+        if ($sortie->getEtat() === Etat::CANCELLED) {
+            $this->addFlash('warning', 'Cette sortie est déjà annulée.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
         $form = $this->createForm(DeleteSortieType::class, $sortie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->getUser();
             $motif = $form->get('motifAnnulation')->getData();
+
+            if (!$motif || trim($motif) === '') {
+                $this->addFlash('danger', 'Le motif d\'annulation est obligatoire.');
+                return $this->render('sortie/delete.html.twig', [
+                    'sortie' => $sortie,
+                    'form' => $form->createView(),
+                ]);
+            }
+
             $result = $sortieService->deleteSortie($sortie, $user, $motif);
 
             if ($result['success']) {
                 $this->addFlash('success', $result['message']);
+                return $this->redirectToRoute('app_sortie');
             } else {
                 $this->addFlash('danger', $result['message']);
             }
-
-            return $this->redirectToRoute('app_home');
         }
 
         return $this->render('sortie/delete.html.twig', [
@@ -180,14 +224,26 @@ final class SortieController extends AbstractController
     {
         // Vérification des droits
         $user = $this->getUser();
-        if ($sortie->getOrganisateur() !== $user && !$user->isAdministrateur()) {
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+        if ($sortie->getOrganisateur() !== $user && !$isAdmin) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette sortie.');
         }
 
-        // Vérification de l’état
-        if ($sortie->getEtat()->value !== 'Créée') {
-            $this->addFlash('danger', 'Seules les sorties en état "Créée" peuvent être modifiées.');
-            return $this->redirectToRoute('app_sortie');
+        // Vérification de l'état - Admin peut modifier "Créée" et "Ouverte", organisateur seulement "Créée"
+        $etatValue = $sortie->getEtat()->value;
+
+        if ($isAdmin) {
+            if ($etatValue !== 'Créée' && $etatValue !== 'Ouverte') {
+                $this->addFlash('danger', 'Seules les sorties en état "Créée" ou "Ouverte" peuvent être modifiées.');
+                return $this->redirectToRoute('app_sortie');
+            }
+        } else {
+            // Organisateur peut modifier seulement si l'état est "Créée"
+            if ($etatValue !== 'Créée') {
+                $this->addFlash('danger', 'Seules les sorties en état "Créée" peuvent être modifiées.');
+                return $this->redirectToRoute('app_sortie');
+            }
         }
 
         $form = $this->createForm(SortieType::class, $sortie);
@@ -217,5 +273,4 @@ final class SortieController extends AbstractController
             'sortie' => $sortie,
         ]);
     }
-
 }
