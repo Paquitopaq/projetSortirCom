@@ -65,9 +65,16 @@ class Sortie
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $motifAnnulation = null;
 
+    /**
+     * @var Collection<int, GroupePrive>
+     */
+    #[ORM\OneToMany(targetEntity: GroupePrive::class, mappedBy: 'sortie')]
+    private Collection $groupePrives;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
+        $this->groupePrives = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -283,6 +290,36 @@ class Sortie
     public function setMotifAnnulation(?string $motifAnnulation): static
     {
         $this->motifAnnulation = $motifAnnulation;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupePrive>
+     */
+    public function getGroupePrives(): Collection
+    {
+        return $this->groupePrives;
+    }
+
+    public function addGroupePrife(GroupePrive $groupePrife): static
+    {
+        if (!$this->groupePrives->contains($groupePrife)) {
+            $this->groupePrives->add($groupePrife);
+            $groupePrife->setSortie($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupePrife(GroupePrive $groupePrife): static
+    {
+        if ($this->groupePrives->removeElement($groupePrife)) {
+            // set the owning side to null (unless already changed)
+            if ($groupePrife->getSortie() === $this) {
+                $groupePrife->setSortie(null);
+            }
+        }
+
         return $this;
     }
 }
