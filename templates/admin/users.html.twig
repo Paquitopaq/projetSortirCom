@@ -35,11 +35,12 @@
                         <!-- Avatar + Infos -->
                         <div class="d-flex align-items-center gap-3">
                             <div class="user-avatar">
+
                                 {% if participant.photoProfil %}
-                                    <img src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Avatar" class="rounded-circle" width="48" height="48">
+                                    <img src="{{ asset(participant.getAvatarPath()) }}" alt="Avatar" class="rounded-circle" width="48" height="48">
                                 {% else %}
                                     <div class="avatar-placeholder rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-                                        {{ participant.email|slice(0,1)|upper }}
+                                        <img src="{{ asset('assets/avatars/cchat.png') }}" alt="Avatar par défaut" width="48" height="48">
                                     </div>
                                 {% endif %}
                             </div>
@@ -96,6 +97,7 @@
                                 </li>
                                 <li>
                                     <form class="form-delete-user" action="{{ path('admin_user_delete', {'id': participant.id}) }}" method="POST">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ participant.id) }}">
                                         <button type="submit" class="dropdown-item text-danger">
                                             <i class="fas fa-trash-alt me-2"></i> Supprimer
                                         </button>

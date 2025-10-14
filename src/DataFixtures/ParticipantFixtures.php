@@ -27,7 +27,6 @@ class ParticipantFixtures extends Fixture
                 'nom' => 'Dupont',
                 'prenom' => 'Alice',
                 'telephone' => '0601020304',
-                'administrateur' => false,
                 'actif' => true,
                 'photoProfil' => null,
             ],
@@ -39,7 +38,6 @@ class ParticipantFixtures extends Fixture
                 'nom' => 'Martin',
                 'prenom' => 'Bob',
                 'telephone' => '0605060708',
-                'administrateur' => true,
                 'actif' => true,
                 'photoProfil' => null,
             ],
@@ -51,7 +49,6 @@ class ParticipantFixtures extends Fixture
                 'nom' => 'Durand',
                 'prenom' => 'Carol',
                 'telephone' => '0611121314',
-                'administrateur' => false,
                 'actif' => false,
                 'photoProfil' => null,
             ],
@@ -65,7 +62,6 @@ class ParticipantFixtures extends Fixture
             $participant->setNom($data['nom']);
             $participant->setPrenom($data['prenom']);
             $participant->setTelephone($data['telephone']);
-            $participant->setAdministrateur($data['administrateur']);
             $participant->setActif($data['actif']);
             $participant->setPhotoProfil($data['photoProfil']);
 

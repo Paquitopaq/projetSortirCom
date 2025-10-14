@@ -14,9 +14,11 @@ class VilleType extends AbstractType
         $builder
             ->add('nom', null, [
                 'label' => 'Nom de la ville',
+                'attr' => ['placeholder' => 'Ex : Nantes']
             ])
             ->add('codePostal', null, [
                 'label' => 'Code postal',
+                'attr' => ['placeholder' => 'Ex : 44000']
             ]);
     }
 

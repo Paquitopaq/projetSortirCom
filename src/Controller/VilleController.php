@@ -22,16 +22,25 @@ final class VilleController extends AbstractController
         $form = $this->createForm(VilleType::class, $ville);
         $form->handleRequest($request);
 
+        // On récupère l’URL d’origine (ex: /sortie/create)
+        $redirect = $request->query->get('redirect');
+
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($ville);
             $em->flush();
 
             $this->addFlash('success', 'La ville a bien été ajoutée !');
+
+            if ($redirect) {
+                return $this->redirect($redirect);
+            }
+
             return $this->redirectToRoute('ville_liste');
         }
 
         return $this->render('ville/create.html.twig', [
             'form' => $form->createView(),
+            'previousUrl' => $redirect,
         ]);
     }
 

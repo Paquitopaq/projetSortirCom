@@ -24,11 +24,10 @@
         <div class="form-card">
             {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-            <!-- Section Informations générales -->
+            {# ---------------- Informations générales ---------------- #}
             <div class="form-section">
                 <div class="form-section-title">
-                    <i class="fas fa-info-circle"></i>
-                    Informations générales
+                    <i class="fas fa-info-circle"></i> Informations générales
                 </div>
 
                 <div class="form-group">
@@ -43,13 +42,27 @@
                     <div class="form-help">Donnez un maximum d'informations pour donner envie de participer !</div>
                     {{ form_errors(form.infoSortie) }}
                 </div>
+
+                {# Upload photo sortie #}
+                <div class="form-group">
+                    {{ form_label(form.photoSortie, 'Photo de la sortie', {'label_attr': {'class': 'form-label'}}) }}
+                    <label class="custom-file-upload">
+                        {{ form_widget(form.photoSortie, {'attr': {'class': 'form-control-file'}}) }}
+                        <span>Choisir un fichier...</span>
+                    </label>
+                    {% if sortie is defined and sortie.photoSortie %}
+                        <div class="mt-2">
+                            <img src="{{ asset('uploads/sorties/' ~ sortie.photoSortie) }}" alt="Photo sortie" class="img-thumbnail">
+                        </div>
+                    {% endif %}
+                    {{ form_errors(form.photoSortie) }}
+                </div>
             </div>
 
-            <!-- Section Date et durée -->
+            {# ---------------- Date et durée ---------------- #}
             <div class="form-section">
                 <div class="form-section-title">
-                    <i class="fas fa-calendar-alt"></i>
-                    Date et durée
+                    <i class="fas fa-calendar-alt"></i> Date et durée
                 </div>
 
                 <div class="form-row">
@@ -74,20 +87,17 @@
                 </div>
             </div>
 
-            <!-- Section Lieu -->
+            {# ---------------- Lieu ---------------- #}
             <div class="form-section">
                 <div class="form-section-title">
-                    <i class="fas fa-map-marker-alt"></i>
-                    Lieu de rendez-vous
+                    <i class="fas fa-map-marker-alt"></i> Lieu de rendez-vous
                 </div>
 
-                {% if form.site is defined %}
-                    <div class="form-group">
-                        {{ form_label(form.site, 'Site organisateur', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.site, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(form.site) }}
-                    </div>
-                {% endif %}
+                <div class="form-group">
+                    {{ form_label(form.site, 'Site organisateur', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.site, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.site) }}
+                </div>
 
                 <div class="mb-3">
                     <label for="sortie_lieu">Lieu existant :</label>
@@ -100,40 +110,29 @@
 
                 <div id="nouveau-lieu-form" style="display:none; margin-top: 1rem;">
                     <h5>Créer un nouveau lieu</h5>
-
-                    {{ form_widget(form.nouveauLieu) }}
+                    {{ form_widget(form.nouveauLieu, {'attr': {'class': 'form-control'}}) }}
 
                     <div class="mt-2">
-                        <a href="{{ path('ville_ajouter') }}" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ path('ville_ajouter', { redirect: app.request.uri }) }}"
+                           class="btn btn-outline-primary btn-sm">
                             <i class="fa fa-city"></i> Ajouter une nouvelle ville
                         </a>
                     </div>
                 </div>
 
                 <div id="lieu-details" class="lieu-details" style="display:none;">
-                    <div class="lieu-info">
-                        <strong>Ville :</strong> <span id="lieu-ville"></span>
-                    </div>
-                    <div class="lieu-info">
-                        <strong>Rue :</strong> <span id="lieu-rue"></span>
-                    </div>
-                    <div class="lieu-info">
-                        <strong>Code postal :</strong> <span id="lieu-code-postal"></span>
-                    </div>
-                    <div class="lieu-info">
-                        <strong>Latitude :</strong> <span id="lieu-latitude"></span>
-                    </div>
-                    <div class="lieu-info">
-                        <strong>Longitude :</strong> <span id="lieu-longitude"></span>
-                    </div>
+                    <div class="lieu-info"><strong>Ville :</strong> <span id="lieu-ville"></span></div>
+                    <div class="lieu-info"><strong>Rue :</strong> <span id="lieu-rue"></span></div>
+                    <div class="lieu-info"><strong>Code postal :</strong> <span id="lieu-code-postal"></span></div>
+                    <div class="lieu-info"><strong>Latitude :</strong> <span id="lieu-latitude"></span></div>
+                    <div class="lieu-info"><strong>Longitude :</strong> <span id="lieu-longitude"></span></div>
                 </div>
             </div>
 
-            <!-- Section Participants -->
+            {# ---------------- Participants ---------------- #}
             <div class="form-section">
                 <div class="form-section-title">
-                    <i class="fas fa-users"></i>
-                    Participants
+                    <i class="fas fa-users"></i> Participants
                 </div>
 
                 <div class="form-group">
@@ -178,43 +177,37 @@
 
 
             <!-- Boutons d'action -->
+            {# ---------------- Boutons d'action ---------------- #}
             <div class="form-actions">
                 <a href="{{ sortie is defined and sortie.id ? path('sortie_detail', {'id': sortie.id}) : path('app_sortie') }}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i>
-                    Annuler
+                    <i class="fas fa-times"></i> Annuler
                 </a>
 
                 {% if sortie is defined and sortie.id %}
-                    {# Mode modification #}
                     <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save"></i>
-                        Enregistrer les modifications
+                        <i class="fas fa-save"></i> Enregistrer les modifications
                     </button>
                 {% else %}
-                    {# Mode création #}
                     <button type="submit" name="action" value="enregistrer" class="btn btn-primary">
-                        <i class="fas fa-save"></i>
-                        Enregistrer en brouillon
+                        <i class="fas fa-save"></i> Enregistrer en brouillon
                     </button>
                     <button type="submit" name="action" value="publier" class="btn btn-success">
-                        <i class="fas fa-paper-plane"></i>
-                        Publier maintenant
+                        <i class="fas fa-paper-plane"></i> Publier maintenant
                     </button>
                 {% endif %}
             </div>
 
             {{ form_end(form) }}
-        </div>
 
-        {% if sortie is defined and sortie.id %}
-            <!-- Info Box pour la modification -->
-            <div class="info-card">
-                <i class="fas fa-info-circle"></i>
-                <div>
-                    <strong>Note :</strong> Les participants déjà inscrits ({{ sortie.participants|length }}) seront conservés après la modification. Assurez-vous que le nombre maximum de participants est suffisant.
+            {% if sortie is defined and sortie.id %}
+                <div class="info-card mt-4">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Note :</strong> Les participants déjà inscrits ({{ sortie.participants|length }}) seront conservés après la modification. Assurez-vous que le nombre maximum de participants est suffisant.
+                    </div>
                 </div>
-            </div>
-        {% endif %}
+            {% endif %}
+        </div>
     </section>
 {% endblock %}
 
@@ -224,116 +217,86 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Affichage des messages flash avec SweetAlert2
-        {% for label, messages in app.flashes %}
-        {% for message in messages %}
-        Swal.fire({
-            icon: '{{ label == 'success' ? 'success' : (label == 'danger' or label == 'error' ? 'error' : 'info') }}',
-            title: '{{ label == 'success' ? 'Succès' : (label == 'danger' or label == 'error' ? 'Erreur' : 'Information') }}',
-            text: '{{ message|raw }}',
-            confirmButtonColor: '#FF6B00',
-            timer: 3000,
-            timerProgressBar: true
-        });
-        {% endfor %}
-        {% endfor %}
-    </script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Flatpickr
+            flatpickr('input[name="sortie[dateHeureDebut]"]', {
+                enableTime: true, dateFormat: "Y-m-d H:i", time_24hr: true, locale: "fr", minDate: "today"
+            });
+            flatpickr('input[name="sortie[dateLimiteInscription]"]', {
+                enableTime: true, dateFormat: "Y-m-d H:i", time_24hr: true, locale: "fr", minDate: "today"
+            });
 
-    {# Script pour afficher/masquer le sous-formulaire #}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+            // SweetAlert2 pour messages flash
+            {% for label, messages in app.flashes %}
+            {% for message in messages %}
+            Swal.fire({
+                icon: '{{ label == 'success' ? 'success' : (label == 'danger' or label == 'error' ? 'error' : 'info') }}',
+                title: '{{ label == 'success' ? 'Succès' : (label == 'danger' or label == 'error' ? 'Erreur' : 'Information') }}',
+                text: '{{ message|raw }}',
+                confirmButtonColor: '#FF6B00',
+                timer: 3000,
+                timerProgressBar: true
+            });
+            {% endfor %}
+            {% endfor %}
+
+            // Upload file preview
+            const fileInput = document.querySelector('.form-control-file');
+            const fileLabel = document.querySelector('.custom-file-upload span');
+            if(fileInput) {
+                fileInput.addEventListener('change', function() {
+                    fileLabel.textContent = this.files[0] ? this.files[0].name : 'Choisir un fichier...';
+                });
+            }
+
+            // Toggle nouveau lieu
             const btn = document.getElementById('btn-nouveau-lieu');
             const formNouveauLieu = document.getElementById('nouveau-lieu-form');
             const lieuSelect = document.getElementById('sortie_lieu');
             let visible = false;
-
-            btn.addEventListener('click', function () {
-                visible = !visible;
-                formNouveauLieu.style.display = visible ? 'block' : 'none';
-
-                if (visible) {
-                    lieuSelect.value = '';
-                    lieuSelect.disabled = true;
-                    btn.innerHTML = '<i class="fa fa-minus"></i> Annuler le nouveau lieu';
-                    btn.classList.add('btn-outline-danger');
-                    btn.classList.remove('btn-outline-success');
-                } else {
-                    lieuSelect.disabled = false;
-                    btn.innerHTML = '<i class="fa fa-plus"></i> Ajouter un nouveau lieu';
-                    btn.classList.add('btn-outline-success');
-                    btn.classList.remove('btn-outline-danger');
-                }
-            });
-        });
-    </script>
-
-    <script>
-        // Données des lieux
-        const lieux = {
-            {% for lieu in lieux %}
-            "{{ lieu.id }}": {
-                ville: "{{ lieu.ville.nom|e('js') }}",
-                rue: "{{ lieu.rue|e('js') }}",
-                codePostal: "{{ lieu.ville.codePostal|e('js') }}",
-                latitude: "{{ lieu.latitude }}",
-                longitude: "{{ lieu.longitude }}"
-            },
-            {% endfor %}
-        };
-
-        // Initialisation Flatpickr pour les dates
-        document.addEventListener('DOMContentLoaded', function() {
-            // Date et heure de début
-            const dateHeureDebut = document.querySelector('input[name="sortie[dateHeureDebut]"]');
-            if (dateHeureDebut) {
-                flatpickr(dateHeureDebut, {
-                    enableTime: true,
-                    dateFormat: "Y-m-d H:i",
-                    time_24hr: true,
-                    locale: "fr",
-                    minDate: "today"
+            if(btn) {
+                btn.addEventListener('click', function () {
+                    visible = !visible;
+                    formNouveauLieu.style.display = visible ? 'block' : 'none';
+                    lieuSelect.disabled = visible;
+                    btn.innerHTML = visible ? '<i class="fa fa-minus"></i> Annuler le nouveau lieu' : '<i class="fa fa-plus"></i> Ajouter un nouveau lieu';
+                    btn.classList.toggle('btn-outline-success', !visible);
+                    btn.classList.toggle('btn-outline-danger', visible);
                 });
             }
 
-            // Date limite d'inscription
-            const dateLimite = document.querySelector('input[name="sortie[dateLimiteInscription]"]');
-            if (dateLimite) {
-                flatpickr(dateLimite, {
-                    enableTime: true,
-                    dateFormat: "Y-m-d H:i",
-                    time_24hr: true,
-                    locale: "fr",
-                    minDate: "today"
+            // Affichage détails du lieu
+            const lieux = {
+                {% for lieu in lieux %}
+                "{{ lieu.id }}": {
+                    ville: "{{ lieu.ville.nom|e('js') }}",
+                    rue: "{{ lieu.rue|e('js') }}",
+                    codePostal: "{{ lieu.ville.codePostal|e('js') }}",
+                    latitude: "{{ lieu.latitude }}",
+                    longitude: "{{ lieu.longitude }}"
+                },
+                {% endfor %}
+            };
+            if(lieuSelect){
+                lieuSelect.addEventListener('change', function () {
+                    const details = lieux[this.value];
+                    const div = document.getElementById('lieu-details');
+                    if(details){
+                        document.getElementById('lieu-ville').textContent = details.ville;
+                        document.getElementById('lieu-rue').textContent = details.rue;
+                        document.getElementById('lieu-code-postal').textContent = details.codePostal;
+                        document.getElementById('lieu-latitude').textContent = details.latitude;
+                        document.getElementById('lieu-longitude').textContent = details.longitude;
+                        div.style.display = 'block';
+                    } else { div.style.display = 'none'; }
                 });
+                {% if sortie is defined and sortie.id %}
+                lieuSelect.dispatchEvent(new Event('change'));
+                {% endif %}
             }
         });
-
-        // Affichage des détails du lieu
-        const lieuSelect = document.getElementById('sortie_lieu');
-        if (lieuSelect) {
-            lieuSelect.addEventListener('change', function () {
-                const selectedId = this.value;
-                const details = lieux[selectedId];
-                const detailsDiv = document.getElementById('lieu-details');
-
-                if (details) {
-                    document.getElementById('lieu-ville').textContent = details.ville;
-                    document.getElementById('lieu-rue').textContent = details.rue;
-                    document.getElementById('lieu-code-postal').textContent = details.codePostal;
-                    document.getElementById('lieu-latitude').textContent = details.latitude;
-                    document.getElementById('lieu-longitude').textContent = details.longitude;
-                    detailsDiv.style.display = 'block';
-                } else {
-                    detailsDiv.style.display = 'none';
-                }
-            });
-
-            // Trigger change event on load pour afficher les détails du lieu actuel en mode modification
-            {% if sortie is defined and sortie.id %}
-            lieuSelect.dispatchEvent(new Event('change'));
-            {% endif %}
-        }
     </script>
+    {% endblock %}
     <script>
         // Données des groupes
         const groupes = {

@@ -26,20 +26,20 @@
                     <!-- Section gauche : Avatar et infos de contact -->
                     <div class="profile-left">
                         <div class="avatar-section">
-                            {% if participant.photoProfil %}
-                                <img src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil" class="avatar-image">
+                            {% if app.user %}
+                                <img class="avatar-image" src="{{ asset(app.user.getAvatarPath()) }}" alt="Avatar">
                             {% else %}
-                                <div class="avatar-placeholder">
-                                    <i class="fas fa-user"></i>
-                                </div>
+                                {{ asset('assets/avatars/cchat.png') }}
                             {% endif %}
                         </div>
 
-                        <div class="greeting-section">
-                            <span class="greeting-text">HELLO I'M</span>
-                            <h1 class="profile-main-name">{{ participant.pseudo }}</h1>
-                            <p class="profile-subtitle">{{ participant.prenom }} {{ participant.nom }}</p>
+                        <div class="profile-info">
+                            <h2>{{ participant.pseudo ?? 'Utilisateur' }}</h2>
+                            <p class="text-muted">{{ participant.prenom }} {{ participant.nom }}</p>
+                            <p><i class="fas fa-envelope"></i> {{ participant.email }}</p>
+                            <p><i class="fas fa-phone"></i> {{ participant.telephone ?? 'Non renseigné' }}</p>
                         </div>
+                        
                         <p class="profile-card-role">{{ participant.administrateur ? 'Administrateur' : 'Membre' }}</p>
 
                         <div class="contact-info">
@@ -128,7 +128,7 @@
                                                     <h3>{{ sortie.nom }}</h3>
                                                     <div class="activity-meta">
                                                         <span><i class="fas fa-clock"></i> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
-                                                        <span><i class="fas fa-user"></i> {{ sortie.organisateur.pseudo ?? sortie.organisateur.prenom }}</span>
+                                                        <span><i class="fas fa-user"></i> {{ participant.pseudo ?? participant.prenom }}</span>
                                                     </div>
                                                 </div>
                                                 <span class="activity-badge status-{{ sortie.etat.value|lower|replace({' ': '-'}) }}">

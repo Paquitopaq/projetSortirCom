@@ -20,24 +20,28 @@ class Sortie
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: false)]
+    #[Assert\NotBlank(message: "Le nom de la sortie est obligatoire.")]
     private ?string $nom = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\GreaterThan("today", message: "La date de début doit être supérieur à aujourd'hui")]
     private ?DateTimeImmutable $dateHeureDebut = null;
 
-    #[ORM\Column]
+    #[ORM\Column(length: 255, nullable: false)]
+    #[Assert\NotNull(message: "La durée est obligatoire.")]
+    #[Assert\Positive(message: "La durée doit être un nombre positif.")]
     private ?int $duree = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: false)]
     #[Assert\NotNull(message: "La date limite d'inscription est obligatoire")]
     private ?DateTimeImmutable $dateLimiteInscription = null;
 
-    #[ORM\Column]
+    #[ORM\Column(length: 255, nullable: false)]
+    #[Assert\NotNull(message: "Renseigner le nombre d'inscription maximum.")]
     private ?int $nbInscriptionMax = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $infoSortie = null;
 
     #[ORM\Column(enumType: Etat::class)]
@@ -66,6 +70,9 @@ class Sortie
     #[ORM\ManyToOne(targetEntity: GroupePrive::class)]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?GroupePrive $groupePrive = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photoSortie = null;
+
 
     public function __construct()
     {
@@ -308,5 +315,16 @@ class Sortie
         return $this->groupePrive->getMembres()->contains($user);
     }
 
+
+    public function getPhotoSortie(): ?string
+    {
+        return $this->photoSortie;
+    }
+
+    public function setPhotoSortie(?string $photoSortie): static
+    {
+        $this->photoSortie = $photoSortie;
+        return $this;
+    }
 
 }

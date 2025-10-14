@@ -14,7 +14,9 @@ use App\Repository\GroupePriveRepository;
 use App\Repository\LieuRepository;
 use App\Service\ImportService;
 use App\Service\SortieService;
+use App\Utils\FileManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,8 +46,13 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/create', name: 'sortie_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager, LieuRepository $lieuRepository, GroupePriveRepository $groupePriveRepository): Response
-    {
+    public function create(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        LieuRepository $lieuRepository,
+        GroupePriveRepository $groupePriveRepository,
+        FileManager $fileManager
+    ): Response {
         $sortie = new Sortie();
 
         $form = $this->createForm(SortieType::class, $sortie,['organisateur' => $this->getUser(),]);
@@ -53,8 +60,8 @@ final class SortieController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            // Nouveau lieu
             $nouveauLieu = $form->get('nouveauLieu')->getData();
-
             if ($nouveauLieu && $nouveauLieu->getNom()) {
                 $entityManager->persist($nouveauLieu);
                 $sortie->setLieu($nouveauLieu);
@@ -65,11 +72,26 @@ final class SortieController extends AbstractController
             }
 
             $publication = $request->request->get('action') === 'publier';
+
+            // Upload photo
+            $photoFile = $form->get('photoSortie')->getData();
+            if ($photoFile instanceof UploadedFile) {
+                $newFilename = $fileManager->upload(
+                    $photoFile,
+                    $this->getParameter('sorties_photos_directory'),
+                    $sortie->getNom() // facultatif, juste pour base du nom
+                );
+                if ($newFilename) {
+                    $sortie->setPhotoSortie($newFilename);
+                } else {
+                    $this->addFlash('warning', 'Erreur lors de l\'upload de l\'image.');
+                }
+            }
+
             $this->sortieService->createSortie($sortie, $publication);
-
-
             $entityManager->persist($sortie);
             $entityManager->flush();
+
             $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
             $this->addFlash('success', $message);
             return $this->redirectToRoute('app_sortie');
@@ -94,6 +116,21 @@ final class SortieController extends AbstractController
         }
 
         return $this->redirectToRoute('app_sortie');
+    }
+
+    #[Route('/sortie/{id}/valider', name: 'sortie_valider', methods: ['POST'])]
+    public function valider(Sortie $sortie): Response
+    {
+        $user = $this->getUser();
+        $result = $this->sortieService->validerSortie($sortie, $user);
+
+        if ($result['success']) {
+            $this->addFlash('success', $result['message']);
+        } else {
+            $this->addFlash('danger', $result['message']);
+        }
+
+        return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
     }
 
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire')]
@@ -137,7 +174,8 @@ final class SortieController extends AbstractController
         $form = $this->createForm(ImportParticipantType::class);
         $form->handleRequest($request);
         $sortie->updateEtat();
-        if ($form->isSubmitted() && $form->isValid() && $this->getUser()?->getAdministrateur()) {
+
+        if ($form->isSubmitted() && $form->isValid() && $this->isGranted('ROLE_ADMIN')) {
             $csvFile = $form->get('csv_file')->getData();
 
             $messages = $importService->importerEtInscrire($csvFile, $sortie);
@@ -155,29 +193,57 @@ final class SortieController extends AbstractController
         ]);
     }
 
-
-
     #[Route('/sortie/{id}/delete', name: 'sortie_delete', methods: ['GET', 'POST'])]
     public function delete(
         Sortie $sortie,
         Request $request,
         SortieService $sortieService
     ): Response {
+        // Vérification des droits
+        $user = $this->getUser();
+
+        if (!$user) {
+            $this->addFlash('danger', 'Vous devez être connecté pour annuler une sortie.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Vérifier que l'utilisateur est soit l'organisateur soit un admin
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        $isOrganisateur = $sortie->getOrganisateur() === $user;
+
+        if (!$isOrganisateur && !$isAdmin) {
+            $this->addFlash('danger', 'Vous n\'avez pas le droit d\'annuler cette sortie.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
+        // Vérifier que la sortie n'est pas déjà annulée
+        if ($sortie->getEtat() === Etat::CANCELLED) {
+            $this->addFlash('warning', 'Cette sortie est déjà annulée.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
         $form = $this->createForm(DeleteSortieType::class, $sortie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->getUser();
             $motif = $form->get('motifAnnulation')->getData();
+
+            if (!$motif || trim($motif) === '') {
+                $this->addFlash('danger', 'Le motif d\'annulation est obligatoire.');
+                return $this->render('sortie/delete.html.twig', [
+                    'sortie' => $sortie,
+                    'form' => $form->createView(),
+                ]);
+            }
+
             $result = $sortieService->deleteSortie($sortie, $user, $motif);
 
             if ($result['success']) {
                 $this->addFlash('success', $result['message']);
+                return $this->redirectToRoute('app_sortie');
             } else {
                 $this->addFlash('danger', $result['message']);
             }
-
-            return $this->redirectToRoute('app_home');
         }
 
         return $this->render('sortie/delete.html.twig', [
@@ -187,25 +253,46 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/{id}/edit', name: 'sortie_edit')]
-    public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
-    {
-        // Vérification des droits
+    public function edit(
+        Sortie $sortie,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        LieuRepository $lieuRepository,
+        FileManager $fileManager
+    ): Response {
         $user = $this->getUser();
-        if ($sortie->getOrganisateur() !== $user && !$user->isAdministrateur()) {
-            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette sortie.');
-        }
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
 
-        // Vérification de l’état
-        if ($sortie->getEtat()->value !== 'Créée') {
-            $this->addFlash('danger', 'Seules les sorties en état "Créée" peuvent être modifiées.');
-            return $this->redirectToRoute('app_sortie');
-        }
+        // Vérifications droits et état...
 
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
         $publication = $request->request->get('action') === 'publier';
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Nouveau lieu
+            $nouveauLieu = $form->get('nouveauLieu')->getData();
+            if ($nouveauLieu && $nouveauLieu->getNom()) {
+                $entityManager->persist($nouveauLieu);
+                $sortie->setLieu($nouveauLieu);
+            }
+
+            // Upload photo
+            $photoFile = $form->get('photoSortie')->getData();
+            if ($photoFile instanceof UploadedFile) {
+                $newFilename = $fileManager->upload(
+                    $photoFile,
+                    $this->getParameter('sorties_photos_directory'),
+                    $sortie->getNom(),        // facultatif, juste pour base du nom
+                    $sortie->getPhotoSortie() // ancien nom pour suppression
+                );
+                if ($newFilename) {
+                    $sortie->setPhotoSortie($newFilename);
+                } else {
+                    $this->addFlash('warning', 'Erreur lors de l\'upload de l\'image.');
+                }
+            }
+
             $this->sortieService->createSortie($sortie, $publication);
             $entityManager->flush();
 
@@ -220,8 +307,4 @@ final class SortieController extends AbstractController
             'sortie' => $sortie,
         ]);
     }
-
-
-
-
 }

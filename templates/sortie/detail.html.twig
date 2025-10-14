@@ -6,48 +6,66 @@
 
 {% block body %}
     <div class="container">
-        <!-- En-tête de la sortie -->
+        <!-- En-tête -->
         <div class="detail-header">
             <a href="{{ path('app_sortie') }}" class="btn-back">
                 <i class="fas fa-arrow-left"></i> Retour aux sorties
             </a>
-            {% if app.user and (app.user == sortie.organisateur or app.user.administrateur) %}
-                <div class="header-actions">
-                    <a href="{{ path('sortie_edit', {'id': sortie.id}) }}" class="btn-edit">
-                        <i class="fas fa-edit"></i> Modifier
-                    </a>
-                    <a href="{{ path('sortie_delete', {'id': sortie.id}) }}" class="btn-delete">
-                        <i class="fas fa-trash"></i> Supprimer
-                    </a>
+            {% if app.user and (app.user == sortie.organisateur or is_granted('ROLE_ADMIN')) %}
+                <div class="menu-dots">
+                    <button class="dots-button">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                        {% if sortie.etat != constant('App\\Enum\\Etat::CANCELLED') %}
+                            <a href="{{ path('sortie_delete', {'id': sortie.id}) }}">
+                                <i class="fas fa-times-circle"></i> Annuler la sortie
+                            </a>
+                        {% endif %}
+                    </div>
                 </div>
             {% endif %}
         </div>
 
-        <!-- Carte principale -->
-        <div class="detail-card">
-            <!-- Image/bannière -->
-            <div class="detail-image">
-                <i class="fas fa-calendar-check"></i>
-                {% if sortie.etat.value == 'Ouvert' %}
-                    <span class="badge-now">Inscriptions ouvertes</span>
-                {% endif %}
+        <!-- Grille principale : Image + Infos -->
+        <div class="main-grid">
+            <!-- Image -->
+            <div class="image-card">
+                <div class="detail-image">
+                    {% if sortie.photoSortie %}
+                        <img src="{{ asset('uploads/sorties/' ~ sortie.photoSortie) }}" alt="{{ sortie.nom }}" class="img-fluid">
+                    {% endif %}
+
+                    {% if sortie.lieu or sortie.site %}
+                        <div class="location-badge">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>
+                                {% if sortie.lieu %}{{ sortie.lieu.nom }}{% endif %}
+                                {% if sortie.site and sortie.lieu %} – {% endif %}
+                                {% if sortie.site %}{{ sortie.site.nom }}{% endif %}
+                            </span>
+                        </div>
+                    {% endif %}
+
+                    {% if sortie.etat.value == 'Ouverte' %}
+                        <span class="badge-now">Inscriptions ouvertes</span>
+                    {% endif %}
+                </div>
             </div>
 
-            <!-- Contenu principal -->
-            <div class="detail-content">
+            <!-- Infos principales -->
+            <div class="info-card">
                 <h1 class="detail-title">{{ sortie.nom }}</h1>
 
-                <div class="detail-meta">
-                    <span class="status-badge status-{{ sortie.etat.value|lower|replace({' ': '-'}) }}">
-                        {{ sortie.etat.value }}
-                    </span>
-                    <span class="detail-participants">
-                        <i class="fas fa-users"></i>
-                        {{ sortie.participants|length }}/{{ sortie.nbInscriptionMax }} participants
-                    </span>
-                </div>
+                {% if sortie.infoSortie %}
+                    <div class="detail-description">
+                        {{ sortie.infoSortie }}
+                    </div>
+                {% endif %}
 
-                <!-- Informations principales -->
                 <div class="detail-grid">
                     <div class="detail-info-item">
                         <i class="fas fa-clock"></i>
@@ -58,168 +76,249 @@
                     </div>
 
                     <div class="detail-info-item">
-                        <i class="fas fa-hourglass-half"></i>
-                        <div>
-                            <div class="info-label">Durée</div>
-                            <div class="info-value">{{ sortie.duree }} minutes</div>
-                        </div>
-                    </div>
-
-                    <div class="detail-info-item">
                         <i class="fas fa-calendar-times"></i>
                         <div>
-                            <div class="info-label">Date limite d'inscription</div>
+                            <div class="info-label">Limite d'inscription</div>
                             <div class="info-value">{{ sortie.dateLimiteInscription|date('d/m/Y') }}</div>
                         </div>
                     </div>
 
                     <div class="detail-info-item">
-                        <i class="fas fa-map-marker-alt"></i>
+                        <i class="fas fa-hourglass-half"></i>
                         <div>
-                            <div class="info-label">Lieu</div>
-                            <div class="info-value">
-                                {% if sortie.lieu %}
-                                    {{ sortie.lieu.nom }}
-                                {% else %}
-                                    <em>Non défini</em>
-                                {% endif %}
-                            </div>
+                            <div class="info-label">Durée</div>
+                            <div class="info-value">{{ sortie.duree }} min</div>
                         </div>
                     </div>
 
                     <div class="detail-info-item">
-                        <i class="fas fa-building"></i>
+                        <i class="fas fa-users"></i>
                         <div>
-                            <div class="info-label">Site</div>
-                            <div class="info-value">
-                                {% if sortie.site %}
-                                    {{ sortie.site.nom }}
-                                {% else %}
-                                    <em>Non défini</em>
-                                {% endif %}
-                            </div>
+                            <div class="info-label">Participants</div>
+                            <div class="info-value">{{ sortie.participants|length }}/{{ sortie.nbInscriptionMax }}</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Description -->
-                {% if sortie.infoSortie %}
-                    <div class="detail-description">
-                        <h3>Informations complémentaires</h3>
-                        <p>{{ sortie.infoSortie }}</p>
-                    </div>
-                {% endif %}
-
-                <!-- Organisateur -->
-                <div class="detail-organizer">
-                    <div class="organizer-avatar">
-                        {{ sortie.organisateur.prenom|first }}{{ sortie.organisateur.nom|first }}
-                    </div>
-                    <div>
-                        <div class="info-label">Organisé par</div>
-                        <div class="info-value">
-                            <a href="{{ path('app_profil_participant', {id: sortie.organisateur.id}) }}">
-                                {{ sortie.organisateur.pseudo ?? sortie.organisateur.prenom ~ ' ' ~ sortie.organisateur.nom }}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <!-- Bouton d'action -->
-                {% if app.user %}
-                    <div class="detail-actions">
+                <div class="action-buttons">
+                    {% if app.user %}
                         {% set user = app.user %}
 
                         {% if user == sortie.organisateur %}
-                            <!-- Organisateur : bouton désactivé -->
-                            <button class="btn-action btn-disabled" disabled>
-                                <i class="fas fa-ban"></i> Vous êtes l'organisateur
-                            </button>
+                            {% if sortie.etat.value == 'Créée' %}
+                                <form method="post" action="{{ path('sortie_valider', {'id': sortie.id}) }}" style="flex: 1;">
+                                    <button type="submit" class="btn-action btn-join" style="width: 100%;">
+                                        <i class="fas fa-check-circle"></i> Publier la sortie
+                                    </button>
+                                </form>
+                            {% else %}
+                                <button class="btn-action btn-disabled" disabled>
+                                    <i class="fas fa-ban"></i> Vous êtes l'organisateur
+                                </button>
+                            {% endif %}
                         {% elseif user in sortie.participants %}
-                            <!-- Déjà inscrit : bouton se désinscrire -->
-                            <form method="post" action="{{ path('sortie_inscrire', {'id': sortie.id}) }}">
-                                <button type="submit" class="btn-action btn-unsubscribe">
+                            <form method="post" action="{{ path('sortie_inscrire', {'id': sortie.id}) }}" style="flex: 1;">
+                                <button type="submit" class="btn-action btn-unsubscribe" style="width: 100%;">
                                     <i class="fas fa-times"></i> Se désinscrire
                                 </button>
                             </form>
                         {% elseif sortie.participants|length < sortie.nbInscriptionMax and sortie.etat.value == 'Ouverte' %}
-                            <!-- Non inscrit : bouton s'inscrire -->
-                            <form method="post" action="{{ path('sortie_inscrire', {'id': sortie.id}) }}">
-                                <button type="submit" class="btn-action btn-join">
-                                    <i class="fas fa-check"></i> S'inscrire à cette sortie
+                            <form method="post" action="{{ path('sortie_inscrire', {'id': sortie.id}) }}" style="flex: 1;">
+                                <button type="submit" class="btn-action btn-join" style="width: 100%;">
+                                    <i class="fas fa-check"></i> S'inscrire
                                 </button>
                             </form>
                         {% else %}
-                            <!-- Sinon : inscriptions closes -->
                             <button class="btn-action btn-disabled" disabled>
                                 <i class="fas fa-ban"></i> Inscriptions closes
                             </button>
                         {% endif %}
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-        {% if app.user and (app.user == sortie.organisateur or app.user.administrateur) and sortie.etat != constant('App\\Enum\\Etat::CANCELLED')  %}
-            <div class="text-center mt-4">
-                <a href="{{ path('sortie_delete', {'id': sortie.id}) }}" class="btn btn-danger btn-lg">
-                    Annuler la sortie
-                </a>
-            </div>
-        {% endif %}
-
-        <!-- Liste des participants -->
-        {% if sortie.participants|length > 0 %}
-            <div class="participants-section">
-                <h2>Participants inscrits ({{ sortie.participants|length }})</h2>
-                <div class="participants-grid">
-                    {% for participant in sortie.participants %}
-                        <a href="{{ path('app_profil_participant', {id: participant.id}) }}" class="participant-card">
-                            <div class="participant-avatar">
-                                {{ participant.prenom|first }}{{ participant.nom|first }}
-                            </div>
-                            <div class="participant-name">
-                                {{ participant.pseudo ?? participant.prenom ~ ' ' ~ participant.nom }}
-                            </div>
-                        </a>
-                    {% endfor %}
+                    {% endif %}
                 </div>
             </div>
-        {% endif %}
+        </div>
 
-        <!-- Import CSV (admin uniquement) -->
-        {% if app.user and app.user.administrateur %}
-            <div class="admin-section">
-                <h3><i class="fas fa-file-csv"></i> Importer des participants via CSV</h3>
-                {{ form_start(form, {'attr': {'class': 'csv-form'}}) }}
-                <div class="csv-upload">
-                    {{ form_widget(form['csv_file']) }}
+        <!-- Grille inférieure : Organisateur + Participants -->
+        <div class="bottom-grid">
+            <!-- Organisateur -->
+            <div class="organizer-card">
+                {% if sortie.organisateur %}
+                    <a href="{{ path('app_profil_participant', {id: sortie.organisateur.id}) }}" class="organizer-link">
+                        <div class="organizer-avatar">
+                            {% if sortie.organisateur.getAvatarPath() %}
+                                <img src="{{ asset(sortie.organisateur.getAvatarPath()) }}" alt="Avatar {{ sortie.organisateur.prenom }}">
+                            {% else %}
+                                {{ sortie.organisateur.prenom|first }}{{ sortie.organisateur.nom|first }}
+                            {% endif %}
+                        </div>
+                        <div class="organizer-name">
+                            {{ sortie.organisateur.prenom ~ ' ' ~ sortie.organisateur.nom }}
+                        </div>
+                        {% if sortie.organisateur.pseudo %}
+                            <div class="organizer-pseudo">{{ sortie.organisateur.pseudo }}</div>
+                        {% endif %}
+                    </a>
+                {% else %}
+                    <div class="organizer-avatar">
+                        <img src="{{ asset('assets/avatars/cchat.png') }}" alt="Avatar par défaut">
+                    </div>
+                    <div class="organizer-name">Organisateur inconnu</div>
+                {% endif %}
+
+                <div class="organizer-stats">
+                    <div class="stat-item">
+                        <div class="info-label">Organisé par</div>
+                        <div class="info-value">
+                            {% if sortie.organisateur %}
+                                {{ sortie.organisateur.prenom }}
+                            {% else %}
+                                Inconnu
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="info-label">Sorties créées</div>
+                        <div class="info-value">
+                            {% if sortie.organisateur and sortie.organisateur.sortiesOrganisees %}
+                                {{ sortie.organisateur.sortiesOrganisees|length }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Participants -->
+            <div class="participants-card">
+                <div class="participants-header">
+                    <h2>Participants inscrits ({{ sortie.participants|length }})</h2>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <div class="admin-buttons">
+                            <button class="btn-admin-action" onclick="openAddParticipantModal()">
+                                <i class="fas fa-user-plus"></i> Ajouter un participant
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if sortie.participants|length > 0 %}
+                    <div class="participants-grid">
+                        {% for participant in sortie.participants %}
+                            <div class="participant-wrapper">
+                                <a href="{{ path('app_profil_participant', {id: participant.id}) }}" class="participant-card">
+                                    <div class="participant-avatar">
+                                        {{ participant.prenom|first }}{{ participant.nom|first }}
+                                    </div>
+                                    <div class="participant-name">
+                                        {{ participant.pseudo ?? participant.prenom ~ ' ' ~ participant.nom }}
+                                    </div>
+                                </a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <div class="participant-admin-actions">
+                                        <button class="btn-icon btn-make-organizer" onclick="openChangeOrganizerModal({{ participant.id }}, '{{ participant.prenom }} {{ participant.nom }}')" title="Définir comme organisateur">
+                                            <i class="fas fa-crown"></i>
+                                        </button>
+                                        <button class="btn-icon btn-remove-participant" onclick="openRemoveParticipantModal({{ participant.id }}, '{{ participant.prenom }} {{ participant.nom }}')" title="Retirer de la sortie">
+                                            <i class="fas fa-user-minus"></i>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p style="color: #888;">Aucun participant pour le moment.</p>
+                {% endif %}
+
+                {# Bouton CSV pour admin #}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div class="admin-buttons">
+                        <button class="btn-admin-action" id="openCsvModal">
+                            <i class="fas fa-file-csv"></i> Importer CSV
+                        </button>
+                    </div>
+                {% endif %}
+
+                {# Formulaire CSV caché pour être injecté dans le modal #}
+                <div id="csvFormWrapper" style="display:none;">
+                    {{ form_start(form, {'attr': {'id': 'csvForm', 'enctype': 'multipart/form-data'}}) }}
+                    <div style="margin-bottom: 10px;">
+                        {{ form_widget(form['csv_file']) }}
+                    </div>
                     <button type="submit" class="btn-action btn-join">
                         <i class="fas fa-upload"></i> Importer le fichier
                     </button>
+                    {{ form_end(form) }}
                 </div>
-                {{ form_end(form) }}
+
             </div>
-        {% endif %}
+        </div>
     </div>
+
     {% include 'partials/_footer.html.twig' %}
 {% endblock %}
 
 {% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Affichage des messages flash avec SweetAlert2
-        {% for label, messages in app.flashes %}
-        {% for message in messages %}
-        Swal.fire({
-            icon: '{{ label == 'success' ? 'success' : (label == 'danger' or label == 'error' ? 'error' : 'info') }}',
-            title: '{{ label == 'success' ? 'Succès' : (label == 'danger' or label == 'error' ? 'Erreur' : 'Information') }}',
-            text: '{{ message|raw }}',
-            confirmButtonColor: '#FF6B00',
-            timer: 3000,
-            timerProgressBar: true
+        // Toggle menu trois points
+        document.addEventListener('DOMContentLoaded', function() {
+            const dotsButton = document.querySelector('.dots-button');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+
+            if (dotsButton && dropdownMenu) {
+                dotsButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    dropdownMenu.classList.toggle('show');
+                });
+
+                // Fermer le menu si on clique ailleurs
+                document.addEventListener('click', function(event) {
+                    if (!dropdownMenu.contains(event.target) && !dotsButton.contains(event.target)) {
+                        dropdownMenu.classList.remove('show');
+                    }
+                });
+            }
         });
-        {% endfor %}
-        {% endfor %}
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const openCsvBtn = document.getElementById('openCsvModal');
+            const csvFormWrapper = document.getElementById('csvFormWrapper');
+
+            if (openCsvBtn && csvFormWrapper) {
+                openCsvBtn.addEventListener('click', () => {
+                    Swal.fire({
+                        title: 'Importer un fichier CSV',
+                        html: csvFormWrapper.innerHTML,
+                        showConfirmButton: false,
+                        showCloseButton: true,
+                        didOpen: () => {
+                            const modalForm = Swal.getPopup().querySelector('form');
+                            if (modalForm) {
+                                // Le formulaire est soumis normalement vers Symfony
+                                modalForm.addEventListener('submit', (e) => {
+                                    // Pas besoin de JS, submission normale
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Messages flash avec SweetAlert2
+            {% for label, messages in app.flashes %}
+            {% for message in messages %}
+            Swal.fire({
+                icon: '{{ label == 'success' ? 'success' : (label == 'danger' or label == 'error' ? 'error' : 'info') }}',
+                title: '{{ label == 'success' ? 'Succès' : (label == 'danger' or label == 'error' ? 'Erreur' : 'Information') }}',
+                text: '{{ message|raw }}',
+                confirmButtonColor: '#FF6B00',
+                timer: 3000,
+                timerProgressBar: true
+            });
+            {% endfor %}
+            {% endfor %}
+        });
     </script>
 {% endblock %}
