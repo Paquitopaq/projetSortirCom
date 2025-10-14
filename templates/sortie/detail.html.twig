@@ -182,23 +182,49 @@
             <!-- Participants -->
             {% if sortie.participants|length > 0 %}
                 <div class="participants-card">
-                    <h2>Participants inscrits ({{ sortie.participants|length }})</h2>
+                    <div class="participants-header">
+                        <h2>Participants inscrits ({{ sortie.participants|length }})</h2>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <button class="btn-admin-action" onclick="openAddParticipantModal()">
+                                <i class="fas fa-user-plus"></i> Ajouter un participant
+                            </button>
+                        {% endif %}
+                    </div>
                     <div class="participants-grid">
                         {% for participant in sortie.participants %}
-                            <a href="{{ path('app_profil_participant', {id: participant.id}) }}" class="participant-card">
-                                <div class="participant-avatar">
-                                    {{ participant.prenom|first }}{{ participant.nom|first }}
-                                </div>
-                                <div class="participant-name">
-                                    {{ participant.pseudo ?? participant.prenom ~ ' ' ~ participant.nom }}
-                                </div>
-                            </a>
+                            <div class="participant-wrapper">
+                                <a href="{{ path('app_profil_participant', {id: participant.id}) }}" class="participant-card">
+                                    <div class="participant-avatar">
+                                        {{ participant.prenom|first }}{{ participant.nom|first }}
+                                    </div>
+                                    <div class="participant-name">
+                                        {{ participant.pseudo ?? participant.prenom ~ ' ' ~ participant.nom }}
+                                    </div>
+                                </a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <div class="participant-admin-actions">
+                                        <button class="btn-icon btn-make-organizer" onclick="openChangeOrganizerModal({{ participant.id }}, '{{ participant.prenom }} {{ participant.nom }}')" title="Définir comme organisateur">
+                                            <i class="fas fa-crown"></i>
+                                        </button>
+                                        <button class="btn-icon btn-remove-participant" onclick="openRemoveParticipantModal({{ participant.id }}, '{{ participant.prenom }} {{ participant.nom }}')" title="Retirer de la sortie">
+                                            <i class="fas fa-user-minus"></i>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
             {% else %}
                 <div class="participants-card">
-                    <h2>Participants inscrits (0)</h2>
+                    <div class="participants-header">
+                        <h2>Participants inscrits (0)</h2>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <button class="btn-admin-action" onclick="openAddParticipantModal()">
+                                <i class="fas fa-user-plus"></i> Ajouter un participant
+                            </button>
+                        {% endif %}
+                    </div>
                     <p style="color: #888;">Aucun participant pour le moment.</p>
                 </div>
             {% endif %}

@@ -127,7 +127,6 @@ final class SortieController extends AbstractController
         $form->handleRequest($request);
         $sortie->updateEtat();
 
-        // Utilisation de is_granted au lieu de getAdministrateur()
         if ($form->isSubmitted() && $form->isValid() && $this->isGranted('ROLE_ADMIN')) {
             $csvFile = $form->get('csv_file')->getData();
 
@@ -145,8 +144,6 @@ final class SortieController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
-
 
     #[Route('/sortie/{id}/delete', name: 'sortie_delete', methods: ['GET', 'POST'])]
     public function delete(
@@ -180,6 +177,7 @@ final class SortieController extends AbstractController
     #[Route('/sortie/{id}/edit', name: 'sortie_edit')]
     public function edit(Sortie $sortie, Request $request, EntityManagerInterface $entityManager,LieuRepository $lieuRepository): Response
     {
+        // Vérification des droits
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
@@ -196,6 +194,7 @@ final class SortieController extends AbstractController
                 return $this->redirectToRoute('app_sortie');
             }
         } else {
+            // Organisateur peut modifier seulement si l'état est "Créée"
             if ($etatValue !== 'Créée') {
                 $this->addFlash('danger', 'Seules les sorties en état "Créée" peuvent être modifiées.');
                 return $this->redirectToRoute('app_sortie');
