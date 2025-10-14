@@ -10,8 +10,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/mes-groupes-prives')]
+#[IsGranted('ROLE_USER')]
 class GroupePriveController extends AbstractController
 {
     #[Route('', name: 'groupe_index', methods: ['GET'])]
