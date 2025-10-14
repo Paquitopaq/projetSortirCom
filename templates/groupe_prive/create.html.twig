@@ -2,19 +2,50 @@
 
 {% block title %}{{ groupe.id ? 'Modifier le groupe' : 'Créer un groupe' }}{% endblock %}
 
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/groupe-edit.css') }}">
+{% endblock %}
+
 {% block body %}
-    <div class="container">
-        <h1>{{ groupe.id ? 'Modifier le groupe' : 'Créer un groupe' }}</h1>
+    <div class="profile-wrapper">
+        <div class="profile-card">
+            <!-- Côté gauche : illustration ou avatar -->
+            <div class="profile-left">
 
-        {{ form_start(form) }}
-        {{ form_row(form.nomGroupe) }}
-        {{ form_row(form.membres) }}
+                    <h2>{{ groupe.id ? 'Modifier le groupe' : 'Créer un groupe' }}</h2>
+            </div>
 
-        <button class="btn btn-primary">
-            {{ groupe.id ? 'Mettre à jour' : 'Créer' }}
-        </button>
-        {{ form_end(form) }}
+            <!-- Côté droit : formulaire -->
+            <div class="profile-right">
+                {% for flash in app.flashes('success') %}
+                    <div class="alert alert-success">{{ flash }}</div>
+                {% endfor %}
 
-        <a href="{{ path('groupe_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+                {{ form_start(form) }}
+                <div class="fields-grid">
+                    <div class="field">
+                        {{ form_label(form.nomGroupe) }}
+                        {{ form_widget(form.nomGroupe) }}
+                    </div>
+
+                    <div class="field">
+                        {{ form_label(form.membres) }}
+                        {{ form_widget(form.membres) }}
+                    </div>
+                </div>
+
+                <div class="submit-wrapper">
+                    <button type="submit">
+                        {{ groupe.id ? 'Mettre à jour le groupe' : 'Créer le groupe' }}
+                    </button>
+                </div>
+                {{ form_end(form) }}
+
+                <div class="submit-wrapper">
+                    <a href="{{ path('groupe_index') }}" class="btn-secondary">Retour à la liste</a>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
