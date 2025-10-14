@@ -35,6 +35,7 @@ class Sortie
 
     #[ORM\Column(nullable: false)]
     #[Assert\NotNull(message: "La date limite d'inscription est obligatoire")]
+    #[Assert\GreaterThan("today", message: "La date limite d'inscription doit être supérieur à aujourd'hui")]
     private ?DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column(length: 255, nullable: false)]
