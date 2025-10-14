@@ -194,35 +194,40 @@ class Sortie
     }
     public function updateEtat(): void
     {
-        $now = new DateTimeImmutable();
+        $now = new \DateTimeImmutable();
 
-        if ($this->etat->getIdEtat() === 'CREATION') {
-            // Rien à faire, attend publication
+        // Si la sortie est en brouillon, on ne change pas son état
+        if ($this->etat === Etat::CREATED) {
             return;
         }
 
-        if ($this->etat->getIdEtat() === 'OUVERTE') {
-            if ($this->dateLimiteInscription < $now || $this->getNbInscriptionMax() <= $this->getNbInscrits()) {
-                $this->etat->setIdEtat('CLOTUREE');
+        // Si la sortie est ouverte
+        if ($this->etat === Etat::OPEN) {
+            if ($this->dateLimiteInscription < $now || $this->getNbInscrits() >= $this->nbInscriptionMax) {
+                $this->etat = Etat::CLOSED;
             }
         }
 
-        if ($this->etat->getIdEtat() === 'CLOTUREE') {
+        // Si la sortie est clôturée
+        if ($this->etat === Etat::CLOSED) {
             if ($this->dateHeureDebut <= $now) {
-                $this->etat->setIdEtat('EN_COURS');
+                $this->etat = Etat::IN_PROGRESS;
             }
         }
 
-        if ($this->etat->getIdEtat() === 'EN_COURS') {
-            $fin = clone $this->dateHeureDebut;
-            $fin->modify("+{$this->duree} minutes");
-
+        // Si la sortie est en cours
+        if ($this->etat === Etat::IN_PROGRESS) {
+            $fin = $this->dateHeureDebut->modify("+{$this->duree} minutes");
             if ($fin <= $now) {
-                $this->etat->setIdEtat('TERMINEE');
+                $this->etat = Etat::PASSED;
             }
         }
-        // Rajouter les autres changements quand on fera les features annulé ou archiver
+
+        if($this->etat === Etat::CANCELLED){
+            return;
+        }
     }
+
 
     public function getNbInscrits(): int
     {
