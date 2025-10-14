@@ -198,9 +198,6 @@
                             <button class="btn-admin-action" onclick="openAddParticipantModal()">
                                 <i class="fas fa-user-plus"></i> Ajouter un participant
                             </button>
-                            <button class="btn-admin-action" id="toggleCsvImport">
-                                <i class="fas fa-file-csv"></i> Importer CSV
-                            </button>
                         </div>
                     {% endif %}
                 </div>
@@ -234,21 +231,30 @@
                     <p style="color: #888;">Aucun participant pour le moment.</p>
                 {% endif %}
 
-                <!-- Formulaire CSV masqué par défaut -->
-                {% if app.user and app.user.administrateur %}
-                    <div class="admin-section" id="csvImportSection" style="display:none; margin-top: 20px;">
-                        <h3><i class="fas fa-file-csv"></i> Importer des participants via CSV</h3>
-                        {{ form_start(form, {'attr': {'class': 'csv-form'}}) }}
-                        <div class="csv-upload">
-                            {{ form_widget(form['csv_file']) }}
-                            <button type="submit" class="btn-action btn-join">
-                                <i class="fas fa-upload"></i> Importer le fichier
-                            </button>
-                        </div>
-                        {{ form_end(form) }}
+                {# Bouton CSV pour admin #}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div class="admin-buttons">
+                        <button class="btn-admin-action" id="openCsvModal">
+                            <i class="fas fa-file-csv"></i> Importer CSV
+                        </button>
                     </div>
                 {% endif %}
+
+                {# Formulaire CSV caché pour être injecté dans le modal #}
+                <div id="csvFormWrapper" style="display:none;">
+                    {{ form_start(form, {'attr': {'id': 'csvForm', 'enctype': 'multipart/form-data'}}) }}
+                    <div style="margin-bottom: 10px;">
+                        {{ form_widget(form['csv_file']) }}
+                    </div>
+                    <button type="submit" class="btn-action btn-join">
+                        <i class="fas fa-upload"></i> Importer le fichier
+                    </button>
+                    {{ form_end(form) }}
+                </div>
+
             </div>
+        </div>
+    </div>
 
     {% include 'partials/_footer.html.twig' %}
 {% endblock %}
@@ -276,29 +282,43 @@
             }
         });
 
-        // Toggle affichage du formulaire CSV
         document.addEventListener('DOMContentLoaded', function() {
-            const toggleCsvBtn = document.getElementById('toggleCsvImport');
-            const csvSection = document.getElementById('csvImportSection');
-            if (toggleCsvBtn && csvSection) {
-                toggleCsvBtn.addEventListener('click', () => {
-                    csvSection.style.display = csvSection.style.display === 'none' ? 'block' : 'none';
+            const openCsvBtn = document.getElementById('openCsvModal');
+            const csvFormWrapper = document.getElementById('csvFormWrapper');
+
+            if (openCsvBtn && csvFormWrapper) {
+                openCsvBtn.addEventListener('click', () => {
+                    Swal.fire({
+                        title: 'Importer un fichier CSV',
+                        html: csvFormWrapper.innerHTML,
+                        showConfirmButton: false,
+                        showCloseButton: true,
+                        didOpen: () => {
+                            const modalForm = Swal.getPopup().querySelector('form');
+                            if (modalForm) {
+                                // Le formulaire est soumis normalement vers Symfony
+                                modalForm.addEventListener('submit', (e) => {
+                                    // Pas besoin de JS, submission normale
+                                });
+                            }
+                        }
+                    });
                 });
             }
-        });
 
-        // Messages flash avec SweetAlert2
-        {% for label, messages in app.flashes %}
-        {% for message in messages %}
-        Swal.fire({
-            icon: '{{ label == 'success' ? 'success' : (label == 'danger' or label == 'error' ? 'error' : 'info') }}',
-            title: '{{ label == 'success' ? 'Succès' : (label == 'danger' or label == 'error' ? 'Erreur' : 'Information') }}',
-            text: '{{ message|raw }}',
-            confirmButtonColor: '#FF6B00',
-            timer: 3000,
-            timerProgressBar: true
+            // Messages flash avec SweetAlert2
+            {% for label, messages in app.flashes %}
+            {% for message in messages %}
+            Swal.fire({
+                icon: '{{ label == 'success' ? 'success' : (label == 'danger' or label == 'error' ? 'error' : 'info') }}',
+                title: '{{ label == 'success' ? 'Succès' : (label == 'danger' or label == 'error' ? 'Erreur' : 'Information') }}',
+                text: '{{ message|raw }}',
+                confirmButtonColor: '#FF6B00',
+                timer: 3000,
+                timerProgressBar: true
+            });
+            {% endfor %}
+            {% endfor %}
         });
-        {% endfor %}
-        {% endfor %}
     </script>
 {% endblock %}

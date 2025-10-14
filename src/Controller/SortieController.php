@@ -43,8 +43,12 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/create', name: 'sortie_create')]
-    public function create(Request $request, EntityManagerInterface $entityManager, LieuRepository $lieuRepository): Response
-    {
+    public function create(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        LieuRepository $lieuRepository,
+        FileManager $fileManager
+    ): Response {
         $sortie = new Sortie();
 
         $form = $this->createForm(SortieType::class, $sortie);
@@ -52,19 +56,34 @@ final class SortieController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            // Nouveau lieu
             $nouveauLieu = $form->get('nouveauLieu')->getData();
-
             if ($nouveauLieu && $nouveauLieu->getNom()) {
                 $entityManager->persist($nouveauLieu);
                 $sortie->setLieu($nouveauLieu);
             }
 
             $publication = $request->request->get('action') === 'publier';
+
+            // Upload photo
+            $photoFile = $form->get('photoSortie')->getData();
+            if ($photoFile instanceof UploadedFile) {
+                $newFilename = $fileManager->upload(
+                    $photoFile,
+                    $this->getParameter('sorties_photos_directory'),
+                    $sortie->getNom() // facultatif, juste pour base du nom
+                );
+                if ($newFilename) {
+                    $sortie->setPhotoSortie($newFilename);
+                } else {
+                    $this->addFlash('warning', 'Erreur lors de l\'upload de l\'image.');
+                }
+            }
+
             $this->sortieService->createSortie($sortie, $publication);
-
-
             $entityManager->persist($sortie);
             $entityManager->flush();
+
             $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
             $this->addFlash('success', $message);
             return $this->redirectToRoute('app_sortie');
