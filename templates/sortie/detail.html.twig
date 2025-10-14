@@ -164,6 +164,8 @@
                 <a href="{{ path('sortie_delete', {'id': sortie.id}) }}" class="btn btn-danger btn-lg">
                     Annuler la sortie
                 </a>
+            </div>
+        {% endif %}
 
         <!-- Liste des participants -->
         {% if sortie.participants|length > 0 %}
