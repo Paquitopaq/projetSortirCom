@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello VilleController!{% endblock %}
+
+{% block body %}
+    <h1>Ajouter une ville</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.nom) }}
+    {{ form_row(form.codePostal) }}
+    <button class="btn btn-success">Enregistrer</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('ville_liste') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+{% endblock %}

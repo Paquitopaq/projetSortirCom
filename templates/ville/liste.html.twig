@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des villes{% endblock %}
+
+{% block body %}
+    <h1>Liste des villes</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Code postal</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for ville in villes %}
+            <tr>
+                <td>{{ ville.nom }}</td>
+                <td>{{ ville.codePostal }}</td>
+            </tr>
+        {% else %}
+            <tr><td colspan="2">Aucune ville enregistrée.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('ville_ajouter') }}" class="btn btn-primary mt-3">
+        <i class="fa fa-plus"></i> Ajouter une ville
+    </a>
+{% endblock %}

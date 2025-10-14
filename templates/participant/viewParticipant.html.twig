@@ -3,167 +3,167 @@
 {% block title %}Profil de {{ participant.pseudo ?? participant.prenom ~ ' ' ~ participant.nom }} | BougeTonCrew{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('css/sortie.css') }}">
-    <style>
-        .organizer-avatar-large {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        .organizer-avatar-large img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-info {
-            flex: 1;
-        }
-
-        .profile-info h2 {
-            margin-bottom: 0.25rem;
-            font-size: 1.6rem;
-            font-weight: 600;
-        }
-
-        .profile-info p {
-            margin-bottom: 0.3rem;
-        }
-
-        .event-content-timeline {
-            padding: 1.5rem 2rem;
-        }
-
-        .list-group-item {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #eaeaea;
-            padding: 0.8rem 0;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/view-profil.css') }}">
 {% endblock %}
 
 {% block body %}
-    <section class="search-section-page">
-        <div class="container-page">
-            <div class="page-header">
-                <h1 class="page-title">
-                    <i class="fas fa-user-circle"></i>
-                    Profil de {{ participant.pseudo ?? participant.prenom ~ ' ' ~ participant.nom }}
-                </h1>
-                {% if app.user and app.user.id == participant.id %}
-                    <a href="{{ path('app_profil_update') }}" class="btn-primary-large">
-                        <i class="fas fa-edit"></i> Modifier mon profil
+    <div class="profile-container">
+        <div class="profile-card-wrapper">
+            <!-- Carte de profil principale -->
+            <div class="profile-business-card">
+                <!-- Header avec logo et bouton retour -->
+                <div class="card-header">
+                    <div class="brand-logo">
+                        <i class="fas fa-users"></i>
+                        <span>BougeTonCrew</span>
+                    </div>
+                    <a href="{{ path('app_sortie') }}" class="btn-back-circle">
+                        <i class="fas fa-arrow-left"></i>
                     </a>
-                {% endif %}
-            </div>
-        </div>
-    </section>
+                </div>
 
-    <section class="sorties-section">
-        <div class="container-page">
-            <div class="timeline">
-                <!-- Carte principale du profil -->
-                <div class="event-item">
-                    <div class="date-box">
-                        <div class="date-number">
-                            <i class="fas fa-user"></i>
+                <div class="card-content">
+                    <!-- Section gauche : Avatar et infos de contact -->
+                    <div class="profile-left">
+                        <div class="avatar-section">
+                            {% if participant.photoProfil %}
+                                <img src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil" class="avatar-image">
+                            {% else %}
+                                <div class="avatar-placeholder">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            {% endif %}
                         </div>
-                        <div class="date-month">Profil</div>
+
+                        <div class="greeting-section">
+                            <span class="greeting-text">HELLO I'M</span>
+                            <h1 class="profile-main-name">{{ participant.pseudo }}</h1>
+                            <p class="profile-subtitle">{{ participant.prenom }} {{ participant.nom }}</p>
+                        </div>
+                        <p class="profile-card-role">{{ participant.administrateur ? 'Administrateur' : 'Membre' }}</p>
+
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <span>{{ participant.email }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Bouton modifier en dehors du contact-info -->
+                        {% if app.user and app.user.id == participant.id %}
+                            <button class="btn-download" onclick="window.location.href='{{ path('app_profil_update') }}'">
+                                <i class="fas fa-edit"></i>
+                                Modifier mon profil
+                            </button>
+                        {% endif %}
                     </div>
 
-                    <div class="event-content-timeline d-flex flex-column">
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="organizer-avatar-large me-4">
-                                {% if participant.photoProfil %}
-                                    <img src="{{ asset('assets/images/' ~ participant.photoProfil) }}" alt="Photo de profil">
+                    <!-- Section droite : Informations principales -->
+                    <div class="profile-right">
+                        <!-- Sections des sorties -->
+                        <div class="activities-section">
+                            <!-- Sorties organisées -->
+                            <div class="activity-card">
+                                <div class="activity-header">
+                                    <h2>
+                                        <i class="fas fa-calendar-plus"></i>
+                                        Sorties organisées
+                                    </h2>
+                                    <span class="activity-count">{{ participant.sortiesOrganisees|length }}</span>
+                                </div>
+
+                                {% if participant.sortiesOrganisees|length > 0 %}
+                                    <div class="activities-list">
+                                        {% for sortie in participant.sortiesOrganisees %}
+                                            <a href="{{ path('sortie_detail', {id: sortie.id}) }}" class="activity-item">
+                                                <div class="activity-icon">
+                                                    <i class="fas fa-calendar-check"></i>
+                                                </div>
+                                                <div class="activity-info">
+                                                    <h3>{{ sortie.nom }}</h3>
+                                                    <div class="activity-meta">
+                                                        <span><i class="fas fa-clock"></i> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
+                                                        <span><i class="fas fa-users"></i> {{ sortie.participants|length }}/{{ sortie.nbInscriptionMax }}</span>
+                                                    </div>
+                                                </div>
+                                                <span class="activity-badge status-{{ sortie.etat.value|lower|replace({' ': '-'}) }}">
+                                                    {{ sortie.etat.value }}
+                                                </span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
                                 {% else %}
-                                    <img src="{{ asset('assets/images/default-avatar.png') }}" alt="Avatar par défaut">
+                                    <div class="empty-activities">
+                                        <i class="fas fa-calendar-times"></i>
+                                        <p>Aucune sortie organisée</p>
+                                    </div>
                                 {% endif %}
                             </div>
-                            <div class="profile-info">
-                                <h2>{{ participant.pseudo ?? 'Utilisateur' }}</h2>
-                                <p class="text-muted">{{ participant.prenom }} {{ participant.nom }}</p>
-                                <p><i class="fas fa-envelope"></i> {{ participant.email }}</p>
-                                <p><i class="fas fa-phone"></i> {{ participant.telephone ?? 'Non renseigné' }}</p>
+
+                            <!-- Participations -->
+                            <div class="activity-card">
+                                <div class="activity-header">
+                                    <h2>
+                                        <i class="fas fa-ticket-alt"></i>
+                                        Participations
+                                    </h2>
+                                    <span class="activity-count">{{ participant.sorties|length }}</span>
+                                </div>
+
+                                {% if participant.sorties|length > 0 %}
+                                    <div class="activities-list">
+                                        {% for sortie in participant.sorties %}
+                                            <a href="{{ path('sortie_detail', {id: sortie.id}) }}" class="activity-item">
+                                                <div class="activity-icon">
+                                                    <i class="fas fa-ticket-alt"></i>
+                                                </div>
+                                                <div class="activity-info">
+                                                    <h3>{{ sortie.nom }}</h3>
+                                                    <div class="activity-meta">
+                                                        <span><i class="fas fa-clock"></i> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
+                                                        <span><i class="fas fa-user"></i> {{ sortie.organisateur.pseudo ?? sortie.organisateur.prenom }}</span>
+                                                    </div>
+                                                </div>
+                                                <span class="activity-badge status-{{ sortie.etat.value|lower|replace({' ': '-'}) }}">
+                                                    {{ sortie.etat.value }}
+                                                </span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="empty-activities">
+                                        <i class="fas fa-inbox"></i>
+                                        <p>Aucune participation</p>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
-
-                        <div class="event-details">
-                            <div class="event-detail">
-                                <i class="fas fa-shield-alt"></i>
-                                Administrateur : <strong>{{ participant.administrateur ? 'Oui' : 'Non' }}</strong>
-                            </div>
-                            <div class="event-detail">
-                                <i class="fas fa-toggle-on"></i>
-                                Actif : <strong>{{ participant.actif ? 'Oui' : 'Non' }}</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sorties organisées -->
-                <div class="event-item">
-                    <div class="date-box">
-                        <div class="date-number">
-                            <i class="fas fa-calendar-plus"></i>
-                        </div>
-                        <div class="date-month">Organisées</div>
-                    </div>
-
-                    <div class="event-content-timeline">
-                        <h3 class="event-title-timeline">Sorties organisées</h3>
-                        {% if participant.sortiesOrganisees|length > 0 %}
-                            <ul class="list-group list-group-flush">
-                                {% for sortie in participant.sortiesOrganisees %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <a href="{{ path('sortie_detail', {id: sortie.id}) }}" class="text-decoration-none fw-bold">
-                                            {{ sortie.nom }}
-                                        </a>
-                                        <span class="text-muted">{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p class="text-muted mb-0">Aucune sortie organisée.</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Sorties auxquelles il participe -->
-                <div class="event-item">
-                    <div class="date-box">
-                        <div class="date-number">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="date-month">Participations</div>
-                    </div>
-
-                    <div class="event-content-timeline">
-                        <h3 class="event-title-timeline">Sorties auxquelles il participe</h3>
-                        {% if participant.sorties|length > 0 %}
-                            <ul class="list-group list-group-flush">
-                                {% for sortie in participant.sorties %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <a href="{{ path('sortie_detail', {id: sortie.id}) }}" class="text-decoration-none fw-bold">
-                                            {{ sortie.nom }}
-                                        </a>
-                                        <span class="text-muted">{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p class="text-muted mb-0">Aucune sortie enregistrée.</p>
-                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     {% include 'partials/_footer.html.twig' %}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Messages flash avec SweetAlert2
+        {% for label, messages in app.flashes %}
+        {% for message in messages %}
+        Swal.fire({
+            icon: '{{ label == 'success' ? 'success' : (label == 'danger' or label == 'error' ? 'error' : 'info') }}',
+            title: '{{ label == 'success' ? 'Succès' : (label == 'danger' or label == 'error' ? 'Erreur' : 'Information') }}',
+            text: '{{ message|raw }}',
+            confirmButtonColor: '#FF6B00',
+            timer: 3000,
+            timerProgressBar: true
+        });
+        {% endfor %}
+        {% endfor %}
+    </script>
 {% endblock %}
