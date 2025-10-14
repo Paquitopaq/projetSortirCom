@@ -8,8 +8,14 @@
     {{ form_start(form) }}
     {{ form_row(form.nom) }}
     {{ form_row(form.codePostal) }}
+
+    {# Champ caché contenant l’URL de retour, passée par le contrôleur #}
+    <input type="hidden" name="redirect" value="{{ previousUrl }}">
+
     <button class="btn btn-success">Enregistrer</button>
     {{ form_end(form) }}
 
-    <a href="{{ path('ville_liste') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    <a href="{{ previousUrl ?? path('ville_liste') }}" class="btn btn-secondary mt-3">
+        Retour
+    </a>
 {% endblock %}

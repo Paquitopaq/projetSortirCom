@@ -104,7 +104,8 @@
                     {{ form_widget(form.nouveauLieu) }}
 
                     <div class="mt-2">
-                        <a href="{{ path('ville_ajouter') }}" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ path('ville_ajouter', { redirect: app.request.uri }) }}"
+                           class="btn btn-outline-primary btn-sm">
                             <i class="fa fa-city"></i> Ajouter une nouvelle ville
                         </a>
                     </div>

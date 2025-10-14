@@ -86,7 +86,32 @@
 
                 <div id="nouveau-lieu-form" style="display:none; margin-top: 1rem;">
                     <h5>Créer un nouveau lieu</h5>
+
                     {{ form_widget(form.nouveauLieu) }}
+
+                    <div class="mt-2">
+                        <a href="{{ path('ville_ajouter', { redirect: app.request.uri }) }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fa fa-city"></i> Ajouter une nouvelle ville
+                        </a>
+                    </div>
+                </div>
+
+                <div id="lieu-details" class="lieu-details" style="display:none;">
+                    <div class="lieu-info">
+                        <strong>Ville :</strong> <span id="lieu-ville"></span>
+                    </div>
+                    <div class="lieu-info">
+                        <strong>Rue :</strong> <span id="lieu-rue"></span>
+                    </div>
+                    <div class="lieu-info">
+                        <strong>Code postal :</strong> <span id="lieu-code-postal"></span>
+                    </div>
+                    <div class="lieu-info">
+                        <strong>Latitude :</strong> <span id="lieu-latitude"></span>
+                    </div>
+                    <div class="lieu-info">
+                        <strong>Longitude :</strong> <span id="lieu-longitude"></span>
+                    </div>
                 </div>
             </div>
 
