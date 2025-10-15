@@ -10,6 +10,7 @@ use App\Form\ImportParticipantType;
 use App\Form\ProfilType;
 use App\Repository\ParticipantRepository;
 use App\Service\AdminUserService;
+use App\Service\ImportService;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -212,33 +213,23 @@ class AdminController extends AbstractController
     }
 
     #[Route('/import/{id}/sortie', name: 'admin_import')]
-    public function import(Request $request, Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em): Response
+    public function import(Request $request, Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em,ImportService $importService): Response
     {
         $form = $this->createForm(ImportParticipantType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $csvFile = $form->get('csvFile')->getData();
+            $csvFile = $form->get('csv_file')->getData();
+            $messages = $importService->importerParticipants($csvFile, $sortie);
 
-            if (($handle = fopen($csvFile->getPathname(), 'r')) !== false) {
-                while (($data = fgetcsv($handle, 1000, ',')) !== false) {
-                    $email = $data[0];
-                    $participant = $em->getRepository(Participant::class)->findOneBy(['email' => $email]);
-
-                    if ($participant && $sortieService->inscrireParticipant($sortie, $participant)) {
-                        $this->addFlash('success', "Inscription réussie pour {$email}");
-                    } else {
-                        $this->addFlash('danger', "Échec d'inscription pour {$email}");
-                    }
-                }
-                fclose($handle);
-                $em->flush();
+            foreach ($messages as $message) {
+                $this->addFlash($message['type'], $message['text']);
             }
 
             return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
-        return $this->render('sortie/import.html.twig', [
+        return $this->render('admin/import.html.twig', [
             'form' => $form->createView(),
             'sortie' => $sortie,
         ]);
