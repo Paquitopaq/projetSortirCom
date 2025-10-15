@@ -21,9 +21,9 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180, nullable: false)]
+    #[ORM\Column(length: 180, nullable: true, unique: true)]
     #[Assert\NotBlank(message: "L'email est obligatoire.")]
-    #[Assert\Regex(pattern: '/^(?!\.)[a-zA-Z0-9.]+(?<!\.)@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/', message: 'Veuillez renseigner un email valide')]
+    #[Assert\Email(message: 'Veuillez renseigner un email valide')]
     private ?string $email = null;
 
     /**
@@ -39,6 +39,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 50, unique: true, nullable: true)]
+    #[Assert\NotBlank(message: "Le pseudo est obligatoire.")]
     private ?string $pseudo = null;
 
     #[ORM\Column(length: 50, nullable: true)]

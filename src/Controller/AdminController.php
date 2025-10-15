@@ -203,6 +203,11 @@ class AdminController extends AbstractController
             $this->addFlash('success', 'Profil créé avec succès.');
 
             return $this->redirectToRoute('admin_users');
+        } else {
+            // form invalid → récupérer les erreurs
+            foreach ($form->getErrors(true) as $error) {
+                $this->addFlash('danger', $error->getMessage());
+            }
         }
 
         return $this->render('admin/createProfil.html.twig', [

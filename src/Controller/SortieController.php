@@ -84,24 +84,7 @@ final class SortieController extends AbstractController
                 }
             }
 
-            $this->sortieService->createSortie($sortie, $form, $publication);
-
-            // Upload photo
-            $photoFile = $form->get('photoSortie')->getData();
-            if ($photoFile instanceof UploadedFile) {
-                $newFilename = $fileManager->upload(
-                    $photoFile,
-                    $this->getParameter('sorties_photos_directory'),
-                    $sortie->getNom() // facultatif, juste pour base du nom
-                );
-                if ($newFilename) {
-                    $sortie->setPhotoSortie($newFilename);
-                } else {
-                    $this->addFlash('warning', 'Erreur lors de l\'upload de l\'image.');
-                }
-            }
-
-            $this->sortieService->createSortie($sortie, $form, $publication);
+            $this->sortieService->createSortie($sortie, $publication);
             $entityManager->persist($sortie);
             $entityManager->flush();
 
