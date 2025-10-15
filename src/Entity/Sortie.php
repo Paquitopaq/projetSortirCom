@@ -20,7 +20,7 @@ class Sortie
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable: false)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Assert\NotBlank(message: "Le nom de la sortie est obligatoire.")]
     private ?string $nom = null;
 
@@ -28,17 +28,17 @@ class Sortie
     #[Assert\GreaterThan("today", message: "La date de début doit être supérieur à aujourd'hui")]
     private ?DateTimeImmutable $dateHeureDebut = null;
 
-    #[ORM\Column(length: 255, nullable: false)]
-    #[Assert\NotNull(message: "La durée est obligatoire.")]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(message: "La durée est obligatoire.")]
     #[Assert\Positive(message: "La durée doit être un nombre positif.")]
     private ?int $duree = null;
 
-    #[ORM\Column(nullable: false)]
-    #[Assert\NotNull(message: "La date limite d'inscription est obligatoire")]
+    #[ORM\Column(nullable: true)]
+    #[Assert\NotBlank(message: "La date limite d'inscription est obligatoire")]
     #[Assert\GreaterThan("today", message: "La date limite d'inscription doit être supérieur à aujourd'hui")]
     private ?DateTimeImmutable $dateLimiteInscription = null;
 
-    #[ORM\Column(length: 255, nullable: false)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Assert\NotNull(message: "Renseigner le nombre d'inscription maximum.")]
     private ?int $nbInscriptionMax = null;
 
@@ -90,7 +90,7 @@ class Sortie
         return $this->nom;
     }
 
-    public function setNom(string $nom): static
+    public function setNom(?string $nom): static
     {
         $this->nom = $nom;
 
@@ -114,7 +114,7 @@ class Sortie
         return $this->duree;
     }
 
-    public function setDuree(int $duree): static
+    public function setDuree(?int $duree): static
     {
         $this->duree = $duree;
 
@@ -126,7 +126,7 @@ class Sortie
         return $this->dateLimiteInscription;
     }
 
-    public function setDateLimiteInscription(DateTimeImmutable $dateLimiteInscription): static
+    public function setDateLimiteInscription(?DateTimeImmutable $dateLimiteInscription): static
     {
         $this->dateLimiteInscription = $dateLimiteInscription;
 
@@ -150,7 +150,7 @@ class Sortie
         return $this->infoSortie;
     }
 
-    public function setInfoSortie(string $infoSortie): static
+    public function setInfoSortie(?string $infoSortie): static
     {
         $this->infoSortie = $infoSortie;
 

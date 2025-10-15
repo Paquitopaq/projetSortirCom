@@ -31,9 +31,6 @@ class SortieType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Ex: Randonnée en forêt'
                 ],
-                'constraints' => [
-                    new NotBlank(['message' => 'Le nom de la sortie est obligatoire'])
-                ]
             ])
             ->add('dateHeureDebut', DateTimeType::class, [
                 'widget' => 'single_text',
@@ -55,11 +52,6 @@ class SortieType extends AbstractType
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
                 'required' => true,
-                'constraints' => [
-                    new NotNull([
-                        'message' => 'La date limite d\'inscription est obligatoire',
-                    ]),
-                ],
                 'attr' => [
                     'class' => 'form-control',
                 ],
