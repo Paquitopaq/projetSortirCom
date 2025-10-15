@@ -83,7 +83,7 @@ final class SortieController extends AbstractController
                 }
             }
 
-            $this->sortieService->createSortie($sortie, $publication);
+            $this->sortieService->createSortie($sortie, $form, $publication);
 
 
             $entityManager->persist($sortie);

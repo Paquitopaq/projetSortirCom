@@ -23,7 +23,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180, nullable: false)]
     #[Assert\NotBlank(message: "L'email est obligatoire.")]
-    #[Assert\Regex(pattern: '^(?!\.)[a-zA-Z0-9.]+(?<!\.)@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$', message: 'Veuillez renseigner un email valide')]
+    #[Assert\Regex(pattern: '/^(?!\.)[a-zA-Z0-9.]+(?<!\.)@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/', message: 'Veuillez renseigner un email valide')]
     private ?string $email = null;
 
     /**
@@ -48,7 +48,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $prenom = null;
 
     #[ORM\Column(length: 12, nullable: true)]
-    #[Assert\Regex(pattern: '^(?=(?:.*\d){10,})(?:0\d(?:[ .-]?\d{2}){4}|\+?\d{1,3}(?:[ .-]?\d{1,4}){2,5})$', message: 'le telephone n\'est pas valide')]
+    #[Assert\Regex(pattern: '/^(?=(?:.*\d){10,})(?:0\d(?:[ .-]?\d{2}){4}|\+?\d{1,3}(?:[ .-]?\d{1,4}){2,5})$/', message: 'le telephone n\'est pas valide')]
     private ?string $telephone = null;
 
     #[ORM\Column]
