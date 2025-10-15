@@ -1,21 +1,40 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello VilleController!{% endblock %}
+{% block title %}{{ ville is defined and ville.id ? 'Modifier' : 'Créer' }} une Ville | BougeTonCrew{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/ville-create.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+{% endblock %}
 
 {% block body %}
-    <h1>Ajouter une ville</h1>
+    <section class="create-section">
+        <div class="create-header">
+            <h1 class="create-title">
+                Ajouter une ville
+            </h1>
+        </div>
 
-    {{ form_start(form) }}
-    {{ form_row(form.nom) }}
-    {{ form_row(form.codePostal) }}
+        <div class="form-card">
+            {{ form_start(form) }}
+            {{ form_row(form.nom) }}
+            {{ form_row(form.codePostal) }}
+        </div>
 
-    {# Champ caché contenant l’URL de retour, passée par le contrôleur #}
-    <input type="hidden" name="redirect" value="{{ previousUrl }}">
+        <div class="form-actions">
+            {# Champ caché contenant l’URL de retour, passée par le contrôleur #}
+            <input type="hidden" name="redirect" value="{{ previousUrl }}">
 
-    <button class="btn btn-success">Enregistrer</button>
-    {{ form_end(form) }}
 
-    <a href="{{ previousUrl ?? path('ville_liste') }}" class="btn btn-secondary mt-3">
-        Retour
-    </a>
+            <button class="btn btn-success">Enregistrer</button>
+            {{ form_end(form) }}
+
+            <a href="{{ previousUrl ?? path('ville_liste') }}" class="btn btn-secondary">
+                Retour
+            </a>
+        </div>
+
+    </section>
+
 {% endblock %}
