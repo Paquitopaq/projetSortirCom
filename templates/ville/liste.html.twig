@@ -1,9 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des villes{% endblock %}
+{% block title %}Toutes les villes | BougeTonCrew{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/ville.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
 
 {% block body %}
-    <h1>Liste des villes</h1>
+    <div class="container">
+    <div class="page-header">
+    <h1 class="page-title">Toutes les villes</h1>
 
     <table class="table">
         <thead>
@@ -24,7 +32,14 @@
         </tbody>
     </table>
 
-    <a href="{{ path('ville_ajouter') }}" class="btn btn-primary mt-3">
-        <i class="fa fa-plus"></i> Ajouter une ville
-    </a>
+    {% if app.user %}
+        <a href="{{ path('ville_ajouter') }}" class="btn-create">
+            <i class="fas fa-plus"></i>
+            Créer une ville
+        </a>
+        </div>
+        </div>
+    {% endif %}
+
+
 {% endblock %}

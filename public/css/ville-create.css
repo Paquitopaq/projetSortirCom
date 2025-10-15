@@ -1,0 +1,29 @@
+.create-section {
+    position: absolute;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 40px 40px;
+}
+
+.create-header {
+    margin-bottom: 32px;
+}
+
+.form-card {
+    display: flex;
+}
+
+.create-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--blue-dark);
+    margin-bottom: 8px;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding: 10px;
+}
