@@ -224,7 +224,13 @@ class SortieService
     }
 
     public function inscrireParticipant(Sortie $sortie, Participant $participant): bool {
-
+        dump([
+            'sortie_id' => $sortie->getId(),
+            'participant_email' => $participant->getEmail(),
+            'participant_id' => $participant->getId(),
+            'déjà_inscrit' => $sortie->getParticipants()->contains($participant),
+            'état_sortie' => $sortie->getEtat()->name ?? null,
+        ]);
         if (!$sortie->getParticipants()->contains($participant)&&$sortie->getEtat() == Etat::OPEN) {
             $sortie->addParticipant($participant);
             $this->entityManager->persist($sortie);
