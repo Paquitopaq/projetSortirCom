@@ -190,19 +190,14 @@
             </div>
 
             <!-- Participants -->
-            <div class="participants-card">
-                <div class="participants-header">
-                    <h2>Participants inscrits ({{ sortie.participants|length }})</h2>
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <div class="admin-buttons">
-                            <button class="btn-admin-action" onclick="openAddParticipantModal()">
-                                <i class="fas fa-user-plus"></i> Ajouter un participant
-                            </button>
-                        </div>
-                    {% endif %}
-                </div>
+            {% if is_granted('ROLE_ADMIN') %}
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addParticipantModal">
+                    <i class="fas fa-user-plus"></i> Ajouter un participant
+                </button>
+            {% endif %}
 
-                {% if sortie.participants|length > 0 %}
+
+            {% if sortie.participants|length > 0 %}
                     <div class="participants-grid">
                         {% for participant in sortie.participants %}
                             <div class="participant-wrapper">
@@ -259,7 +254,30 @@
     {% include 'partials/_footer.html.twig' %}
 {% endblock %}
 
+
 {% block javascripts %}
+    <div class="modal fade" id="addParticipantModal" tabindex="-1" aria-labelledby="addParticipantModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addParticipantModalLabel">Ajouter un participant</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <select id="participantSelect" class="form-select">
+                        {% for participant in participants %}
+                            <option value="{{ participant.id }}">{{ participant.nom }} {{ participant.prenom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success" onclick="ajouterParticipant({{ sortie.id }})">Ajouter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Toggle menu trois points
@@ -321,4 +339,29 @@
             {% endfor %}
         });
     </script>
+    <script>
+        function ajouterParticipant(sortieId) {
+            const participantId = document.getElementById('participantSelect').value;
+
+            fetch(`/sortie/{id}/add-participant`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ participantId: participantId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+        }
+    </script>
+    <script>
+
+    </script>
+
+
 {% endblock %}

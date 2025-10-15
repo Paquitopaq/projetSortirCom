@@ -61,6 +61,7 @@ final class SortieController extends AbstractController
                 $entityManager->persist($nouveauLieu);
                 $sortie->setLieu($nouveauLieu);
             }
+
             $groupePrive = $form->get('groupePrive')->getData();
             if ($groupePrive) {
                 $sortie->setGroupePrive($groupePrive);
@@ -82,25 +83,9 @@ final class SortieController extends AbstractController
                     $this->addFlash('warning', 'Erreur lors de l\'upload de l\'image.');
                 }
             }
-
-            $this->sortieService->createSortie($sortie, $form, $publication);
-
-            // Upload photo
-            $photoFile = $form->get('photoSortie')->getData();
-            if ($photoFile instanceof UploadedFile) {
-                $newFilename = $fileManager->upload(
-                    $photoFile,
-                    $this->getParameter('sorties_photos_directory'),
-                    $sortie->getNom() // facultatif, juste pour base du nom
-                );
-                if ($newFilename) {
-                    $sortie->setPhotoSortie($newFilename);
-                } else {
-                    $this->addFlash('warning', 'Erreur lors de l\'upload de l\'image.');
-                }
-            }
-
             $this->sortieService->createSortie($sortie, $publication);
+
+
             $entityManager->persist($sortie);
             $entityManager->flush();
 
@@ -186,7 +171,7 @@ final class SortieController extends AbstractController
         $form = $this->createForm(ImportParticipantType::class);
         $form->handleRequest($request);
         $sortie->updateEtat();
-
+        $participantsDisponibles = $em->getRepository(Participant::class)->findAll();
         if ($form->isSubmitted() && $form->isValid() && $this->isGranted('ROLE_ADMIN')) {
             $csvFile = $form->get('csv_file')->getData();
 
@@ -202,6 +187,7 @@ final class SortieController extends AbstractController
         return $this->render('sortie/detail.html.twig', [
             'sortie' => $sortie,
             'form' => $form->createView(),
+            'participants' => $participantsDisponibles,
         ]);
     }
 
