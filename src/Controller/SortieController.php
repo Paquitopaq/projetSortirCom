@@ -277,6 +277,7 @@ final class SortieController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         LieuRepository $lieuRepository,
+        GroupePriveRepository $groupePriveRepository,
         FileManager $fileManager
     ): Response {
         $user = $this->getUser();
@@ -286,6 +287,7 @@ final class SortieController extends AbstractController
 
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
+        $groupe = $groupePriveRepository->findAll();
         $publication = $request->request->get('action') === 'publier';
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -312,7 +314,7 @@ final class SortieController extends AbstractController
                 }
             }
 
-            $this->sortieService->createSortie($sortie, $form,$publication);
+            $this->sortieService->createSortie($sortie,$publication);
             $entityManager->flush();
 
             $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
@@ -320,10 +322,11 @@ final class SortieController extends AbstractController
             return $this->redirectToRoute('app_sortie');
         }
 
-        return $this->render('sortie/edit.html.twig', [
+        return $this->render('sortie/create.html.twig', [
             'form' => $form->createView(),
             'lieux' => $lieuRepository->findAll(),
             'sortie' => $sortie,
+            'groupes' => $groupe,
         ]);
     }
 }

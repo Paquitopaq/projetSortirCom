@@ -185,7 +185,7 @@
                 </a>
 
                 {% if sortie is defined and sortie.id %}
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-success" name="action" value="publier">
                         <i class="fas fa-save"></i> Enregistrer les modifications
                     </button>
                 {% else %}
@@ -327,7 +327,7 @@
             });
 
             // Affichage initial en mode modification
-            {% if sortie is defined and sortie.id and sortie.groupe %}
+            {% if sortie is defined and sortie.id and sortie.groupe is defined %}
             groupeSelect.dispatchEvent(new Event('change'));
             {% endif %}
         }
