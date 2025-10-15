@@ -100,7 +100,7 @@ final class SortieController extends AbstractController
                 }
             }
 
-            $this->sortieService->createSortie($sortie, $publication);
+            $this->sortieService->createSortie($sortie, $form, $publication);
             $entityManager->persist($sortie);
             $entityManager->flush();
 
@@ -305,7 +305,7 @@ final class SortieController extends AbstractController
                 }
             }
 
-            $this->sortieService->createSortie($sortie, $publication);
+            $this->sortieService->createSortie($sortie, $form,$publication);
             $entityManager->flush();
 
             $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';

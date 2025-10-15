@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\GroupePrive;
+use App\Entity\Participant;
 use App\Form\ProfilType;
 use App\Repository\ParticipantRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -18,10 +20,16 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 final class ParticipantController extends AbstractController
 {
     #[Route('/update', name: 'app_profil_update')]
-    public function updateProfil(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function updateProfil(Request $request, EntityManagerInterface $em, SluggerInterface $slugger, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         $participant = $this->getUser();
-        $form = $this->createForm(ProfilType::class, $participant, ['is_create' => false]);
+
+        if (!$participant instanceof Participant) {
+            $this->addFlash('error', 'Utilisateur non connecté.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $form = $this->createForm(ProfilType::class, $participant, ['is_create' => true]);
         $form -> handleRequest($request);
 
         $avatarDirectory = $this->getParameter('kernel.project_dir') . '/public/assets/avatars';
@@ -30,6 +38,13 @@ final class ParticipantController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $selectedAvatar = $request->request->get('selected_avatar');
             $photoFile = $form->get('photoProfil')->getData();
+
+            $plainPassword = $form->get('plainPassword')->getData();
+
+            if ($plainPassword) {
+                $participant->setPassword($userPasswordHasher->hashPassword($participant, $plainPassword));
+            }
+
 
             if ($photoFile) {
                 $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
