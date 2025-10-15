@@ -24,11 +24,10 @@
         <div class="form-card">
             {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-            <!-- Section Informations générales -->
+            {# ---------------- Informations générales ---------------- #}
             <div class="form-section">
                 <div class="form-section-title">
-                    <i class="fas fa-info-circle"></i>
-                    Informations générales
+                    <i class="fas fa-info-circle"></i> Informations générales
                 </div>
 
                 <div class="form-group">
@@ -94,13 +93,11 @@
                     <i class="fas fa-map-marker-alt"></i> Lieu de rendez-vous
                 </div>
 
-                {% if form.site is defined %}
-                    <div class="form-group">
-                        {{ form_label(form.site, 'Site organisateur', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.site, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(form.site) }}
-                    </div>
-                {% endif %}
+                <div class="form-group">
+                    {{ form_label(form.site, 'Site organisateur', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.site, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.site) }}
+                </div>
 
                 <div class="mb-3">
                     <label for="sortie_lieu">Lieu existant :</label>
@@ -181,6 +178,7 @@
 
 
             <!-- Boutons d'action -->
+            {# ---------------- Boutons d'action ---------------- #}
             <div class="form-actions">
                 <a href="{{ sortie is defined and sortie.id ? path('sortie_detail', {'id': sortie.id}) : path('app_sortie') }}" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Annuler

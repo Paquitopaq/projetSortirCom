@@ -77,10 +77,10 @@ class SortieType extends AbstractType
             ])
             ->add('lieu', EntityType::class, [
                 'class' => Lieu::class,
-                'choice_label' => 'nom', // ou 'idLieu' si tu préfères
-                'label' => 'Lieu de la sortie',
-                'placeholder' => 'Choisissez un lieu',
-                'attr' => ['id' => 'lieu-select'],
+                'choice_label' => 'nom',
+                'label' => 'Lieu',
+                'placeholder' => 'Choisir un lieu',
+                'required' => false
             ])
             ->add('nouveauLieu', LieuType::class, [
                 'label' => false,

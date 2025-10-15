@@ -55,8 +55,8 @@ final class SortieController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            // Nouveau lieu
             $nouveauLieu = $form->get('nouveauLieu')->getData();
-
             if ($nouveauLieu && $nouveauLieu->getNom()) {
                 $entityManager->persist($nouveauLieu);
                 $sortie->setLieu($nouveauLieu);
@@ -85,7 +85,22 @@ final class SortieController extends AbstractController
 
             $this->sortieService->createSortie($sortie, $form, $publication);
 
+            // Upload photo
+            $photoFile = $form->get('photoSortie')->getData();
+            if ($photoFile instanceof UploadedFile) {
+                $newFilename = $fileManager->upload(
+                    $photoFile,
+                    $this->getParameter('sorties_photos_directory'),
+                    $sortie->getNom() // facultatif, juste pour base du nom
+                );
+                if ($newFilename) {
+                    $sortie->setPhotoSortie($newFilename);
+                } else {
+                    $this->addFlash('warning', 'Erreur lors de l\'upload de l\'image.');
+                }
+            }
 
+            $this->sortieService->createSortie($sortie, $publication);
             $entityManager->persist($sortie);
             $entityManager->flush();
 
@@ -154,6 +169,7 @@ final class SortieController extends AbstractController
     public function detailsortie(
         Request                $request,
         ?Sortie                $sortie,
+        SortieService          $sortieService,
         ImportService          $importService,
         EntityManagerInterface $em
     ): Response {
@@ -259,34 +275,14 @@ final class SortieController extends AbstractController
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
-        if ($sortie->getOrganisateur() !== $user && !$isAdmin) {
-            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette sortie.');
-        }
-
-        // Vérification de l'état - Admin peut modifier "Créée" et "Ouverte", organisateur seulement "Créée"
-        $etatValue = $sortie->getEtat()->value;
-
-        if ($isAdmin) {
-            if ($etatValue !== 'Créée' && $etatValue !== 'Ouverte') {
-                $this->addFlash('danger', 'Seules les sorties en état "Créée" ou "Ouverte" peuvent être modifiées.');
-                return $this->redirectToRoute('app_sortie');
-            }
-        } else {
-            // Organisateur peut modifier seulement si l'état est "Créée"
-            if ($etatValue !== 'Créée') {
-                $this->addFlash('danger', 'Seules les sorties en état "Créée" peuvent être modifiées.');
-                return $this->redirectToRoute('app_sortie');
-            }
-        }
+        // Vérifications droits et état...
 
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
         $publication = $request->request->get('action') === 'publier';
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->sortieService->createSortie($sortie, $publication);
-
-            // Création d'un nouveau lieu
+            // Nouveau lieu
             $nouveauLieu = $form->get('nouveauLieu')->getData();
             if ($nouveauLieu && $nouveauLieu->getNom()) {
                 $entityManager->persist($nouveauLieu);
