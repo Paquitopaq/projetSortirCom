@@ -84,14 +84,22 @@ final class SortieController extends AbstractController
                 }
             }
 
+
             $this->sortieService->createSortie($sortie, $publication);
             $entityManager->persist($sortie);
             $entityManager->flush();
 
+
             $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
             $this->addFlash('success', $message);
             return $this->redirectToRoute('app_sortie');
+        } else {
+            // form invalid → récupérer les erreurs
+            foreach ($form->getErrors(true) as $error) {
+                $this->addFlash('danger', $error->getMessage());
+            }
         }
+
 
         return $this->render('sortie/create.html.twig', [
             'form' => $form->createView(),
@@ -130,7 +138,7 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire')]
-    public function inscription(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em,    Request $request,): Response
+    public function inscription(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em, Request $request,): Response
     {
 
         $participantId = $request->request->get('participantId');
@@ -147,6 +155,35 @@ final class SortieController extends AbstractController
             $this->addFlash('danger', 'Participant introuvable.');
             return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
+
+        // Vérifie si le participant est autorisé à s'inscrire
+        if (!$sortie->isUserAllowedToRegister($participant)) {
+            $this->addFlash('danger', "Ce participant ne fait pas partie du groupe privé associé à cette sortie.");
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
+        // Tente l'inscription via le service
+        if ($sortieService->inscrireParticipant($sortie, $participant)) {
+            $this->addFlash('success', 'Participant ajouté avec succès.');
+        }
+        // Tente la désinscription si déjà inscrit
+        elseif ($sortieService->removeParticipant($sortie, $participant)) {
+            $this->addFlash('success', 'Participant retiré de la sortie.');
+        }
+        // Échec des deux
+        else {
+            $this->addFlash('danger', 'Impossible de modifier l’inscription pour cette sortie.');
+        }
+
+        return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+    }
+
+    #[Route('/sortie/{id}/sinscrire', name: 'sortie_sinscrire')]
+    public function autoinscription(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em): Response
+    {
+
+        $participant = $em->getRepository(Participant::class)->find($this->getUser()->getId());
+
 
         // Vérifie si le participant est autorisé à s'inscrire
         if (!$sortie->isUserAllowedToRegister($participant)) {
