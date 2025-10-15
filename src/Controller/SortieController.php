@@ -131,19 +131,41 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire')]
-    public function inscription(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em): Response
+    public function inscription(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em,    Request $request,): Response
     {
-        $participant = $em->getRepository(Participant::class)->find($this->getUser()->getId());
-        if(!$sortie->isUserAllowedToRegister($participant)) {
-            $this->addFlash('danger', "Vous ne faites pas partie du groupe privé associé à cette sortie.");
+
+        $participantId = $request->request->get('participantId');
+
+        if (!$participantId) {
+            $this->addFlash('danger', 'Aucun participant sélectionné.');
             return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
+
+        // Récupère le participant ciblé
+        $participant = $em->getRepository(Participant::class)->find($participantId);
+
+        if (!$participant) {
+            $this->addFlash('danger', 'Participant introuvable.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
+        // Vérifie si le participant est autorisé à s'inscrire
+        if (!$sortie->isUserAllowedToRegister($participant)) {
+            $this->addFlash('danger', "Ce participant ne fait pas partie du groupe privé associé à cette sortie.");
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
+        // Tente l'inscription via le service
         if ($sortieService->inscrireParticipant($sortie, $participant)) {
-            $this->addFlash('success', 'Inscription à la sortie réussie !');
-        }else if ($sortieService->removeParticipant($sortie, $participant)) {
-            $this->addFlash('success', 'vous n\'êtes plus inscrit à cette sortie.');
-        }else {
-            $this->addFlash('danger', 'Les inscription et désinscription ne sont plus possible pour cette sortie.');
+            $this->addFlash('success', 'Participant ajouté avec succès.');
+        }
+        // Tente la désinscription si déjà inscrit
+        elseif ($sortieService->removeParticipant($sortie, $participant)) {
+            $this->addFlash('success', 'Participant retiré de la sortie.');
+        }
+        // Échec des deux
+        else {
+            $this->addFlash('danger', 'Impossible de modifier l’inscription pour cette sortie.');
         }
 
         return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);

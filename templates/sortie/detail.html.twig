@@ -229,9 +229,17 @@
                                         <button class="btn-icon btn-make-organizer" onclick="openChangeOrganizerModal({{ participant.id }}, '{{ participant.prenom }} {{ participant.nom }}')" title="Définir comme organisateur">
                                             <i class="fas fa-crown"></i>
                                         </button>
-                                        <button class="btn-icon btn-remove-participant" onclick="openRemoveParticipantModal({{ participant.id }}, '{{ participant.prenom }} {{ participant.nom }}')" title="Retirer de la sortie">
-                                            <i class="fas fa-user-minus"></i>
-                                        </button>
+                                        <form method="post" action="{{ path('admin_remove_participant', {id: sortie.id}) }}" style="display: inline;">
+                                            <input type="hidden" name="participantId" value="{{ participant.id }}">
+                                            <input type="hidden" name="motif" value="Retrait manuel par l'admin">
+                                            <button type="submit" class="btn-icon btn-remove-participant"
+                                                    onclick="return confirm('Confirmer le retrait de ce participant ?')"
+                                                    title="Retirer de la sortie">
+                                                <i class="fas fa-user-minus"></i>
+                                            </button>
+
+                                        </form>
+
                                     </div>
                                 {% endif %}
                             </div>

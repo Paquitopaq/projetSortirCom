@@ -430,34 +430,41 @@ class AdminController extends AbstractController
     }
 
     #[Route('/sortie/{id}/remove-participant', name: 'admin_remove_participant', methods: ['POST'])]
-    public function removeParticipant(Sortie $sortie, Request $request, EntityManagerInterface $em): Response
-    {
-        $data = json_decode($request->getContent(), true);
-        $participantId = $data['participantId'] ?? null;
-        $motif = $data['motif'] ?? null;
+    public function removeParticipant(
+        Sortie $sortie,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+        $participantId = $request->request->get('participantId');
+        $motif = $request->request->get('motif');
 
         if (!$participantId || !$motif) {
-            return $this->json(['success' => false, 'message' => 'Données manquantes']);
+            $this->addFlash('danger', 'Données manquantes.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
         $participant = $em->getRepository(Participant::class)->find($participantId);
 
         if (!$participant) {
-            return $this->json(['success' => false, 'message' => 'Participant introuvable']);
+            $this->addFlash('danger', 'Participant introuvable.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
         if (!$sortie->getParticipants()->contains($participant)) {
-            return $this->json(['success' => false, 'message' => 'Ce participant n\'est pas inscrit à cette sortie']);
+            $this->addFlash('warning', 'Ce participant n\'est pas inscrit à cette sortie.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
         if ($sortie->getOrganisateur() === $participant) {
-            return $this->json(['success' => false, 'message' => 'Impossible de retirer l\'organisateur de la sortie']);
+            $this->addFlash('danger', 'Impossible de retirer l\'organisateur de la sortie.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
         $sortie->removeParticipant($participant);
-
         $em->flush();
 
-        return $this->json(['success' => true, 'message' => 'Participant retiré avec succès. Motif: ' . $motif]);
+        $this->addFlash('success', 'Participant retiré avec succès. Motif : ' . $motif);
+        return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
     }
+
 }
