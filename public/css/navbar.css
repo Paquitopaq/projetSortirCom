@@ -443,3 +443,152 @@
 .btn-auth-outline:hover {
     background: var(--background);
 }
+
+
+/* Responsive */
+
+@media (max-width: 1200px) {
+
+    .navbar {
+        padding: 0 24px;
+    }
+
+    .nav-content {
+        gap: 20px;
+        grid-template-columns: auto 1fr auto;
+    }
+
+    .nav-links {
+        gap: 20px;
+    }
+
+    .search-bar {
+        max-width: 600px;
+    }
+
+    .become-host {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    .calendar-dropdown {
+        min-width: 600px;
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    /* Réduction de la hauteur et marges */
+    .navbar {
+        padding: 0 16px;
+        height: auto;
+    }
+
+    .nav-content {
+        grid-template-columns: auto auto;
+        height: 70px;
+        gap: 12px;
+    }
+
+    /* Cache les liens centraux */
+    .nav-links {
+        display: none;
+    }
+
+    /* La barre de recherche prend toute la largeur */
+    .search-bar {
+        order: 3;
+        grid-column: span 2;
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .search-container {
+        padding: 6px 12px;
+    }
+
+    /* Le bouton créer une sortie devient plus petit */
+    .become-host {
+        display: none; /* Cache sur mobile, à afficher via menu hamburger */
+    }
+
+    /* Affiche le menu hamburger / user compact */
+    .menu-toggle {
+        display: flex;
+        padding: 6px 10px;
+    }
+
+    /* Ajustement de l’avatar */
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+    }
+
+    /* Réduction du dropdown */
+    .dropdown-menu {
+        min-width: 200px;
+    }
+
+    /* Le calendrier ne sort plus de l’écran */
+    .calendar-dropdown {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 90px;
+        width: 90%;
+        min-width: unset;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .navbar {
+        padding: 0 12px;
+    }
+
+    .nav-content {
+        height: 60px;
+        gap: 8px;
+    }
+
+    .logo-img {
+        height: 38px;
+    }
+
+    .search-bar {
+        order: 3;
+        margin: 8px 0;
+    }
+
+    .search-container {
+        border-radius: 24px;
+        padding: 6px 10px;
+    }
+
+    .search-section {
+        padding: 0 8px;
+        min-height: 40px;
+    }
+
+    .search-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .hamburger span {
+        width: 14px;
+    }
+
+    .user-avatar {
+        width: 26px;
+        height: 26px;
+    }
+
+    .dropdown-menu {
+        right: 4px;
+        top: 60px;
+        width: 80vw;
+    }
+}
