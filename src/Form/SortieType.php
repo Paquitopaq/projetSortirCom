@@ -91,7 +91,7 @@ class SortieType extends AbstractType
                 'label' => 'Photo de la sortie',
                 'mapped' => false,
                 'required' => false,
-                 'constraints' => [
+                'constraints' => [
                     new File([
                         'maxSize' => '2M',
                         'mimeTypes' => [
@@ -105,8 +105,6 @@ class SortieType extends AbstractType
                     ])
                 ],
             ])
-        
-       
 
             ->add('groupePrive', EntityType::class, [
                 'class' => GroupePrive::class,
