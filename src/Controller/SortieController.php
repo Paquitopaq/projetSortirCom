@@ -187,7 +187,7 @@ final class SortieController extends AbstractController
 
         // Vérifie si le participant est autorisé à s'inscrire
         if (!$sortie->isUserAllowedToRegister($participant)) {
-            $this->addFlash('danger', "Ce participant ne fait pas partie du groupe privé associé à cette sortie.");
+            $this->addFlash('danger', "{$participant->getNom()} ne fait pas partie du groupe privé associé à cette sortie.");
             return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
