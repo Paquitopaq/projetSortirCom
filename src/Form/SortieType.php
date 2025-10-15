@@ -2,9 +2,11 @@
 
 namespace App\Form;
 
+use App\Entity\GroupePrive;
 use App\Entity\Lieu;
 use App\Entity\Site;
 use App\Entity\Sortie;
+use App\Repository\GroupePriveRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -21,6 +23,7 @@ class SortieType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $organisateur = $options['organisateur'];
         $builder
             ->add('nom', TextType::class, [
                 'label' => 'Nom de la sortie',
@@ -88,7 +91,7 @@ class SortieType extends AbstractType
                 'label' => 'Photo de la sortie',
                 'mapped' => false,
                 'required' => false,
-                'constraints' => [
+                 'constraints' => [
                     new File([
                         'maxSize' => '2M',
                         'mimeTypes' => [
@@ -102,13 +105,45 @@ class SortieType extends AbstractType
                     ])
                 ],
             ])
-        ;
+        
+       
+
+            ->add('groupePrive', EntityType::class, [
+                'class' => GroupePrive::class,
+                'choice_label' => 'nomGroupe',
+                'required' => false,
+                'label' => 'Groupe privé existant',
+                'placeholder' => 'Sélectionnez un groupe privé',
+                'query_builder' => function (GroupePriveRepository $repo) use ($organisateur) {
+                    return $repo->createQueryBuilder('g')
+                        ->where('g.organisateur = :organisateur')
+                        ->setParameter('organisateur', $organisateur);
+                },
+            ]);
+
+
+
+
+//
+//            // Validation : au moins un des deux doit être rempli
+//            $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+//                $data = $event->getData();
+//                $form = $event->getForm();
+//
+//                $lieuChoisi = $data->getLieu();
+//                $nouveauLieu = $form->get('nouveauLieu')->getData();
+//
+//                if ( !$lieuChoisi && (!$nouveauLieu || !$nouveauLieu->getNom())) {
+//                    $form->addError(new FormError('Veuillez choisir un lieu ou en créer un nouveau'));
+//                }
+//            });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Sortie::class,
+            'organisateur' => null,
         ]);
     }
 }

@@ -64,6 +64,12 @@ class Sortie
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $motifAnnulation = null;
 
+    /**
+     * @var Collection<int, GroupePrive>
+     */
+    #[ORM\ManyToOne(targetEntity: GroupePrive::class)]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    private ?GroupePrive $groupePrive = null;
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photoSortie = null;
 
@@ -288,6 +294,27 @@ class Sortie
         $this->motifAnnulation = $motifAnnulation;
         return $this;
     }
+
+    public function getGroupePrive(): ?GroupePrive
+    {
+        return $this->groupePrive;
+    }
+
+    public function setGroupePrive(?GroupePrive $groupePrive): static
+    {
+        $this->groupePrive = $groupePrive;
+        return $this;
+    }
+
+    public function isUserAllowedToRegister(Participant $user): bool
+    {
+        if ($this->groupePrive === null) {
+            return true;
+        }
+
+        return $this->groupePrive->getMembres()->contains($user);
+    }
+
 
     public function getPhotoSortie(): ?string
     {

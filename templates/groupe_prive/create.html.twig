@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ groupe.id ? 'Modifier le groupe' : 'Créer un groupe' }}{% endblock %}
+
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/groupe-edit.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="profile-wrapper">
+        <div class="profile-card">
+            <!-- Côté gauche : illustration ou avatar -->
+            <div class="profile-left">
+
+                    <h2>{{ groupe.id ? 'Modifier le groupe' : 'Créer un groupe' }}</h2>
+            </div>
+
+            <!-- Côté droit : formulaire -->
+            <div class="profile-right">
+                {% for flash in app.flashes('success') %}
+                    <div class="alert alert-success">{{ flash }}</div>
+                {% endfor %}
+
+                {{ form_start(form) }}
+                <div class="fields-grid">
+                    <div class="field">
+                        {{ form_label(form.nomGroupe) }}
+                        {{ form_widget(form.nomGroupe) }}
+                    </div>
+
+                    <div class="field">
+                        {{ form_label(form.membres) }}
+                        {{ form_widget(form.membres) }}
+                    </div>
+                </div>
+
+                <div class="submit-wrapper">
+                    <button type="submit">
+                        {{ groupe.id ? 'Mettre à jour le groupe' : 'Créer le groupe' }}
+                    </button>
+                </div>
+                {{ form_end(form) }}
+
+                <div class="submit-wrapper">
+                    <a href="{{ path('groupe_index') }}" class="btn-secondary">Retour à la liste</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

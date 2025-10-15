@@ -2,12 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\GroupePrive;
 use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Enum\Etat;
 use App\Form\DeleteSortieType;
+use App\Form\GroupePriveType;
 use App\Form\ImportParticipantType;
 use App\Form\SortieType;
+use App\Repository\GroupePriveRepository;
 use App\Repository\LieuRepository;
 use App\Service\ImportService;
 use App\Service\SortieService;
@@ -47,11 +50,12 @@ final class SortieController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         LieuRepository $lieuRepository,
+        GroupePriveRepository $groupePriveRepository,
         FileManager $fileManager
     ): Response {
         $sortie = new Sortie();
 
-        $form = $this->createForm(SortieType::class, $sortie);
+        $form = $this->createForm(SortieType::class, $sortie,['organisateur' => $this->getUser(),]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -61,6 +65,10 @@ final class SortieController extends AbstractController
             if ($nouveauLieu && $nouveauLieu->getNom()) {
                 $entityManager->persist($nouveauLieu);
                 $sortie->setLieu($nouveauLieu);
+            }
+            $groupePrive = $form->get('groupePrive')->getData();
+            if ($groupePrive) {
+                $sortie->setGroupePrive($groupePrive);
             }
 
             $publication = $request->request->get('action') === 'publier';
@@ -92,6 +100,7 @@ final class SortieController extends AbstractController
         return $this->render('sortie/create.html.twig', [
             'form' => $form->createView(),
             'lieux' => $lieuRepository->findAll(),
+            'groupes' => $groupePriveRepository->findAll(),
         ]);
     }
 
@@ -128,7 +137,10 @@ final class SortieController extends AbstractController
     public function inscription(Sortie $sortie, SortieService $sortieService, EntityManagerInterface $em): Response
     {
         $participant = $em->getRepository(Participant::class)->find($this->getUser()->getId());
-
+        if(!$sortie->isUserAllowedToRegister($participant)) {
+            $this->addFlash('danger', "Vous ne faites pas partie du groupe privé associé à cette sortie.");
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
         if ($sortieService->inscrireParticipant($sortie, $participant)) {
             $this->addFlash('success', 'Inscription à la sortie réussie !');
         }else if ($sortieService->removeParticipant($sortie, $participant)) {

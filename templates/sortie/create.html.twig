@@ -148,6 +148,35 @@
                 </div>
             </div>
 
+            <!-- Section Groupe -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-user-friends"></i>
+                    Groupe associé
+                </div>
+
+                <div class="mb-3">
+                    <label for="sortie_groupe">Groupe existant :</label>
+                    {{ form_widget(form.groupePrive) }}
+
+                    <div id="groupe-details" class="groupe-details" style="display:none; margin-top: 1rem;">
+                        <div class="groupe-info">
+                            <strong>Nom :</strong> <span id="groupe-nom"></span>
+                        </div>
+                        <div class="groupe-info">
+                            <strong>Description :</strong> <span id="groupe-description"></span>
+                        </div>
+                        <div class="groupe-info">
+                            <strong>Nombre de membres :</strong> <span id="groupe-membres"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <!-- Boutons d'action -->
             {# ---------------- Boutons d'action ---------------- #}
             <div class="form-actions">
                 <a href="{{ sortie is defined and sortie.id ? path('sortie_detail', {'id': sortie.id}) : path('app_sortie') }}" class="btn btn-secondary">
@@ -267,4 +296,41 @@
             }
         });
     </script>
+    {% endblock %}
+    <script>
+        // Données des groupes
+        const groupes = {
+            {% for groupe in groupes %}
+            "{{ groupe.id }}": {
+                nom: "{{ groupe.nomGroupe|e('js') }}",
+                membres: "{{ groupe.membres|length }}"
+            },
+            {% endfor %}
+        };
+
+        // Affichage des détails du groupe
+        const groupeSelect = document.getElementById('sortie_groupe');
+        if (groupeSelect) {
+            groupeSelect.addEventListener('change', function () {
+                const selectedId = this.value;
+                const details = groupes[selectedId];
+                const detailsDiv = document.getElementById('groupe-details');
+
+                if (details) {
+                    document.getElementById('groupe-nom').textContent = details.nom;
+                    document.getElementById('groupe-description').textContent = details.description;
+                    document.getElementById('groupe-membres').textContent = details.membres;
+                    detailsDiv.style.display = 'block';
+                } else {
+                    detailsDiv.style.display = 'none';
+                }
+            });
+
+            // Affichage initial en mode modification
+            {% if sortie is defined and sortie.id and sortie.groupe %}
+            groupeSelect.dispatchEvent(new Event('change'));
+            {% endif %}
+        }
+    </script>
+
 {% endblock %}
