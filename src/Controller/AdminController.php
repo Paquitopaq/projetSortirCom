@@ -14,6 +14,7 @@ use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -355,42 +356,51 @@ class AdminController extends AbstractController
     }
 
     #[Route('/sortie/{id}/add-participant', name: 'admin_add_participant', methods: ['POST'])]
-    public function addParticipant(Sortie $sortie, Request $request, EntityManagerInterface $em, SortieService $sortieService): Response
-    {
-        $data = json_decode($request->getContent(), true);
-        $participantId = $data['participantId'] ?? null;
+    public function addParticipant(
+        Sortie $sortie,
+        Request $request,
+        EntityManagerInterface $em,
+        SortieService $sortieService
+    ): Response {
+        $participantId = $request->request->get('participantId');
 
         if (!$participantId) {
-            return $this->json(['success' => false, 'message' => 'Participant non spécifié']);
+            $this->addFlash('danger', 'Participant non spécifié.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
         $participant = $em->getRepository(Participant::class)->find($participantId);
 
         if (!$participant) {
-            return $this->json(['success' => false, 'message' => 'Participant introuvable']);
+            $this->addFlash('danger', 'Participant introuvable.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
         if ($sortie->getParticipants()->contains($participant)) {
-            return $this->json(['success' => false, 'message' => 'Ce participant est déjà inscrit']);
+            $this->addFlash('warning', 'Ce participant est déjà inscrit.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
         if ($sortie->getParticipants()->count() >= $sortie->getNbInscriptionMax()) {
-            return $this->json(['success' => false, 'message' => 'La sortie est complète']);
+            $this->addFlash('danger', 'La sortie est complète.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
         }
 
         if ($sortie->getEtat()->value !== 'Ouverte') {
             $sortie->addParticipant($participant);
-            $em->persist($sortie);
             $em->flush();
         } else {
-            // Utiliser le service normal
             if (!$sortieService->inscrireParticipant($sortie, $participant)) {
-                return $this->json(['success' => false, 'message' => 'Impossible d\'ajouter le participant']);
+                $this->addFlash('danger', 'Impossible d\'ajouter le participant.');
+                return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
             }
         }
 
-        return $this->json(['success' => true, 'message' => 'Participant ajouté avec succès']);
+        $this->addFlash('success', 'Participant ajouté avec succès.');
+        return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
     }
+
+
 
     #[Route('/sortie/{id}/change-organizer', name: 'admin_change_organizer', methods: ['POST'])]
     public function changeOrganizer(Sortie $sortie, Request $request, EntityManagerInterface $em): Response
