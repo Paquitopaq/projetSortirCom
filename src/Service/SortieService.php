@@ -32,22 +32,12 @@ class SortieService
         $this->security = $security;
     }
 
-    public function createSortie(Sortie $sortie, FormInterface $form, bool $publier, bool $isNew = true): void
+    public function createSortie(Sortie $sortie, bool $publier): void
     {
-        // Gestion du nouveau lieu
-        $nouveauLieu = $form->get('nouveauLieu')->getData();
-        if ($nouveauLieu && $nouveauLieu->getNom()) {
-            $this->entityManager->persist($nouveauLieu);
-            $sortie->setLieu($nouveauLieu);
-        }
 
-        // Organisateur (utilisateur connecté)
-        if ($isNew) {
-            $participant = $this->entityManager
-                ->getRepository(Participant::class)
-                ->find($this->security->getUser()->getId());
-            $sortie->setOrganisateur($participant);
-        }
+        $participant = $this->entityManager->getRepository(Participant::class)->find($this->security->getUser()->getId());
+        $sortie->setOrganisateur($participant);
+        $sortie->addParticipant($participant);
 
         // État selon l'action (publier ou brouillon)
         $etat = $publier ? Etat::OPEN : Etat::CREATED;

@@ -193,14 +193,24 @@
             <div class="participants-card">
                 <div class="participants-header">
                     <h2>Participants inscrits ({{ sortie.participants|length }})</h2>
+
                     {% if is_granted('ROLE_ADMIN') %}
-                        <div class="admin-buttons">
-                            <button class="btn-admin-action" onclick="openAddParticipantModal()">
-                                <i class="fas fa-user-plus"></i> Ajouter un participant
-                            </button>
-                        </div>
+                        <form method="post" action="{{ path('admin_add_participant', {id: sortie.id}) }}" style="margin-top: 10px;">
+                            <div class="d-flex gap-2 align-items-center">
+                                <select name="participantId" class="form-select" required style="max-width: 300px;">
+                                    {% for participant in participants %}
+                                        <option value="{{ participant.id }}">{{ participant.nom }} {{ participant.prenom }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-user-plus"></i> Ajouter
+                                </button>
+                            </div>
+                        </form>
                     {% endif %}
                 </div>
+
+
 
                 {% if sortie.participants|length > 0 %}
                     <div class="participants-grid">
@@ -219,9 +229,17 @@
                                         <button class="btn-icon btn-make-organizer" onclick="openChangeOrganizerModal({{ participant.id }}, '{{ participant.prenom }} {{ participant.nom }}')" title="Définir comme organisateur">
                                             <i class="fas fa-crown"></i>
                                         </button>
-                                        <button class="btn-icon btn-remove-participant" onclick="openRemoveParticipantModal({{ participant.id }}, '{{ participant.prenom }} {{ participant.nom }}')" title="Retirer de la sortie">
-                                            <i class="fas fa-user-minus"></i>
-                                        </button>
+                                        <form method="post" action="{{ path('admin_remove_participant', {id: sortie.id}) }}" style="display: inline;">
+                                            <input type="hidden" name="participantId" value="{{ participant.id }}">
+                                            <input type="hidden" name="motif" value="Retrait manuel par l'admin">
+                                            <button type="submit" class="btn-icon btn-remove-participant"
+                                                    onclick="return confirm('Confirmer le retrait de ce participant ?')"
+                                                    title="Retirer de la sortie">
+                                                <i class="fas fa-user-minus"></i>
+                                            </button>
+
+                                        </form>
+
                                     </div>
                                 {% endif %}
                             </div>
@@ -259,7 +277,10 @@
     {% include 'partials/_footer.html.twig' %}
 {% endblock %}
 
+
 {% block javascripts %}
+
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Toggle menu trois points
@@ -320,5 +341,10 @@
             {% endfor %}
             {% endfor %}
         });
+
+    <script>
+
     </script>
+
+
 {% endblock %}

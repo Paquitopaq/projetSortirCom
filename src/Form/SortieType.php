@@ -18,6 +18,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class SortieType extends AbstractType
 {
@@ -50,13 +51,18 @@ class SortieType extends AbstractType
                 ]
             ])
             ->add('dateLimiteInscription', DateTimeType::class, [
-                'widget' => 'single_text',
                 'label' => 'Date limite d\'inscription',
+                'widget' => 'single_text',
                 'input' => 'datetime_immutable',
-                'html5' => false,
+                'required' => true,
+                'constraints' => [
+                    new NotNull([
+                        'message' => 'La date limite d\'inscription est obligatoire',
+                    ]),
+                ],
                 'attr' => [
-                    'class' => 'form-control'
-                ]
+                    'class' => 'form-control',
+                ],
             ])
             ->add('nbInscriptionMax', IntegerType::class, [
                 'label' => 'Nombre maximum de participants'
