@@ -32,16 +32,8 @@ class SortieService
         $this->security = $security;
     }
 
-    public function createSortie(Sortie $sortie, FormInterface $form, bool $publier, bool $isNew = true): void
+    public function createSortie(Sortie $sortie, bool $publier, bool $isNew = true): void
     {
-        // Gestion du nouveau lieu
-        $nouveauLieu = $form->get('nouveauLieu')->getData();
-        if ($nouveauLieu && $nouveauLieu->getNom()) {
-            $this->entityManager->persist($nouveauLieu);
-            $sortie->setLieu($nouveauLieu);
-        }
-
-        // Organisateur (utilisateur connecté)
         if ($isNew) {
             $participant = $this->entityManager
                 ->getRepository(Participant::class)
@@ -53,7 +45,6 @@ class SortieService
         $etat = $publier ? Etat::OPEN : Etat::CREATED;
         $sortie->setEtat($etat);
 
-        // Persistance en base
         $this->entityManager->persist($sortie);
         $this->entityManager->flush();
     }

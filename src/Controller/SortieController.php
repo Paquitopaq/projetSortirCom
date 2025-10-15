@@ -26,7 +26,7 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/sortie', name: 'app_sortie')]
-    public function index(Request $request,EntityManagerInterface $entityManager): Response
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         $data = $this->sortieService->getFilteredSorties($request);
         $sorties = $data['sorties'];
@@ -63,6 +63,7 @@ final class SortieController extends AbstractController
                 $sortie->setLieu($nouveauLieu);
             }
 
+            // Déterminer publication ou brouillon
             $publication = $request->request->get('action') === 'publier';
 
             // Upload photo
@@ -71,7 +72,7 @@ final class SortieController extends AbstractController
                 $newFilename = $fileManager->upload(
                     $photoFile,
                     $this->getParameter('sorties_photos_directory'),
-                    $sortie->getNom() // facultatif, juste pour base du nom
+                    $sortie->getNom()
                 );
                 if ($newFilename) {
                     $sortie->setPhotoSortie($newFilename);
@@ -81,11 +82,10 @@ final class SortieController extends AbstractController
             }
 
             $this->sortieService->createSortie($sortie, $publication);
-            $entityManager->persist($sortie);
-            $entityManager->flush();
 
             $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
             $this->addFlash('success', $message);
+
             return $this->redirectToRoute('app_sortie');
         }
 
@@ -248,11 +248,6 @@ final class SortieController extends AbstractController
         LieuRepository $lieuRepository,
         FileManager $fileManager
     ): Response {
-        $user = $this->getUser();
-        $isAdmin = $this->isGranted('ROLE_ADMIN');
-
-        // Vérifications droits et état...
-
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
         $publication = $request->request->get('action') === 'publier';
@@ -271,7 +266,7 @@ final class SortieController extends AbstractController
                 $newFilename = $fileManager->upload(
                     $photoFile,
                     $this->getParameter('sorties_photos_directory'),
-                    $sortie->getNom(),        // facultatif, juste pour base du nom
+                    $sortie->getNom(),
                     $sortie->getPhotoSortie() // ancien nom pour suppression
                 );
                 if ($newFilename) {
@@ -286,6 +281,7 @@ final class SortieController extends AbstractController
 
             $message = $publication ? 'Sortie publiée avec succès.' : 'Sortie enregistrée en brouillon.';
             $this->addFlash('success', $message);
+
             return $this->redirectToRoute('app_sortie');
         }
 

@@ -39,9 +39,15 @@
                             <p><i class="fas fa-envelope"></i> {{ participant.email }}</p>
                             <p><i class="fas fa-phone"></i> {{ participant.telephone ?? 'Non renseigné' }}</p>
                         </div>
-                        
-                        <p class="profile-card-role">{{ participant.administrateur ? 'Administrateur' : 'Membre' }}</p>
 
+                        <p class="profile-card-role">
+                            {% if 'ROLE_ADMIN' in participant.roles %}
+                                Administrateur
+                            {% else %}
+                                Membre
+                            {% endif %}
+                        </p>
+                        
                         <div class="contact-info">
                             <div class="contact-item">
                                 <div class="contact-icon">
