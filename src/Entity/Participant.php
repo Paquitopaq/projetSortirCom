@@ -39,6 +39,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 50, unique: true, nullable: true)]
+    #[Assert\NotBlank(message: "Le pseudo est obligatoire.")]
     private ?string $pseudo = null;
 
     #[ORM\Column(length: 50, nullable: true)]
