@@ -2,50 +2,57 @@
 
 {% block title %}{{ groupe.id ? 'Modifier le groupe' : 'Créer un groupe' }}{% endblock %}
 
-
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('css/groupe-edit.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/group-edit.css') }}">
 {% endblock %}
 
 {% block body %}
-    <div class="profile-wrapper">
-        <div class="profile-card">
-            <!-- Côté gauche : illustration ou avatar -->
-            <div class="profile-left">
-
-                    <h2>{{ groupe.id ? 'Modifier le groupe' : 'Créer un groupe' }}</h2>
-            </div>
-
-            <!-- Côté droit : formulaire -->
-            <div class="profile-right">
-                {% for flash in app.flashes('success') %}
-                    <div class="alert alert-success">{{ flash }}</div>
-                {% endfor %}
-
-                {{ form_start(form) }}
-                <div class="fields-grid">
-                    <div class="field">
-                        {{ form_label(form.nomGroupe) }}
-                        {{ form_widget(form.nomGroupe) }}
-                    </div>
-
-                    <div class="field">
-                        {{ form_label(form.membres) }}
-                        {{ form_widget(form.membres) }}
-                    </div>
-                </div>
-
-                <div class="submit-wrapper">
-                    <button type="submit">
-                        {{ groupe.id ? 'Mettre à jour le groupe' : 'Créer le groupe' }}
-                    </button>
-                </div>
-                {{ form_end(form) }}
-
-                <div class="submit-wrapper">
-                    <a href="{{ path('groupe_index') }}" class="btn-secondary">Retour à la liste</a>
-                </div>
-            </div>
+    <section class="create-section">
+        <div class="create-header">
+            <h1 class="create-title">
+                <i class="fas fa-{{ groupe.id ? 'edit' : 'plus-circle' }}"></i>
+                {{ groupe.id ? 'Modifier le groupe' : 'Créer un groupe' }}
+            </h1>
+            <p class="create-subtitle">
+                {{ groupe.id ? 'Modifiez les informations de votre groupe' : 'Créez un nouveau groupe pour votre crew' }}
+            </p>
         </div>
-    </div>
+
+        <div class="form-card">
+            {% for flash in app.flashes('success') %}
+                <div class="alert alert-success">{{ flash }}</div>
+            {% endfor %}
+
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-info-circle"></i> Informations du groupe
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.nomGroupe, 'Nom du groupe', {'label_attr': {'class': 'form-label required'}}) }}
+                    {{ form_widget(form.nomGroupe, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Les aventuriers'}}) }}
+                    {{ form_errors(form.nomGroupe) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.membres, 'Membres', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.membres, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.membres) }}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> {{ groupe.id ? 'Mettre à jour le groupe' : 'Créer le groupe' }}
+                </button>
+                <a href="{{ path('groupe_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </section>
 {% endblock %}
