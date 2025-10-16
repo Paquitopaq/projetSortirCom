@@ -1,17 +1,55 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Reset your password{% endblock %}
+{% block title %}Nouveau mot de passe{% endblock %}
 
 {% block body %}
-    <h1>Reset your password</h1>
-    <h1>Reset your password</h1>
-    <h1>Reset your password</h1>
-    <h1>Reset your password</h1>
-    <h1>Reset your password</h1>
-    <h1>Reset your password</h1>
+    <div class="auth-container">
+        <div class="auth-wrapper">
 
-    {{ form_start(resetForm) }}
-        {{ form_row(resetForm.plainPassword) }}
-        <button class="btn btn-primary">Reset password</button>
-    {{ form_end(resetForm) }}
+            <!-- Illustration -->
+            <div class="auth-illustration">
+                <img src="{{ asset('images/reset-password.svg') }}" alt="Réinitialisation du mot de passe">
+            </div>
+
+            <!-- Formulaire -->
+            <div class="auth-form-section">
+                <div class="auth-form-content">
+                    <h1 class="auth-title"><i class="fa-solid fa-key"></i> Nouveau mot de passe</h1>
+
+                    <p style="color: var(--text-gray); margin-bottom: 1.5rem;">
+                        Entrez votre nouveau mot de passe ci-dessous pour finaliser la réinitialisation de votre compte.
+                    </p>
+
+                    {{ form_start(resetForm, {'attr': {'class': 'auth-form'}}) }}
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            {{ form_widget(resetForm.plainPassword, {
+                                'attr': {
+                                    'class': 'form-input',
+                                    'placeholder': 'Nouveau mot de passe'
+                                }
+                            }) }}
+                        </div>
+                        {{ form_errors(resetForm.plainPassword) }}
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-solid fa-check"></i> Réinitialiser le mot de passe
+                    </button>
+                    {{ form_end(resetForm) }}
+
+                    <div class="register-link">
+                        <p class="register-text">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <a href="{{ path('app_login') }}" class="register-link-btn">Retour à la connexion</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 {% endblock %}

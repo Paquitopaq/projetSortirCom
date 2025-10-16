@@ -101,9 +101,14 @@
             {% for sortie in sorties|slice(0, 6) %}
                 <div class="sortie-card">
                     <div class="sortie-image">
-                        <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&h=300&fit=crop" alt="{{ sortie.nom }}">
+                        {% if sortie.photoSortie %}
+                            <img src="{{ asset('uploads/sorties/' ~ sortie.photoSortie) }}" alt="{{ sortie.nom }}">
+                        {% else %}
+                            <img src="{{ asset('assets/images/default-sortie.jpg') }}" alt="Image par défaut">
+                        {% endif %}
                         <span class="sortie-badge">{{ sortie.etat.value }}</span>
                     </div>
+
                     <div class="sortie-content">
                         <h3 class="sortie-title">{{ sortie.nom }}</h3>
                         <div class="sortie-meta">
@@ -120,6 +125,7 @@
                                 {{ sortie.lieu.nom ?? 'Lieu à définir' }}
                             </div>
                         </div>
+
                         <div class="sortie-footer">
                             <div class="sortie-info">
                                 <i class="fas fa-clock"></i>
@@ -149,21 +155,22 @@
         <div class="stats-container">
             <div class="stat-item">
                 <i class="fas fa-calendar-check fa-3x"></i>
-                <div class="stat-number">{{ sorties|length }}</div>
+                <div class="stat-number" data-target="{{ sortiesDisponibles }}">{{ sortiesDisponibles }}</div>
                 <div class="stat-label">Sorties disponibles</div>
             </div>
             <div class="stat-item">
                 <i class="fas fa-users fa-3x"></i>
-                <div class="stat-number">500+</div>
+                <div class="stat-number" data-target="{{ participantsActifs }}">{{ participantsActifs }}</div>
                 <div class="stat-label">Participants actifs</div>
             </div>
             <div class="stat-item">
                 <i class="fas fa-user-tie fa-3x"></i>
-                <div class="stat-number">50+</div>
+                <div class="stat-number" data-target="{{ organisateurs }}">{{ organisateurs }}</div>
                 <div class="stat-label">Organisateurs</div>
             </div>
         </div>
     </section>
+
     {% include 'partials/_footer.html.twig' %}
 
 {% endblock %}
@@ -265,4 +272,25 @@
             }
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const updateCount = () => {
+                    const target = +counter.getAttribute('data-target');
+                    const count = +counter.innerText;
+                    const increment = target / 100;
+
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + increment);
+                        setTimeout(updateCount, 20);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                updateCount();
+            });
+        });
+    </script>
+
 {% endblock %}
