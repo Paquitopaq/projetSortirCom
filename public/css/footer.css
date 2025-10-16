@@ -1,0 +1,225 @@
+/* ===== Footer Version Premium ===== */
+.footer {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, #0a1d38 100%);
+    color: white;
+    padding: 60px 40px 30px;
+    margin-top: 100px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Effet décoratif en arrière-plan */
+.footer::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255, 107, 0, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.footer::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -5%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 107, 0, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.footer-section {
+    animation: fadeInUp 0.6s ease;
+}
+
+.footer-section:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.footer-section:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.footer-section:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.footer-section h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.footer-section h4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--gradient);
+    border-radius: 2px;
+}
+
+.footer-section h4 i {
+    color: var(--orange);
+    font-size: 20px;
+}
+
+.footer-section p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.footer-section a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    padding: 8px 12px 8px 0;
+    border-radius: 6px;
+}
+
+.footer-section a i {
+    color: var(--orange);
+    font-size: 14px;
+    width: 16px;
+    transition: all 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: white;
+    padding-left: 8px;
+    background: rgba(255, 107, 0, 0.1);
+}
+
+.footer-section a:hover i {
+    color: #ff8533;
+    transform: scale(1.2);
+}
+
+.footer-bottom {
+    text-align: center;
+    font-size: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 30px;
+    color: rgba(255, 255, 255, 0.6);
+    position: relative;
+    z-index: 1;
+}
+
+.footer-bottom p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.footer-bottom p::before {
+    content: '❤️';
+    animation: heartbeat 1.5s ease infinite;
+}
+
+/* Badge Admin dans le footer */
+.footer-section h4 i.fa-shield-alt {
+    animation: shieldPulse 2s ease infinite;
+}
+
+@keyframes shieldPulse {
+    0%, 100% {
+        color: var(--orange);
+        filter: drop-shadow(0 0 0 transparent);
+    }
+    50% {
+        color: #ff8533;
+        filter: drop-shadow(0 0 8px rgba(255, 107, 0, 0.6));
+    }
+}
+
+/* Style spécial pour les liens admin */
+.footer-section a[href*="admin"] {
+    position: relative;
+}
+
+.footer-section a[href*="admin"]::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--gradient);
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.footer-section a[href*="admin"]:hover::before {
+    opacity: 1;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes heartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+/* Responsive Footer */
+@media (max-width: 768px) {
+    .footer {
+        padding: 40px 20px 20px;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .footer-section h4 {
+        font-size: 16px;
+    }
+
+    .footer-section a:hover {
+        padding-left: 12px;
+    }
+}
