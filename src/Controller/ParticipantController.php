@@ -52,7 +52,7 @@ final class ParticipantController extends AbstractController
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$photoFile->guessExtension();
 
                 try {
-                    $photoFile->move($this->getParameter('sorties_photos_directory'), $newFilename);
+                    $photoFile->move($this->getParameter('photo_directory'), $newFilename);
                     $participant->setPhotoProfil($newFilename);
                     $participant->setPhotoSource('image');
                 } catch (FileException $e) {
