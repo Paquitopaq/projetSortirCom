@@ -39,7 +39,7 @@
                 <input type="text"
                        name="date_fin"
                        id="date-fin"
-                       placeholder="Date de fin"
+                       placeholder="Date limite d'inscription"
                        value="{{ app.request.query.get('date_fin') }}"
                        readonly>
 
@@ -118,24 +118,45 @@
                             <div class="sortie-image">
                                 {# Badge de statut #}
                                 {% if sortie.etat == constant('App\\Enum\\Etat::OPEN') %}
-                                    <span class="status-badge-top status-now">Ouverte</span>
+                                    <span class="status-badge-top status-open">
+                                        <i class="fas fa-door-open"></i> Ouverte
+                                    </span>
                                 {% elseif sortie.etat == constant('App\\Enum\\Etat::PASSED') %}
-                                    <span class="status-badge-top status-passed">Passée</span>
+                                    <span class="status-badge-top status-passed">
+                                        <i class="fas fa-history"></i> Passée
+                                    </span>
                                 {% elseif sortie.etat == constant('App\\Enum\\Etat::IN_PROGRESS') %}
-                                    <span class="status-badge-top status-today">En cours</span>
+                                    <span class="status-badge-top status-in-progress">
+                                        <i class="fas fa-running"></i> En cours
+                                    </span>
                                 {% elseif sortie.etat == constant('App\\Enum\\Etat::CREATED') %}
-                                    <span class="status-badge-top status-open">Créée</span>
-                                {% elseif isComplet %}
-                                    <span class="status-badge-top status-full">Complet</span>
+                                    <span class="status-badge-top status-created">
+                                        <i class="fas fa-file-alt"></i> Créée
+                                    </span>
                                 {% elseif sortie.etat == constant('App\\Enum\\Etat::CLOSED') %}
-                                    <span class="status-badge-top status-closed">Clôturée</span>
+                                    <span class="status-badge-top status-closed">
+                                        <i class="fas fa-lock"></i> Clôturée
+                                    </span>
+                                {% elseif sortie.etat == constant('App\\Enum\\Etat::CANCELLED') %}
+                                    <span class="status-badge-top status-cancelled">
+                                        <i class="fas fa-ban"></i> Annulée
+                                    </span>
+                                {% endif %}
+
+                                {# Badge complet si applicable #}
+                                {% if isComplet and sortie.etat == constant('App\\Enum\\Etat::OPEN') %}
+                                    <span class="status-badge-bottom status-full">
+                                        <i class="fas fa-users"></i> Complet
+                                    </span>
                                 {% endif %}
 
                                 {# Affichage de la photo si disponible, sinon image par défaut #}
                                 {% if sortie.photoSortie %}
                                     <img src="{{ asset('uploads/sorties/' ~ sortie.photoSortie) }}" alt="{{ sortie.nom }}" class="sortie-img">
                                 {% else %}
-                                    <img src="{{ asset('assets/avatars/sunglasses.jpg') }}" alt="Sortie sans image" class="sortie-img">
+                                    <div class="sortie-img-placeholder">
+                                        <i class="fas fa-image"></i>
+                                    </div>
                                 {% endif %}
 
                             </div>
@@ -166,9 +187,13 @@
                                 <div class="organizer">
                                     <div class="organizer-avatar">
                                         {% if sortie.organisateur %}
-                                            {{ sortie.organisateur.prenom|first|upper }}{{ sortie.organisateur.nom|first|upper }}
+                                            {% if sortie.organisateur.getAvatarPath() %}
+                                                <img src="{{ asset(sortie.organisateur.getAvatarPath()) }}" alt="Avatar {{ sortie.organisateur.prenom }}">
+                                            {% else %}
+                                                <span>{{ sortie.organisateur.prenom|first|upper }}{{ sortie.organisateur.nom|first|upper }}</span>
+                                            {% endif %}
                                         {% else %}
-                                            ?
+                                            <span>?</span>
                                         {% endif %}
                                     </div>
                                     <span>
