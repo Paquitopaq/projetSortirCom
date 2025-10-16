@@ -55,7 +55,13 @@
                     {% endif %}
 
                     {% if sortie.etat.value == 'Ouverte' %}
-                        <span class="badge-now">Inscriptions ouvertes</span>
+                        <span class="badge-now badge-open">Inscriptions ouvertes</span>
+                    {% elseif sortie.participants|length >= sortie.nbInscriptionMax %}
+                        <span class="badge-now badge-full">Complet</span>
+                    {% elseif sortie.dateLimiteInscription < date() %}
+                        <span class="badge-now badge-closed">Inscriptions closes</span>
+                    {% elseif sortie.etat.value == 'Clôturée' or sortie.etat.value == 'Annulée' %}
+                        <span class="badge-now badge-cancelled">{{ sortie.etat.value }}</span>
                     {% endif %}
                 </div>
             </div>
