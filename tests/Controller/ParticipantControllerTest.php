@@ -2,7 +2,10 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\GroupePrive;
 use App\Entity\Participant;
+use App\Entity\Sortie;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
