@@ -39,9 +39,22 @@ body {
     color: var(--blue-dark);
 }
 
-.btn-create {
+.header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* ===== Boutons ===== */
+.btn-create,
+.btn-import {
     padding: 12px 24px;
-    background: var(--orange);
     color: white;
     text-decoration: none;
     font-weight: 600;
@@ -51,12 +64,37 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-create {
+    background: var(--orange);
 }
 
 .btn-create:hover {
     background: #e55f00;
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(255, 107, 0, 0.3);
+}
+
+.btn-import {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+}
+
+.btn-import:hover {
+    background: linear-gradient(135deg, #218838, #1ab386);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.35);
+}
+
+.btn-import i {
+    transition: transform 0.3s;
+}
+
+.btn-import:hover i {
+    transform: scale(1.1);
 }
 
 /* ===== Barre de recherche ===== */
@@ -140,7 +178,7 @@ body {
     border-color: var(--orange);
 }
 
-/* ===== Compteur de résultats ===== */
+/* ===== Résultats ===== */
 .results-count {
     margin: 24px 0;
     color: #717171;
@@ -152,7 +190,7 @@ body {
     font-size: 16px;
 }
 
-/* ===== Grille de sorties (Desktop) ===== */
+/* ===== Grille de sorties ===== */
 .sorties-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -173,7 +211,9 @@ body {
 
 .sortie-image {
     width: 100%;
-    height: 200px;
+    height: 150px;
+    overflow: hidden;
+    border-radius: 10px;
     position: relative;
     display: flex;
     align-items: center;
@@ -185,6 +225,12 @@ body {
     color: white;
     font-size: 48px;
     opacity: 0.9;
+}
+
+.sortie-image img.sortie-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .status-badge-top {
@@ -201,35 +247,12 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-.status-badge-top.status-now {
-    background: var(--orange);
-    color: white;
-}
-
-.status-badge-top.status-today {
-    background: #28a745;
-    color: white;
-}
-
-.status-badge-top.status-open {
-    background: #d4edda;
-    color: #155724;
-}
-
-.status-badge-top.status-closed {
-    background: #f8d7da;
-    color: #721c24;
-}
-
-.status-badge-top.status-full {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.status-badge-top.status-passed {
-    background: #d6d6d6;
-    color: #666;
-}
+.status-badge-top.status-now { background: var(--orange); color: white; }
+.status-badge-top.status-today { background: #28a745; color: white; }
+.status-badge-top.status-open { background: #d4edda; color: #155724; }
+.status-badge-top.status-closed { background: #f8d7da; color: #721c24; }
+.status-badge-top.status-full { background: #fff3cd; color: #856404; }
+.status-badge-top.status-passed { background: #d6d6d6; color: #666; }
 
 .sortie-content {
     padding: 20px;
@@ -245,32 +268,15 @@ body {
     margin-bottom: 12px;
 }
 
-.sortie-location {
+.sortie-location,
+.sortie-date,
+.sortie-info,
+.sortie-participants {
     font-size: 14px;
     color: #717171;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.sortie-date {
-    font-size: 14px;
-    color: #717171;
-    margin-bottom: 12px;
-}
-
-.sortie-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    color: #717171;
-    margin-bottom: 12px;
 }
 
 .sortie-participants {
-    font-size: 14px;
     color: var(--blue-dark);
     font-weight: 600;
     margin-bottom: 16px;
@@ -306,16 +312,12 @@ body {
     font-size: 12px;
 }
 
-/* ===== Boutons d'action ===== */
+/* ===== Action Buttons ===== */
 .action-buttons {
     display: flex;
     gap: 8px;
     margin-top: auto;
-}
-
-.action-buttons form {
-    flex: 1;
-    width: 100%;
+    flex-direction: row;
 }
 
 .btn-action {
@@ -334,45 +336,17 @@ body {
     text-decoration: none;
 }
 
-.btn-join {
-    background: var(--orange);
-    color: white;
-}
+.btn-join { background: var(--orange); color: white; }
+.btn-join:hover { background: #e55f00; transform: translateY(-1px); }
 
-.btn-join:hover {
-    background: #e55f00;
-    transform: translateY(-1px);
-}
+.btn-unsubscribe { background: #dc3545; color: white; }
+.btn-unsubscribe:hover { background: #c82333; transform: translateY(-1px); }
 
-.btn-unsubscribe {
-    background: #dc3545;
-    color: white;
-}
+.btn-manage { background: var(--blue-dark); color: white; }
+.btn-manage:hover { background: #081829; transform: translateY(-1px); }
 
-.btn-unsubscribe:hover {
-    background: #c82333;
-    transform: translateY(-1px);
-}
-
-.btn-manage {
-    background: var(--blue-dark);
-    color: white;
-}
-
-.btn-manage:hover {
-    background: #081829;
-    transform: translateY(-1px);
-}
-
-.btn-disabled {
-    background: #e0e0e0;
-    color: #999;
-    cursor: not-allowed;
-}
-
-.btn-disabled:hover {
-    transform: none;
-}
+.btn-disabled { background: #e0e0e0; color: #999; cursor: not-allowed; }
+.btn-disabled:hover { transform: none; }
 
 /* ===== Message vide ===== */
 .no-sorties {
@@ -381,249 +355,164 @@ body {
     color: #717171;
 }
 
-.no-sorties i {
-    font-size: 64px;
-    color: #ddd;
-    margin-bottom: 24px;
+.no-sorties i { font-size: 64px; color: #ddd; margin-bottom: 24px; }
+.no-sorties h3 { font-size: 24px; margin-bottom: 12px; color: var(--blue-dark); }
+.no-sorties p { font-size: 16px; margin-bottom: 24px; }
+
+/* ===== Modal ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(11, 36, 71, 0.7);
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s;
 }
 
-.no-sorties h3 {
-    font-size: 24px;
-    margin-bottom: 12px;
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    padding: 2rem;
+    position: relative;
+    animation: slideIn 0.3s;
+    box-shadow: var(--card-shadow);
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: var(--blue-dark);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s;
+}
+
+.close-modal:hover {
     color: var(--blue-dark);
 }
 
-.no-sorties p {
-    font-size: 16px;
-    margin-bottom: 24px;
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
 }
 
-.sortie-image {
-    width: 100%;
-    height: 150px;
-    overflow: hidden;
+.modal-btn {
+    padding: 12px 24px;
+    border: none;
     border-radius: 10px;
-    position: relative;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s;
 }
 
-.sortie-image img.sortie-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.modal-btn-primary {
+    background: var(--orange);
+    color: white;
 }
 
+.modal-btn-primary:hover:not(:disabled) {
+    background: #e55f00;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(255, 107, 0, 0.4);
+}
 
-/* ===== RESPONSIVE TABLETTE (Liste) ===== */
+.modal-btn-primary:disabled {
+    background: #e0e0e0;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.modal-btn-secondary {
+    background: var(--blue-dark);
+    color: white;
+}
+
+.modal-btn-secondary:hover {
+    background: #081829;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(11, 36, 71, 0.3);
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 1024px) and (min-width: 769px) {
-    .sorties-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .sortie-card {
-        flex-direction: row;
-        height: 180px;
-    }
-
-    .sortie-image {
-        width: 240px;
-        min-width: 240px;
-        height: 100%;
-    }
-
-    .sortie-image i {
-        font-size: 40px;
-    }
-
-    .sortie-content {
-        padding: 16px;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .sortie-title {
-        font-size: 16px;
-        margin-bottom: 8px;
-    }
-
+    .sorties-grid { display: flex; flex-direction: column; gap: 16px; }
+    .sortie-card { flex-direction: row; height: 180px; }
+    .sortie-image { width: 240px; min-width: 240px; height: 100%; }
+    .sortie-image i { font-size: 40px; }
+    .sortie-content { padding: 16px; flex: 1; }
+    .sortie-title { font-size: 16px; margin-bottom: 8px; }
     .sortie-location,
-    .sortie-date {
-        font-size: 13px;
-        margin-bottom: 6px;
-    }
-
-    .sortie-info {
-        margin-bottom: 8px;
-    }
-
-    .sortie-footer {
-        margin-bottom: 12px;
-        padding-top: 12px;
-    }
-
-    .action-buttons {
-        margin-top: 0;
-    }
-
-    .btn-action {
-        padding: 10px 14px;
-        font-size: 13px;
-    }
+    .sortie-date { font-size: 13px; margin-bottom: 6px; }
+    .sortie-info { margin-bottom: 8px; }
+    .sortie-footer { margin-bottom: 12px; padding-top: 12px; }
+    .action-buttons { margin-top: 0; }
+    .btn-action { padding: 10px 14px; font-size: 13px; }
 }
 
-/* ===== RESPONSIVE MOBILE (Liste compacte) ===== */
 @media (max-width: 768px) {
-    .container {
-        padding-top: 70px;
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-
-    .page-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-
-    .page-title {
-        font-size: 24px;
-    }
-
-    .btn-create {
-        justify-content: center;
-        width: 100%;
-    }
-
-    .search-bar form {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .search-bar input[type="text"] {
-        width: 100%;
-    }
-
-    .search-bar button {
-        width: 100%;
-    }
-
-    .filters {
-        gap: 8px;
-    }
-
-    .filter-btn {
-        font-size: 13px;
-        padding: 8px 14px;
-    }
-
-    .sorties-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .sortie-card {
-        flex-direction: row;
-        height: 140px;
-    }
-
-    .sortie-image {
-        width: 120px;
-        min-width: 120px;
-        height: 100%;
-    }
-
-    .sortie-image i {
-        font-size: 28px;
-    }
-
-    .status-badge-top {
-        padding: 4px 8px;
-        font-size: 9px;
-        top: 8px;
-        right: 8px;
-    }
-
-    .sortie-content {
-        padding: 12px;
-        flex: 1;
-    }
-
-    .sortie-title {
-        font-size: 14px;
-        margin-bottom: 6px;
-        line-height: 1.3;
-    }
-
-    .sortie-location {
-        font-size: 12px;
-        margin-bottom: 4px;
-    }
-
-    .sortie-date {
-        font-size: 12px;
-        margin-bottom: 6px;
-    }
-
-    .sortie-info {
-        font-size: 11px;
-        gap: 8px;
-        margin-bottom: 6px;
-    }
-
-    .sortie-participants {
-        font-size: 12px;
-        margin-bottom: 8px;
-    }
-
-    .sortie-footer {
-        padding-top: 8px;
-        margin-bottom: 8px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-
-    .organizer {
-        font-size: 11px;
-        gap: 6px;
-    }
-
-    .organizer-avatar {
-        width: 24px;
-        height: 24px;
-        font-size: 10px;
-    }
-
-    .action-buttons {
-        flex-direction: column;
-        gap: 6px;
-        margin-top: 0;
-    }
-
-    .btn-action {
-        padding: 8px 12px;
-        font-size: 12px;
-        gap: 6px;
-    }
-
-    .no-sorties {
-        padding: 60px 20px;
-    }
-
-    .no-sorties i {
-        font-size: 48px;
-        margin-bottom: 16px;
-    }
-
-    .no-sorties h3 {
-        font-size: 20px;
-    }
-
-    .no-sorties p {
-        font-size: 14px;
-    }
+    .container { padding-top: 70px; padding-left: 16px; padding-right: 16px; }
+    .page-header { flex-direction: column; align-items: stretch; gap: 16px; margin-bottom: 24px; }
+    .page-title { font-size: 24px; }
+    .btn-create, .btn-import { width: 100%; justify-content: center; }
+    .search-bar form { flex-direction: column; gap: 12px; }
+    .filters { gap: 8px; }
+    .filter-btn { font-size: 13px; padding: 8px 14px; }
+    .sorties-grid { display: flex; flex-direction: column; gap: 16px; }
+    .sortie-card { flex-direction: row; height: 140px; }
+    .sortie-image { width: 120px; min-width: 120px; height: 100%; }
+    .sortie-image i { font-size: 28px; }
+    .status-badge-top { padding: 4px 8px; font-size: 9px; top: 8px; right: 8px; }
+    .sortie-content { padding: 12px; flex: 1; }
+    .sortie-title { font-size: 14px; margin-bottom: 6px; line-height: 1.3; }
+    .sortie-location { font-size: 12px; margin-bottom: 4px; }
+    .sortie-date { font-size: 12px; margin-bottom: 6px; }
+    .sortie-info { font-size: 11px; gap: 8px; margin-bottom: 6px; }
+    .sortie-participants { font-size: 12px; margin-bottom: 8px; }
+    .sortie-footer { padding-top: 8px; margin-bottom: 8px; flex-direction: column; align-items: flex-start; gap: 8px; }
+    .organizer { font-size: 11px; gap: 6px; }
+    .organizer-avatar { width: 24px; height: 24px; font-size: 10px; }
+    .action-buttons { flex-direction: column; gap: 6px; margin-top: 0; }
+    .btn-action { padding: 8px 12px; font-size: 12px; gap: 6px; }
+    .no-sorties { padding: 60px 20px; }
+    .no-sorties i { font-size: 48px; margin-bottom: 16px; }
+    .no-sorties h3 { font-size: 20px; }
+    .no-sorties p { font-size: 14px; }
 }
