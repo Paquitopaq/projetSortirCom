@@ -142,6 +142,7 @@
         <div class="bottom-grid">
             <!-- Organisateur -->
             <div class="organizer-card">
+                <div class="info-label">Organisé par</div>
                 {% if sortie.organisateur %}
                     <a href="{{ path('app_profil_participant', {id: sortie.organisateur.id}) }}" class="organizer-link">
                         <div class="organizer-avatar">
@@ -167,16 +168,6 @@
 
                 <div class="organizer-stats">
                     <div class="stat-item">
-                        <div class="info-label">Organisé par</div>
-                        <div class="info-value">
-                            {% if sortie.organisateur %}
-                                {{ sortie.organisateur.prenom }}
-                            {% else %}
-                                Inconnu
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="stat-item">
                         <div class="info-label">Sorties créées</div>
                         <div class="info-value">
                             {% if sortie.organisateur and sortie.organisateur.sortiesOrganisees %}
@@ -199,7 +190,7 @@
                             <div class="d-flex gap-2 align-items-center">
                                 <select name="participantId" class="form-select" required style="max-width: 300px;">
                                     {% for participant in participants %}
-                                        <option value="{{ participant.id }}">{{ participant.nom }} {{ participant.prenom }}</option>
+                                        <option value="{{ participant.id }}">{{ participant.pseudo }}</option>
                                     {% endfor %}
                                 </select>
                                 <button type="submit" class="btn btn-success">
@@ -210,8 +201,6 @@
                     {% endif %}
                 </div>
 
-
-
                 {% if sortie.participants|length > 0 %}
                     <div class="participants-grid">
                         {% for participant in sortie.participants %}
@@ -221,25 +210,21 @@
                                         {{ participant.prenom|first }}{{ participant.nom|first }}
                                     </div>
                                     <div class="participant-name">
-                                        {{ participant.pseudo ?? participant.prenom ~ ' ' ~ participant.nom }}
+                                        {{ participant.pseudo ?? participant.prenom }}
                                     </div>
                                 </a>
                                 {% if is_granted('ROLE_ADMIN') %}
                                     <div class="participant-admin-actions">
-                                        <button class="btn-icon btn-make-organizer" onclick="openChangeOrganizerModal({{ participant.id }}, '{{ participant.prenom }} {{ participant.nom }}')" title="Définir comme organisateur">
-                                            <i class="fas fa-crown"></i>
-                                        </button>
-                                        <form method="post" action="{{ path('admin_remove_participant', {id: sortie.id}) }}" style="display: inline;">
+                                        <form method="post" action="{{ path('admin_remove_participant', {id: sortie.id}) }}" class="remove-participant-form" style="display: inline;">
                                             <input type="hidden" name="participantId" value="{{ participant.id }}">
-                                            <input type="hidden" name="motif" value="Retrait manuel par l'admin">
-                                            <button type="submit" class="btn-icon btn-remove-participant"
-                                                    onclick="return confirm('Confirmer le retrait de ce participant ?')"
+                                            <input type="hidden" name="motif" value="">
+                                            <button type="button"
+                                                    class="btn-icon btn-remove-participant swal-remove-btn"
+                                                    data-nom="{{ participant.prenom }} {{ participant.nom }}"
                                                     title="Retirer de la sortie">
                                                 <i class="fas fa-user-minus"></i>
                                             </button>
-
                                         </form>
-
                                     </div>
                                 {% endif %}
                             </div>
@@ -284,15 +269,6 @@
                         </div>
                     </div>
                 </div>
-
-
-
-
-
-
-
-
-
             </div>
         </div>
     </div>
@@ -302,9 +278,8 @@
 
 
 {% block javascripts %}
-        <script>
-
-            document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
                 const form = document.querySelector('#csvImportModal form');
                 if (form) {
                     form.addEventListener('submit', function () {
@@ -316,8 +291,62 @@
                     });
                 }
             });
-
         </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // === CONFIRMATION AVEC MOTIF POUR RETRAIT DE PARTICIPANT ===
+            document.querySelectorAll('.swal-remove-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const form = this.closest('form');
+                    const participantNom = this.getAttribute('data-nom');
+
+                    Swal.fire({
+                        title: 'Retirer un participant',
+                        html: `
+                    <p>Veuillez indiquer le motif du retrait de <strong>${participantNom}</strong> :</p>
+                    <input id="motif-input" class="swal2-input" placeholder="Motif obligatoire">
+                `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Confirmer le retrait',
+                        cancelButtonText: 'Annuler',
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        preConfirm: () => {
+                            const motif = document.getElementById('motif-input').value.trim();
+                            if (!motif) {
+                                Swal.showValidationMessage('⚠️ Le motif est obligatoire.');
+                                return false;
+                            }
+                            return motif;
+                        }
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            const motif = result.value;
+                            form.querySelector('input[name="motif"]').value = motif;
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            // === AFFICHAGE DES MESSAGES FLASH AVEC SWEETALERT ===
+            {% for label, messages in app.flashes %}
+            {% for message in messages %}
+            Swal.fire({
+                icon: '{{ label == "success" ? "success" : (label == "error" ? "error" : "info") }}',
+                title: '{{ label|capitalize }}',
+                text: '{{ message|e("js") }}',
+                confirmButtonColor: '#3085d6'
+            });
+            {% endfor %}
+            {% endfor %}
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -340,13 +369,5 @@
                 });
             }
         });
-
-
-
-
     </script>
-
-
-
-
 {% endblock %}

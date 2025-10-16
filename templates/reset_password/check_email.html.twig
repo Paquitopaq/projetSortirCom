@@ -1,18 +1,54 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Password Reset Email Sent{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+{% endblock %}
 
 {% block body %}
-    <p>Réparer NavBar</p>
-    <p>Réparer NavBar</p>
-    <p>Réparer NavBar</p>
-    <p>Réparer NavBar</p>
-    <p>Réparer NavBar</p>
-    <p>Réparer NavBar</p>
-    <p>Réparer NavBar</p>
-    <p>
-        If an account matching your email exists, then an email was just sent that contains a link that you can use to reset your password.
-        This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
-    </p>
-    <p>If you don't receive an email please check your spam folder or <a href="{{ path('app_forgot_password_request') }}">try again</a>.</p>
+    <div class="auth-container">
+        <div class="auth-wrapper">
+            <!-- Illustration -->
+            <div class="auth-illustration">
+                <i class="fa-solid fa-envelope-circle-check" style="font-size: 6rem; color: var(--orange); margin-bottom: 1rem;"></i>
+                <h2 style="color: var(--blue-dark); font-weight: 700;">Vérifiez votre boîte mail</h2>
+                <p style="color: var(--text-gray); text-align: center; max-width: 300px; margin-top: 0.75rem;">
+                    Un email de réinitialisation de mot de passe vous a été envoyé.
+                    Cliquez sur le lien qu’il contient pour continuer.
+                </p>
+            </div>
+
+            <!-- Contenu -->
+            <div class="auth-form-section">
+                <div class="auth-form-content">
+
+                    <h1 class="auth-title">Email envoyé 📧</h1>
+
+                    <div class="custom-alert" style="background: #fff8e1; border: 1px solid #ffe082; color: #b36b00;">
+                        <i class="fa-solid fa-circle-info" style="margin-right: 0.5rem;"></i>
+                        Si un compte correspond à votre adresse, un lien de réinitialisation vient d’être envoyé.
+                    </div>
+
+                    <p style="color: var(--text-gray); margin-bottom: 1.5rem;">
+                        Ce lien expirera dans
+                        <strong>{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</strong>.
+                    </p>
+
+                    <p style="color: var(--text-gray); line-height: 1.6;">
+                        Si vous ne recevez pas l’email, vérifiez vos spams ou
+                        <a href="{{ path('app_forgot_password_request') }}" style="color: var(--orange); font-weight: 600; text-decoration: none;">
+                            réessayez ici
+                        </a>.
+                    </p>
+
+                    <div class="register-link" style="margin-top: 2rem;">
+                        <p class="register-text">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            Retour à la page de connexion
+                        </p>
+                        <a href="{{ path('app_login') }}" class="register-link-btn">Se connecter</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
