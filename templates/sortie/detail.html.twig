@@ -256,57 +256,7 @@
                     <p style="color: #888;">Aucun participant pour le moment.</p>
                 {% endif %}
 
-                {# Modal recherche de participants #}
-                <div class="modal fade" id="searchParticipantModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title"><i class="fas fa-search"></i> Rechercher un participant</h5>
-                                <button type="button" class="btn-close" onclick="closeSearchModal()"></button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="text"
-                                       id="searchInput"
-                                       class="form-control search-input"
-                                       placeholder="Rechercher par nom, prénom ou pseudo..."
-                                       oninput="filterParticipants()">
-
-                                <div id="participantsList" class="participants-search-list">
-                                    {% for participant in participants %}
-                                        <div class="participant-search-item" data-search="{{ (participant.nom ~ ' ' ~ participant.prenom ~ ' ' ~ participant.pseudo)|lower }}">
-                                            <form method="post" action="{{ path('admin_add_participant', {id: sortie.id}) }}" style="display: flex; align-items: center; gap: 12px; width: 100%;">
-                                                <input type="hidden" name="participantId" value="{{ participant.id }}">
-                                                <div class="search-avatar">
-                                                    {% if participant.getAvatarPath() %}
-                                                        <img src="{{ asset(participant.getAvatarPath()) }}" alt="Avatar">
-                                                    {% else %}
-                                                        <span>{{ participant.prenom|first }}{{ participant.nom|first }}</span>
-                                                    {% endif %}
-                                                </div>
-                                                <div style="flex: 1;">
-                                                    <strong>{{ participant.prenom }} {{ participant.nom }}</strong>
-                                                    {% if participant.pseudo %}
-                                                        <small>@{{ participant.pseudo }}</small>
-                                                    {% endif %}
-                                                </div>
-                                                <button type="submit" class="btn-add-search">
-                                                    <i class="fas fa-plus"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-
-                                <div id="noResults" class="no-results" style="display: none;">
-                                    <i class="fas fa-search"></i>
-                                    <p>Aucun participant trouvé</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {# Modal import CSV #}
+                {# Modal import CSV - Bootstrap natif #}
                 <div class="modal fade" id="csvImportModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
@@ -401,92 +351,94 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Recherche de participants
-        function openSearchModal() {
-            document.getElementById('searchParticipantModal').classList.add('show');
-            document.getElementById('searchParticipantModal').style.display = 'block';
-            document.body.classList.add('modal-open');
-            document.getElementById('searchInput').focus();
-        }
-
-        function closeSearchModal() {
-            document.getElementById('searchParticipantModal').classList.remove('show');
-            document.getElementById('searchParticipantModal').style.display = 'none';
-            document.body.classList.remove('modal-open');
-            document.getElementById('searchInput').value = '';
-            filterParticipants();
-        }
-
-        function filterParticipants() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const items = document.querySelectorAll('.participant-search-item');
-            let visibleCount = 0;
-
-            items.forEach(item => {
-                const searchData = item.getAttribute('data-search');
-                if (searchData.includes(searchTerm)) {
-                    item.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            document.getElementById('noResults').style.display = visibleCount === 0 ? 'flex' : 'none';
-        }
-
-        // Changement d'organisateur
-        function openChangeOrganizerModal() {
-            document.getElementById('changeOrganizerModal').classList.add('show');
-            document.getElementById('changeOrganizerModal').style.display = 'block';
-            document.body.classList.add('modal-open');
-            document.getElementById('searchOrganizerInput').focus();
-        }
-
-        function closeChangeOrganizerModal() {
-            document.getElementById('changeOrganizerModal').classList.remove('show');
-            document.getElementById('changeOrganizerModal').style.display = 'none';
-            document.body.classList.remove('modal-open');
-            document.getElementById('searchOrganizerInput').value = '';
-            filterOrganizers();
-        }
-
-        function filterOrganizers() {
-            const searchTerm = document.getElementById('searchOrganizerInput').value.toLowerCase();
-            const items = document.querySelectorAll('#organizersList .participant-search-item');
-            let visibleCount = 0;
-
-            items.forEach(item => {
-                const searchData = item.getAttribute('data-search');
-                if (searchData.includes(searchTerm)) {
-                    item.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            document.getElementById('noOrganizerResults').style.display = visibleCount === 0 ? 'flex' : 'none';
-        }
-
-        // Fermeture du modal import CSV
         document.addEventListener('DOMContentLoaded', function () {
-            const csvForm = document.querySelector('#csvImportModal form');
-            if (csvForm) {
-                csvForm.addEventListener('submit', function () {
-                    const modalElement = document.getElementById('csvImportModal');
-                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
-                    if (modalInstance) {
-                        modalInstance.hide();
-                    }
-                });
+
+            // ======== Modals Bootstrap ========
+
+            function openCSVImportModal() {
+                const csvModalEl = document.getElementById('csvImportModal');
+                const csvModal = new bootstrap.Modal(csvModalEl);
+                csvModal.show();
             }
 
-            // Confirmation changement d'organisateur
+            document.querySelectorAll('[data-bs-target="#csvImportModal"]').forEach(btn => {
+                btn.addEventListener('click', openCSVImportModal);
+            });
+
+            // Rechercher des participants
+            const searchModalEl = document.getElementById('searchParticipantModal');
+            const searchModal = new bootstrap.Modal(searchModalEl);
+
+            function openSearchModal() {
+                searchModal.show();
+                document.getElementById('searchInput').focus();
+            }
+
+            function closeSearchModal() {
+                searchModal.hide();
+                document.getElementById('searchInput').value = '';
+                filterParticipants();
+            }
+
+            // Changer organisateur
+            const changeOrganizerModalEl = document.getElementById('changeOrganizerModal');
+            const changeOrganizerModal = new bootstrap.Modal(changeOrganizerModalEl);
+
+            function openChangeOrganizerModal() {
+                changeOrganizerModal.show();
+                document.getElementById('searchOrganizerInput').focus();
+            }
+
+            function closeChangeOrganizerModal() {
+                changeOrganizerModal.hide();
+                document.getElementById('searchOrganizerInput').value = '';
+                filterOrganizers();
+            }
+
+            // ======== Filtres de recherche ========
+            function filterParticipants() {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                const items = document.querySelectorAll('.participant-search-item');
+                let visibleCount = 0;
+
+                items.forEach(item => {
+                    const searchData = item.getAttribute('data-search');
+                    if (searchData.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                document.getElementById('noResults').style.display = visibleCount === 0 ? 'flex' : 'none';
+            }
+
+            function filterOrganizers() {
+                const searchTerm = document.getElementById('searchOrganizerInput').value.toLowerCase();
+                const items = document.querySelectorAll('#organizersList .participant-search-item');
+                let visibleCount = 0;
+
+                items.forEach(item => {
+                    const searchData = item.getAttribute('data-search');
+                    if (searchData.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                document.getElementById('noOrganizerResults').style.display = visibleCount === 0 ? 'flex' : 'none';
+            }
+
+            document.getElementById('searchInput')?.addEventListener('input', filterParticipants);
+            document.getElementById('searchOrganizerInput')?.addEventListener('input', filterOrganizers);
+
+            // ======== Confirmation changement d'organisateur ========
             document.querySelectorAll('#changeOrganizerModal form').forEach(form => {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
-
                     const participantName = this.querySelector('strong').textContent;
 
                     Swal.fire({
@@ -506,7 +458,7 @@
                 });
             });
 
-            // Confirmation retrait participant
+            // ======== Confirmation retrait participant ========
             document.querySelectorAll('.swal-remove-btn').forEach(button => {
                 button.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -516,9 +468,9 @@
                     Swal.fire({
                         title: 'Retirer un participant',
                         html: `
-                            <p>Veuillez indiquer le motif du retrait de <strong>${participantNom}</strong> :</p>
-                            <input id="motif-input" class="swal2-input" placeholder="Motif obligatoire">
-                        `,
+                    <p>Veuillez indiquer le motif du retrait de <strong>${participantNom}</strong> :</p>
+                    <input id="motif-input" class="swal2-input" placeholder="Motif obligatoire">
+                `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Confirmer le retrait',
@@ -542,19 +494,7 @@
                 });
             });
 
-            // Messages flash
-            {% for label, messages in app.flashes %}
-            {% for message in messages %}
-            Swal.fire({
-                icon: '{{ label == "success" ? "success" : (label == "error" ? "error" : "info") }}',
-                title: '{{ label|capitalize }}',
-                text: '{{ message|e("js") }}',
-                confirmButtonColor: '#3085d6'
-            });
-            {% endfor %}
-            {% endfor %}
-
-            // Menu trois points
+            // ======== Menu trois points ========
             const dotsButton = document.querySelector('.dots-button');
             const dropdownMenu = document.getElementById('dropdownMenu');
 

@@ -218,6 +218,7 @@ final class SortieController extends AbstractController
         ImportService          $importService,
         EntityManagerInterface $em
     ): Response {
+
         if (!$sortie) {
             $this->addFlash('danger', "Cette sortie n'existe pas.");
             return $this->redirectToRoute('app_home');
@@ -229,9 +230,11 @@ final class SortieController extends AbstractController
         }
 
         $form = $this->createForm(ImportParticipantType::class);
+
         $form->handleRequest($request);
         $sortie->updateEtat();
         $participantsDisponibles = $em->getRepository(Participant::class)->findAll();
+
         if ($form->isSubmitted() && $form->isValid() && $this->isGranted('ROLE_ADMIN')) {
             $csvFile = $form->get('csv_file')->getData();
 
