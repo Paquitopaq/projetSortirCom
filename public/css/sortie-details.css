@@ -375,6 +375,7 @@ body {
     align-items: center;
     text-align: center;
     transition: var(--transition);
+    position: relative;
 }
 
 .organizer-card:hover {
@@ -496,6 +497,7 @@ body {
     box-shadow: var(--card-shadow);
     padding: 28px;
     transition: var(--transition);
+    position: relative;
 }
 
 .participants-card:hover {
@@ -632,71 +634,161 @@ body {
     transform: scale(1.1);
 }
 
-/* ===== Styles pour les modals Bootstrap ===== */
-.modal-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid #eee;
+/* ===== Infobulles (Tooltips) ===== */
+.organizer-tooltip,
+.participant-tooltip {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    width: 400px;
+    max-width: 90vw;
+    z-index: 1000;
+    animation: tooltipSlideDown 0.2s ease;
 }
 
-.modal-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--blue-dark);
+.participant-tooltip {
+    top: 60px;
+    right: 0;
+}
+
+@keyframes tooltipSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tooltip-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, var(--orange), #ff8533);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.tooltip-header i {
+    margin-right: 6px;
+}
+
+.tooltip-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
-    gap: 8px;
-}
-
-.modal-title i {
-    color: var(--orange);
-}
-
-.modal-body {
-    padding: 24px;
-}
-
-.modal-footer {
-    padding: 16px 24px;
-    border-top: 1px solid #eee;
-}
-
-/* Styles du champ de recherche dans les modals */
-.search-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #eee;
-    border-radius: 10px;
-    font-size: 14px;
+    justify-content: center;
+    border-radius: 50%;
     transition: var(--transition);
-    margin-bottom: 16px;
+    line-height: 1;
 }
 
-.search-input:focus {
+.tooltip-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tooltip-body {
+    padding: 16px;
+}
+
+.tooltip-search-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    transition: var(--transition);
+}
+
+.tooltip-search-input:focus {
     outline: none;
     border-color: var(--orange);
     box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
 }
 
-/* Liste de recherche des participants */
-.participants-search-list {
-    max-height: 400px;
+.tooltip-list {
+    max-height: 320px;
     overflow-y: auto;
     border: 1px solid #eee;
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
-.participant-search-item {
-    padding: 12px;
+.tooltip-item {
     border-bottom: 1px solid #eee;
     transition: var(--transition);
 }
 
-.participant-search-item:last-child {
+.tooltip-item:last-child {
     border-bottom: none;
 }
 
-.participant-search-item:hover {
+.tooltip-item:hover {
     background: #f9f9f9;
+}
+
+.tooltip-item form {
+    display: block;
+    width: 100%;
+}
+
+.tooltip-item-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+}
+
+.tooltip-item-info {
+    flex: 1;
+}
+
+.tooltip-item-info strong {
+    display: block;
+    color: var(--blue-dark);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.tooltip-item-info small {
+    color: #888;
+    font-size: 12px;
+}
+
+.btn-tooltip-select {
+    background: var(--orange);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.btn-tooltip-select:hover {
+    background: #e55f00;
+    transform: scale(1.05);
 }
 
 .search-avatar {
@@ -724,40 +816,7 @@ body {
     text-transform: uppercase;
 }
 
-.participant-search-item strong {
-    display: block;
-    color: var(--blue-dark);
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.participant-search-item small {
-    color: #888;
-    font-size: 12px;
-}
-
-.btn-add-search {
-    background: var(--orange);
-    color: white;
-    border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-    flex-shrink: 0;
-}
-
-.btn-add-search:hover {
-    background: #e55f00;
-    transform: scale(1.05);
-}
-
-/* Message "Aucun résultat" */
-.no-results {
+.tooltip-no-results {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -767,15 +826,43 @@ body {
     text-align: center;
 }
 
-.no-results i {
+.tooltip-no-results i {
     font-size: 48px;
     margin-bottom: 12px;
     opacity: 0.3;
 }
 
-.no-results p {
+.tooltip-no-results p {
     margin: 0;
     font-size: 14px;
+}
+
+/* ===== Styles pour les modals Bootstrap ===== */
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--blue-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-title i {
+    color: var(--orange);
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #eee;
 }
 
 /* Boutons Bootstrap personnalisés */
@@ -880,5 +967,13 @@ body {
     .participants-header {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .organizer-tooltip,
+    .participant-tooltip {
+        width: 95vw;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
     }
 }

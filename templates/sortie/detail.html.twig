@@ -356,23 +356,18 @@
                     <p style="color: #888;">Aucun participant pour le moment.</p>
                 {% endif %}
 
-                {# Bouton CSV pour admin #}
-                {% if is_granted('ROLE_ADMIN') %}
-                    <div class="admin-buttons">
-                        <button class="btn-admin-action" data-bs-toggle="modal" data-bs-target="#csvImportModal">
-                            <i class="fas fa-file-csv"></i> Importer CSV
-                        </button>
-                    </div>
-                {% endif %}
+                {# Modal import CSV - Bootstrap #}
                 <div class="modal fade" id="csvImportModal" tabindex="-1" aria-labelledby="csvImportModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             {{ form_start(form, {
                                 'action': path('admin_import', {id: sortie.id}),
                                 'attr': {'enctype': 'multipart/form-data'}
                             }) }}
                             <div class="modal-header">
-                                <h5 class="modal-title" id="csvImportModalLabel">Importer un fichier CSV</h5>
+                                <h5 class="modal-title" id="csvImportModalLabel">
+                                    <i class="fas fa-file-csv"></i> Importer un fichier CSV
+                                </h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                             </div>
                             <div class="modal-body">
@@ -403,6 +398,18 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+
+            // ======== Fermeture automatique du modal CSV après soumission ========
+            const csvForm = document.querySelector('#csvImportModal form');
+            if (csvForm) {
+                csvForm.addEventListener('submit', function () {
+                    const modalElement = document.getElementById('csvImportModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                });
+            }
 
             // ======== Infobulle Changement d'organisateur ========
             const btnChangeOrganizer = document.getElementById('btnChangeOrganizer');
@@ -464,6 +471,7 @@
 
             // ======== Filtres de recherche ========
             function filterParticipants() {
+                if (!searchInput) return;
                 const searchTerm = searchInput.value.toLowerCase();
                 const items = document.querySelectorAll('#participantsList .tooltip-item');
                 let visibleCount = 0;
@@ -478,10 +486,14 @@
                     }
                 });
 
-                document.getElementById('noResults').style.display = visibleCount === 0 ? 'flex' : 'none';
+                const noResults = document.getElementById('noResults');
+                if (noResults) {
+                    noResults.style.display = visibleCount === 0 ? 'flex' : 'none';
+                }
             }
 
             function filterOrganizers() {
+                if (!searchOrganizerInput) return;
                 const searchTerm = searchOrganizerInput.value.toLowerCase();
                 const items = document.querySelectorAll('#organizersList .tooltip-item');
                 let visibleCount = 0;
@@ -496,7 +508,10 @@
                     }
                 });
 
-                document.getElementById('noOrganizerResults').style.display = visibleCount === 0 ? 'flex' : 'none';
+                const noOrganizerResults = document.getElementById('noOrganizerResults');
+                if (noOrganizerResults) {
+                    noOrganizerResults.style.display = visibleCount === 0 ? 'flex' : 'none';
+                }
             }
 
             searchInput?.addEventListener('input', filterParticipants);
