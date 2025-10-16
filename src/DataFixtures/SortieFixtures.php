@@ -49,6 +49,9 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
             $sortie->setLieu($lieu);
 
             $manager->persist($sortie);
+            if ($i === 1) {
+                $this->addReference('sortie_fixture_1', $sortie);
+            }
         }
 
         $manager->flush();

@@ -2,7 +2,10 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\GroupePrive;
 use App\Entity\Participant;
+use App\Entity\Sortie;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -76,6 +79,52 @@ class ParticipantControllerTest extends WebTestCase
 
 
     }
+
+    public function testAffichageProfilAvecFixtures(): void{
+            $client = static::createClient();
+            $container = static::getContainer();
+            $em = $container->get(EntityManagerInterface::class);
+
+            // Récupère le participant et la sortie depuis les fixtures
+            /** @var Participant $participant */
+            $participant = $em->getRepository(Participant::class)->findOneBy(['email' => 'alice@example.com']);
+            /** @var Sortie $sortie */
+             $sortie = $em->getRepository(Sortie::class)->findOneBy(['nom' => 'Sortie Test 1']);
+            // Crée un groupe privé lié au participant et à la sortie
+            $groupe = new GroupePrive();
+            $groupe->setNomGroupe('Groupe lié aux fixtures');
+            $groupe->setOrganisateur($participant);
+            $groupe->setSortie($sortie);
+            $groupe->addMembre($participant);
+            $em->persist($groupe);
+            $em->flush();
+
+            // Connexion et accès à la page
+            $client->loginUser($participant);
+            $crawler = $client->request('GET', '/profil/' . $participant->getId());
+
+            $this->assertResponseIsSuccessful();
+
+            // Vérifie que le nom du participant est affiché
+            $this->assertSelectorTextContains('body', $participant->getNom());
+
+            // Vérifie que le groupe est affiché
+            $this->assertSelectorTextContains('.activity-item h3', 'Groupe lié aux fixtures');
+
+            // Vérifie que la sortie liée est affichée
+            $this->assertSelectorTextContains('.activity-meta', $sortie->getNom());
+
+            // Vérifie que le compteur de groupes est correct
+            $this->assertSelectorTextContains('.activity-count', '0');
+
+            // Vérifie que les boutons "Modifier" et "Supprimer" sont présents
+            $this->assertSelectorExists('.status-edit');
+            $this->assertSelectorExists('form[action*="supprimer"] button');
+        }
+
+
+
+
 
 
 }

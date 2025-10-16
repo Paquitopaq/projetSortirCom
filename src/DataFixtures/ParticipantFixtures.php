@@ -54,7 +54,7 @@ class ParticipantFixtures extends Fixture
             ],
         ];
 
-        foreach ($participants as $data) {
+        foreach ($participants as $index=> $data) {
             $participant = new Participant();
             $participant->setEmail($data['email']);
             $participant->setRoles($data['roles']);
@@ -69,6 +69,7 @@ class ParticipantFixtures extends Fixture
             $participant->setPassword($hashedPassword);
 
             $manager->persist($participant);
+            $this->addReference('participant_fixture_' . $index, $participant);
         }
 
         $manager->flush();
