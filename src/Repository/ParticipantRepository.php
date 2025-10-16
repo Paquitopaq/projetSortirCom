@@ -45,4 +45,22 @@ class ParticipantRepository extends ServiceEntityRepository implements PasswordU
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function countActifs(): int
+    {
+        return $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->where('p.actif = true')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countOrganisateurs(): int
+    {
+        return $this->createQueryBuilder('p')
+            ->select('COUNT(DISTINCT p.id)')
+            ->join('p.sortiesOrganisees', 's')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
