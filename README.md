@@ -2,9 +2,9 @@
 # 🚀 BougeTonCrew — Application Symfony de gestion de sorties et groupes privés
 
 Pré-requis :
-Php:8.3.14
-Symfony : 5.15
-MySql
+- Php:8.3.14
+- Symfony : 5.15
+- MySql
 
 1. Faire un git clone de :
 2. Créer une base de données nommée "Sortir". (Sinon si autre nom de base de donnée modifier la connexion dans le .env)
