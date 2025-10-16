@@ -55,11 +55,14 @@
                     {% endif %}
 
                     {% if sortie.etat.value == 'Ouverte' %}
-                        <span class="badge-now badge-open">Inscriptions ouvertes</span>
+                        <span class="badge-now badge-open">
+                            <i class="fa-solid fa-lock-open"></i>Inscriptions ouvertes</span>
                     {% elseif sortie.participants|length >= sortie.nbInscriptionMax %}
-                        <span class="badge-now badge-full">Complet</span>
+                        <span class="badge-now badge-full">
+                            <i class="fa-solid fa-lock"></i>Complet</span>
                     {% elseif sortie.dateLimiteInscription < date() %}
-                        <span class="badge-now badge-closed">Inscriptions closes</span>
+                        <span class="badge-now badge-closed">
+                            <i class="fa-solid fa-lock"></i>Inscriptions closes</span>
                     {% elseif sortie.etat.value == 'Clôturée' or sortie.etat.value == 'Annulée' %}
                         <span class="badge-now badge-cancelled">{{ sortie.etat.value }}</span>
                     {% endif %}
@@ -152,7 +155,15 @@
         <div class="bottom-grid">
             <!-- Organisateur -->
             <div class="organizer-card">
-                <div class="info-label">Organisé par</div>
+                <div class="organizer-header">
+                    <div class="info-label">Organisé par</div>
+                    {% if is_granted('ROLE_ADMIN') or (app.user and app.user == sortie.organisateur) %}
+                        <button class="btn-change-organizer" onclick="openChangeOrganizerModal()" title="Changer l'organisateur">
+                            <i class="fas fa-user-edit"></i>
+                        </button>
+                    {% endif %}
+                </div>
+
                 {% if sortie.organisateur %}
                     <a href="{{ path('app_profil_participant', {id: sortie.organisateur.id}) }}" class="organizer-link">
                         <div class="organizer-avatar">
@@ -323,6 +334,62 @@
                         </div>
                     </div>
                 </div>
+
+                {# Modal changement d'organisateur #}
+                <div class="modal fade" id="changeOrganizerModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title"><i class="fas fa-exchange-alt"></i> Changer l'organisateur</h5>
+                                <button type="button" class="btn-close" onclick="closeChangeOrganizerModal()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="text"
+                                       id="searchOrganizerInput"
+                                       class="form-control search-input"
+                                       placeholder="Rechercher un participant..."
+                                       oninput="filterOrganizers()">
+
+                                <div id="organizersList" class="participants-search-list">
+                                    {% for participant in sortie.participants %}
+                                        <div class="participant-search-item" data-search="{{ (participant.nom ~ ' ' ~ participant.prenom ~ ' ' ~ participant.pseudo)|lower }}">
+                                            <form method="post" action="{{ path('sortie_change_organizer', {id: sortie.id}) }}" style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                                                <input type="hidden" name="newOrganizerId" value="{{ participant.id }}">
+                                                <div class="search-avatar">
+                                                    {% if participant.getAvatarPath() %}
+                                                        <img src="{{ asset(participant.getAvatarPath()) }}" alt="Avatar">
+                                                    {% else %}
+                                                        <span>{{ participant.prenom|first }}{{ participant.nom|first }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div style="flex: 1;">
+                                                    <strong>{{ participant.prenom }} {{ participant.nom }}</strong>
+                                                    {% if participant.pseudo %}
+                                                        <small>@{{ participant.pseudo }}</small>
+                                                    {% endif %}
+                                                </div>
+                                                {% if participant.id == sortie.organisateur.id %}
+                                                    <span class="current-organizer-badge">
+                                                        <i class="fas fa-crown"></i> Actuel
+                                                    </span>
+                                                {% else %}
+                                                    <button type="submit" class="btn-add-search">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </form>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <div id="noOrganizerResults" class="no-results" style="display: none;">
+                                    <i class="fas fa-search"></i>
+                                    <p>Aucun participant trouvé</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -368,6 +435,40 @@
             document.getElementById('noResults').style.display = visibleCount === 0 ? 'flex' : 'none';
         }
 
+        // Changement d'organisateur
+        function openChangeOrganizerModal() {
+            document.getElementById('changeOrganizerModal').classList.add('show');
+            document.getElementById('changeOrganizerModal').style.display = 'block';
+            document.body.classList.add('modal-open');
+            document.getElementById('searchOrganizerInput').focus();
+        }
+
+        function closeChangeOrganizerModal() {
+            document.getElementById('changeOrganizerModal').classList.remove('show');
+            document.getElementById('changeOrganizerModal').style.display = 'none';
+            document.body.classList.remove('modal-open');
+            document.getElementById('searchOrganizerInput').value = '';
+            filterOrganizers();
+        }
+
+        function filterOrganizers() {
+            const searchTerm = document.getElementById('searchOrganizerInput').value.toLowerCase();
+            const items = document.querySelectorAll('#organizersList .participant-search-item');
+            let visibleCount = 0;
+
+            items.forEach(item => {
+                const searchData = item.getAttribute('data-search');
+                if (searchData.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            document.getElementById('noOrganizerResults').style.display = visibleCount === 0 ? 'flex' : 'none';
+        }
+
         // Fermeture du modal import CSV
         document.addEventListener('DOMContentLoaded', function () {
             const csvForm = document.querySelector('#csvImportModal form');
@@ -380,6 +481,30 @@
                     }
                 });
             }
+
+            // Confirmation changement d'organisateur
+            document.querySelectorAll('#changeOrganizerModal form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const participantName = this.querySelector('strong').textContent;
+
+                    Swal.fire({
+                        title: 'Changer l\'organisateur ?',
+                        html: `<p>Êtes-vous sûr de vouloir désigner <strong>${participantName}</strong> comme nouvel organisateur ?</p>`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Oui, changer',
+                        cancelButtonText: 'Annuler',
+                        confirmButtonColor: '#FF6B00',
+                        cancelButtonColor: '#6c757d'
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
 
             // Confirmation retrait participant
             document.querySelectorAll('.swal-remove-btn').forEach(button => {

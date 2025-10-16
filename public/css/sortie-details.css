@@ -201,13 +201,36 @@ body {
     position: absolute;
     bottom: 20px;
     left: 20px;
-    background: var(--orange);
     color: white;
     padding: 10px 20px;
     border-radius: 24px;
     font-weight: 600;
     font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.badge-open {
+    background: var(--orange);
     animation: pulse 2s infinite;
+}
+
+.badge-full {
+    background: #dc3545;
+}
+
+.badge-closed {
+    background: #6c757d;
+}
+
+.badge-cancelled {
+    background: #343a40;
+}
+
+.badge-full::before,
+.badge-closed::before {
+    font-size: 16px;
 }
 
 @keyframes pulse {
@@ -363,6 +386,46 @@ body {
     box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
 
+.organizer-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.btn-change-organizer {
+    background: var(--orange);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.btn-change-organizer:hover {
+    background: #e55f00;
+    transform: scale(1.05);
+}
+
+.current-organizer-badge {
+    background: #ffc107;
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 .organizer-link {
     text-decoration: none;
     color: inherit;
@@ -467,7 +530,7 @@ body {
 }
 
 .btn-admin-action {
-    background: var(--blue-dark);
+    background: var(--orange);
     color: white;
     border: none;
     padding: 10px 16px;

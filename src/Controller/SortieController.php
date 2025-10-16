@@ -12,6 +12,7 @@ use App\Form\ImportParticipantType;
 use App\Form\SortieType;
 use App\Repository\GroupePriveRepository;
 use App\Repository\LieuRepository;
+use App\Repository\ParticipantRepository;
 use App\Service\ImportService;
 use App\Service\SortieService;
 use App\Utils\FileManager;
@@ -21,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class SortieController extends AbstractController
 {
@@ -247,6 +249,41 @@ final class SortieController extends AbstractController
             'form' => $form->createView(),
             'participants' => $participantsDisponibles,
         ]);
+    }
+
+    #[Route('/sortie/{id}/change-organizer', name: 'sortie_change_organizer', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function changeOrganizer(
+        Request $request,
+        Sortie $sortie,
+        EntityManagerInterface $em,
+        ParticipantRepository $participantRepository
+    ): Response {
+        $newOrganizerId = $request->request->get('newOrganizerId');
+        $newOrganizer = $participantRepository->find($newOrganizerId);
+
+        if (!$newOrganizer) {
+            $this->addFlash('error', 'Participant introuvable.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
+        // Vérifier que le nouveau organisateur est bien inscrit
+        if (!$sortie->getParticipants()->contains($newOrganizer)) {
+            $this->addFlash('error', 'Ce participant n\'est pas inscrit à la sortie.');
+            return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+        }
+
+        $oldOrganizer = $sortie->getOrganisateur();
+        $sortie->setOrganisateur($newOrganizer);
+        $em->flush();
+
+        $this->addFlash('success', sprintf(
+            'L\'organisateur a été changé de %s à %s.',
+            $oldOrganizer->getPseudo() ?? $oldOrganizer->getPrenom(),
+            $newOrganizer->getPseudo() ?? $newOrganizer->getPrenom()
+        ));
+
+        return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
     }
 
     #[Route('/sortie/{id}/delete', name: 'sortie_delete', methods: ['GET', 'POST'])]
