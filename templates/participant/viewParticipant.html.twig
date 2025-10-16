@@ -26,10 +26,12 @@
                     <!-- Section gauche : Avatar et infos de contact -->
                     <div class="profile-left">
                         <div class="avatar-section">
-                            {% if app.user %}
-                                <img class="avatar-image" src="{{ asset(app.user.getAvatarPath()) }}" alt="Avatar">
+                            {% if participant.getAvatarPath() %}
+                                <img class="avatar-image" src="{{ asset(participant.getAvatarPath()) }}" alt="Avatar de {{ participant.pseudo ?? participant.prenom }}">
                             {% else %}
-                                {{ asset('assets/avatars/cchat.png') }}
+                                <div class="avatar-placeholder">
+                                    <span>{{ participant.prenom|first }}{{ participant.nom|first }}</span>
+                                </div>
                             {% endif %}
                         </div>
 
@@ -40,12 +42,12 @@
                             <p><i class="fas fa-phone"></i> {{ participant.telephone ?? 'Non renseigné' }}</p>
                         </div>
 
-                        {% if is_granted ('ROLE_ADMIN') %}
+                        {% if participant.roles and 'ROLE_ADMIN' in participant.roles %}
                             <p class="profile-card-role">Administrateur</p>
                         {% else %}
-                            <p>Membre</p>
+                            <p class="profile-card-role">Membre</p>
                         {% endif %}
-                        
+
                         <div class="contact-info">
                             <div class="contact-item">
                                 <div class="contact-icon">
@@ -148,6 +150,7 @@
                                     </div>
                                 {% endif %}
                             </div>
+
                             <!-- Groupes privés -->
                             <div class="activity-card">
                                 <div class="activity-header">
@@ -171,8 +174,8 @@
                                                         <span><i class="fas fa-users"></i> {{ groupe.membres|length }} membre{{ groupe.membres|length > 1 ? 's' : '' }}</span>
                                                         {% if groupe.sortie %}
                                                             <span><i class="fas fa-calendar"></i> Sortie liée :
-                                    <a href="{{ path('sortie_detail', {id: groupe.sortie.id}) }}">{{ groupe.sortie.nom }}</a>
-                                </span>
+                                                                <a href="{{ path('sortie_detail', {id: groupe.sortie.id}) }}">{{ groupe.sortie.nom }}</a>
+                                                            </span>
                                                         {% endif %}
                                                     </div>
                                                 </div>
@@ -180,13 +183,12 @@
                                                     <a href="{{ path('modifier_groupe', {id: groupe.id}) }}" class="activity-badge status-edit">
                                                         Modifier
                                                     </a>
-                                                    <form method="post" action="{{ path('supprimer_groupe', {id: groupe.id}) }}" onsubmit="return confirm('Supprimer ce groupe ?');">
+                                                    <form method="post" action="{{ path('supprimer_groupe', {id: groupe.id}) }}" onsubmit="return confirm('Supprimer ce groupe ?');" style="display: inline;">
                                                         <input type="hidden" name="_token" value="{{ csrf_token('delete_groupe_prive_' ~ groupe.id) }}">
                                                         <button class="btn btn-sm btn-outline-danger">
                                                             <i class="fas fa-trash-alt"></i> Supprimer
                                                         </button>
                                                     </form>
-
                                                 {% endif %}
                                             </div>
                                         {% endfor %}
