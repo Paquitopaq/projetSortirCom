@@ -158,7 +158,7 @@
                 <div class="organizer-header">
                     <div class="info-label">Organisé par</div>
                     {% if is_granted('ROLE_ADMIN') or (app.user and app.user == sortie.organisateur) %}
-                        <button class="btn-change-organizer" onclick="openChangeOrganizerModal()" title="Changer l'organisateur">
+                        <button class="btn-change-organizer" id="btnChangeOrganizer" title="Changer l'organisateur">
                             <i class="fas fa-user-edit"></i>
                         </button>
                     {% endif %}
@@ -199,6 +199,59 @@
                         </div>
                     </div>
                 </div>
+
+                {# Infobulle de changement d'organisateur #}
+                <div id="organizerTooltip" class="organizer-tooltip" style="display: none;">
+                    <div class="tooltip-header">
+                        <span><i class="fas fa-exchange-alt"></i> Changer l'organisateur</span>
+                        <button class="tooltip-close" id="closeTooltip">×</button>
+                    </div>
+                    <div class="tooltip-body">
+                        <input type="text"
+                               id="searchOrganizerInput"
+                               class="tooltip-search-input"
+                               placeholder="Rechercher un participant...">
+
+                        <div id="organizersList" class="tooltip-list">
+                            {% for participant in sortie.participants %}
+                                <div class="tooltip-item" data-search="{{ (participant.nom ~ ' ' ~ participant.prenom ~ ' ' ~ participant.pseudo)|lower }}">
+                                    <form method="post" action="{{ path('sortie_change_organizer', {id: sortie.id}) }}">
+                                        <input type="hidden" name="newOrganizerId" value="{{ participant.id }}">
+                                        <div class="tooltip-item-content">
+                                            <div class="search-avatar">
+                                                {% if participant.getAvatarPath() %}
+                                                    <img src="{{ asset(participant.getAvatarPath()) }}" alt="Avatar">
+                                                {% else %}
+                                                    <span>{{ participant.prenom|first }}{{ participant.nom|first }}</span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="tooltip-item-info">
+                                                <strong>{{ participant.prenom }} {{ participant.nom }}</strong>
+                                                {% if participant.pseudo %}
+                                                    <small>@{{ participant.pseudo }}</small>
+                                                {% endif %}
+                                            </div>
+                                            {% if participant.id == sortie.organisateur.id %}
+                                                <span class="current-organizer-badge">
+                                                    <i class="fas fa-crown"></i> Actuel
+                                                </span>
+                                            {% else %}
+                                                <button type="submit" class="btn-tooltip-select">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div id="noOrganizerResults" class="tooltip-no-results" style="display: none;">
+                            <i class="fas fa-search"></i>
+                            <p>Aucun participant trouvé</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Participants -->
@@ -208,12 +261,59 @@
 
                     {% if is_granted('ROLE_ADMIN') %}
                         <div class="admin-buttons-inline">
-                            <button class="btn-admin-action" onclick="openSearchModal()">
+                            <button class="btn-admin-action" id="btnAddParticipant">
                                 <i class="fas fa-user-plus"></i> Ajouter un participant
                             </button>
                             <button class="btn-admin-action" data-bs-toggle="modal" data-bs-target="#csvImportModal">
                                 <i class="fas fa-file-csv"></i> Importer CSV
                             </button>
+                        </div>
+
+                        {# Infobulle d'ajout de participant #}
+                        <div id="participantTooltip" class="participant-tooltip" style="display: none;">
+                            <div class="tooltip-header">
+                                <span><i class="fas fa-search"></i> Rechercher un participant</span>
+                                <button class="tooltip-close" id="closeParticipantTooltip">×</button>
+                            </div>
+                            <div class="tooltip-body">
+                                <input type="text"
+                                       id="searchInput"
+                                       class="tooltip-search-input"
+                                       placeholder="Rechercher par nom, prénom ou pseudo...">
+
+                                <div id="participantsList" class="tooltip-list">
+                                    {% for participant in participants %}
+                                        <div class="tooltip-item" data-search="{{ (participant.nom ~ ' ' ~ participant.prenom ~ ' ' ~ participant.pseudo)|lower }}">
+                                            <form method="post" action="{{ path('admin_add_participant', {id: sortie.id}) }}">
+                                                <input type="hidden" name="participantId" value="{{ participant.id }}">
+                                                <div class="tooltip-item-content">
+                                                    <div class="search-avatar">
+                                                        {% if participant.getAvatarPath() %}
+                                                            <img src="{{ asset(participant.getAvatarPath()) }}" alt="Avatar">
+                                                        {% else %}
+                                                            <span>{{ participant.prenom|first }}{{ participant.nom|first }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="tooltip-item-info">
+                                                        <strong>{{ participant.prenom }} {{ participant.nom }}</strong>
+                                                        {% if participant.pseudo %}
+                                                            <small>@{{ participant.pseudo }}</small>
+                                                        {% endif %}
+                                                    </div>
+                                                    <button type="submit" class="btn-tooltip-select">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <div id="noResults" class="tooltip-no-results" style="display: none;">
+                                    <i class="fas fa-search"></i>
+                                    <p>Aucun participant trouvé</p>
+                                </div>
+                            </div>
                         </div>
                     {% endif %}
                 </div>
@@ -284,62 +384,6 @@
                         </div>
                     </div>
                 </div>
-
-                {# Modal changement d'organisateur #}
-                <div class="modal fade" id="changeOrganizerModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title"><i class="fas fa-exchange-alt"></i> Changer l'organisateur</h5>
-                                <button type="button" class="btn-close" onclick="closeChangeOrganizerModal()"></button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="text"
-                                       id="searchOrganizerInput"
-                                       class="form-control search-input"
-                                       placeholder="Rechercher un participant..."
-                                       oninput="filterOrganizers()">
-
-                                <div id="organizersList" class="participants-search-list">
-                                    {% for participant in sortie.participants %}
-                                        <div class="participant-search-item" data-search="{{ (participant.nom ~ ' ' ~ participant.prenom ~ ' ' ~ participant.pseudo)|lower }}">
-                                            <form method="post" action="{{ path('sortie_change_organizer', {id: sortie.id}) }}" style="display: flex; align-items: center; gap: 12px; width: 100%;">
-                                                <input type="hidden" name="newOrganizerId" value="{{ participant.id }}">
-                                                <div class="search-avatar">
-                                                    {% if participant.getAvatarPath() %}
-                                                        <img src="{{ asset(participant.getAvatarPath()) }}" alt="Avatar">
-                                                    {% else %}
-                                                        <span>{{ participant.prenom|first }}{{ participant.nom|first }}</span>
-                                                    {% endif %}
-                                                </div>
-                                                <div style="flex: 1;">
-                                                    <strong>{{ participant.prenom }} {{ participant.nom }}</strong>
-                                                    {% if participant.pseudo %}
-                                                        <small>@{{ participant.pseudo }}</small>
-                                                    {% endif %}
-                                                </div>
-                                                {% if participant.id == sortie.organisateur.id %}
-                                                    <span class="current-organizer-badge">
-                                                        <i class="fas fa-crown"></i> Actuel
-                                                    </span>
-                                                {% else %}
-                                                    <button type="submit" class="btn-add-search">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                {% endif %}
-                                            </form>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-
-                                <div id="noOrganizerResults" class="no-results" style="display: none;">
-                                    <i class="fas fa-search"></i>
-                                    <p>Aucun participant trouvé</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -353,58 +397,74 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            // ======== Modals Bootstrap ========
+            // ======== Infobulle Changement d'organisateur ========
+            const btnChangeOrganizer = document.getElementById('btnChangeOrganizer');
+            const organizerTooltip = document.getElementById('organizerTooltip');
+            const closeTooltip = document.getElementById('closeTooltip');
+            const searchOrganizerInput = document.getElementById('searchOrganizerInput');
 
-            function openCSVImportModal() {
-                const csvModalEl = document.getElementById('csvImportModal');
-                const csvModal = new bootstrap.Modal(csvModalEl);
-                csvModal.show();
+            if (btnChangeOrganizer) {
+                btnChangeOrganizer.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    organizerTooltip.style.display = organizerTooltip.style.display === 'none' ? 'block' : 'none';
+                    if (organizerTooltip.style.display === 'block') {
+                        searchOrganizerInput.focus();
+                    }
+                });
+
+                closeTooltip.addEventListener('click', function() {
+                    organizerTooltip.style.display = 'none';
+                    searchOrganizerInput.value = '';
+                    filterOrganizers();
+                });
+
+                // Fermer si on clique ailleurs
+                document.addEventListener('click', function(e) {
+                    if (!organizerTooltip.contains(e.target) && e.target !== btnChangeOrganizer) {
+                        organizerTooltip.style.display = 'none';
+                    }
+                });
             }
 
-            document.querySelectorAll('[data-bs-target="#csvImportModal"]').forEach(btn => {
-                btn.addEventListener('click', openCSVImportModal);
-            });
+            // ======== Infobulle Ajout de participant ========
+            const btnAddParticipant = document.getElementById('btnAddParticipant');
+            const participantTooltip = document.getElementById('participantTooltip');
+            const closeParticipantTooltip = document.getElementById('closeParticipantTooltip');
+            const searchInput = document.getElementById('searchInput');
 
-            // Rechercher des participants
-            const searchModalEl = document.getElementById('searchParticipantModal');
-            const searchModal = new bootstrap.Modal(searchModalEl);
+            if (btnAddParticipant) {
+                btnAddParticipant.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    participantTooltip.style.display = participantTooltip.style.display === 'none' ? 'block' : 'none';
+                    if (participantTooltip.style.display === 'block') {
+                        searchInput.focus();
+                    }
+                });
 
-            function openSearchModal() {
-                searchModal.show();
-                document.getElementById('searchInput').focus();
-            }
+                closeParticipantTooltip.addEventListener('click', function() {
+                    participantTooltip.style.display = 'none';
+                    searchInput.value = '';
+                    filterParticipants();
+                });
 
-            function closeSearchModal() {
-                searchModal.hide();
-                document.getElementById('searchInput').value = '';
-                filterParticipants();
-            }
-
-            // Changer organisateur
-            const changeOrganizerModalEl = document.getElementById('changeOrganizerModal');
-            const changeOrganizerModal = new bootstrap.Modal(changeOrganizerModalEl);
-
-            function openChangeOrganizerModal() {
-                changeOrganizerModal.show();
-                document.getElementById('searchOrganizerInput').focus();
-            }
-
-            function closeChangeOrganizerModal() {
-                changeOrganizerModal.hide();
-                document.getElementById('searchOrganizerInput').value = '';
-                filterOrganizers();
+                // Fermer si on clique ailleurs
+                document.addEventListener('click', function(e) {
+                    if (!participantTooltip.contains(e.target) && e.target !== btnAddParticipant) {
+                        participantTooltip.style.display = 'none';
+                    }
+                });
             }
 
             // ======== Filtres de recherche ========
             function filterParticipants() {
-                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-                const items = document.querySelectorAll('.participant-search-item');
+                const searchTerm = searchInput.value.toLowerCase();
+                const items = document.querySelectorAll('#participantsList .tooltip-item');
                 let visibleCount = 0;
 
                 items.forEach(item => {
                     const searchData = item.getAttribute('data-search');
                     if (searchData.includes(searchTerm)) {
-                        item.style.display = 'flex';
+                        item.style.display = 'block';
                         visibleCount++;
                     } else {
                         item.style.display = 'none';
@@ -415,14 +475,14 @@
             }
 
             function filterOrganizers() {
-                const searchTerm = document.getElementById('searchOrganizerInput').value.toLowerCase();
-                const items = document.querySelectorAll('#organizersList .participant-search-item');
+                const searchTerm = searchOrganizerInput.value.toLowerCase();
+                const items = document.querySelectorAll('#organizersList .tooltip-item');
                 let visibleCount = 0;
 
                 items.forEach(item => {
                     const searchData = item.getAttribute('data-search');
                     if (searchData.includes(searchTerm)) {
-                        item.style.display = 'flex';
+                        item.style.display = 'block';
                         visibleCount++;
                     } else {
                         item.style.display = 'none';
@@ -432,11 +492,11 @@
                 document.getElementById('noOrganizerResults').style.display = visibleCount === 0 ? 'flex' : 'none';
             }
 
-            document.getElementById('searchInput')?.addEventListener('input', filterParticipants);
-            document.getElementById('searchOrganizerInput')?.addEventListener('input', filterOrganizers);
+            searchInput?.addEventListener('input', filterParticipants);
+            searchOrganizerInput?.addEventListener('input', filterOrganizers);
 
             // ======== Confirmation changement d'organisateur ========
-            document.querySelectorAll('#changeOrganizerModal form').forEach(form => {
+            document.querySelectorAll('#organizersList form').forEach(form => {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     const participantName = this.querySelector('strong').textContent;
@@ -468,9 +528,9 @@
                     Swal.fire({
                         title: 'Retirer un participant',
                         html: `
-                    <p>Veuillez indiquer le motif du retrait de <strong>${participantNom}</strong> :</p>
-                    <input id="motif-input" class="swal2-input" placeholder="Motif obligatoire">
-                `,
+                            <p>Veuillez indiquer le motif du retrait de <strong>${participantNom}</strong> :</p>
+                            <input id="motif-input" class="swal2-input" placeholder="Motif obligatoire">
+                        `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Confirmer le retrait',
@@ -493,6 +553,18 @@
                     });
                 });
             });
+
+            // ======== Messages flash ========
+            {% for label, messages in app.flashes %}
+            {% for message in messages %}
+            Swal.fire({
+                icon: '{{ label == "success" ? "success" : (label == "error" ? "error" : "info") }}',
+                title: '{{ label|capitalize }}',
+                text: '{{ message|e("js") }}',
+                confirmButtonColor: '#3085d6'
+            });
+            {% endfor %}
+            {% endfor %}
 
             // ======== Menu trois points ========
             const dotsButton = document.querySelector('.dots-button');
