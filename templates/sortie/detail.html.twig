@@ -36,7 +36,11 @@
             <div class="image-card">
                 <div class="detail-image">
                     {% if sortie.photoSortie %}
-                        <img src="{{ asset('uploads/sorties/' ~ sortie.photoSortie) }}" alt="{{ sortie.nom }}" class="img-fluid">
+                        <img src="{{ asset('uploads/sorties/' ~ sortie.photoSortie) }}" alt="{{ sortie.nom }}">
+                    {% else %}
+                        <div class="placeholder-icon">
+                            <i class="fas fa-image"></i>
+                        </div>
                     {% endif %}
 
                     {% if sortie.lieu or sortie.site %}
@@ -149,7 +153,7 @@
                             {% if sortie.organisateur.getAvatarPath() %}
                                 <img src="{{ asset(sortie.organisateur.getAvatarPath()) }}" alt="Avatar {{ sortie.organisateur.prenom }}">
                             {% else %}
-                                {{ sortie.organisateur.prenom|first }}{{ sortie.organisateur.nom|first }}
+                                <span>{{ sortie.organisateur.prenom|first }}{{ sortie.organisateur.nom|first }}</span>
                             {% endif %}
                         </div>
                         <div class="organizer-name">
@@ -161,7 +165,7 @@
                     </a>
                 {% else %}
                     <div class="organizer-avatar">
-                        <img src="{{ asset('assets/avatars/cchat.png') }}" alt="Avatar par défaut">
+                        <span>??</span>
                     </div>
                     <div class="organizer-name">Organisateur inconnu</div>
                 {% endif %}
@@ -186,18 +190,14 @@
                     <h2>Participants inscrits ({{ sortie.participants|length }})</h2>
 
                     {% if is_granted('ROLE_ADMIN') %}
-                        <form method="post" action="{{ path('admin_add_participant', {id: sortie.id}) }}" style="margin-top: 10px;">
-                            <div class="d-flex gap-2 align-items-center">
-                                <select name="participantId" class="form-select" required style="max-width: 300px;">
-                                    {% for participant in participants %}
-                                        <option value="{{ participant.id }}">{{ participant.pseudo }}</option>
-                                    {% endfor %}
-                                </select>
-                                <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-user-plus"></i> Ajouter
-                                </button>
-                            </div>
-                        </form>
+                        <div class="admin-buttons-inline">
+                            <button class="btn-admin-action" onclick="openSearchModal()">
+                                <i class="fas fa-user-plus"></i> Ajouter un participant
+                            </button>
+                            <button class="btn-admin-action" data-bs-toggle="modal" data-bs-target="#csvImportModal">
+                                <i class="fas fa-file-csv"></i> Importer CSV
+                            </button>
+                        </div>
                     {% endif %}
                 </div>
 
@@ -207,12 +207,17 @@
                             <div class="participant-wrapper">
                                 <a href="{{ path('app_profil_participant', {id: participant.id}) }}" class="participant-card">
                                     <div class="participant-avatar">
-                                        {{ participant.prenom|first }}{{ participant.nom|first }}
+                                        {% if participant.getAvatarPath() %}
+                                            <img src="{{ asset(participant.getAvatarPath()) }}" alt="Avatar {{ participant.prenom }}">
+                                        {% else %}
+                                            <span>{{ participant.prenom|first }}{{ participant.nom|first }}</span>
+                                        {% endif %}
                                     </div>
                                     <div class="participant-name">
                                         {{ participant.pseudo ?? participant.prenom }}
                                     </div>
                                 </a>
+
                                 {% if is_granted('ROLE_ADMIN') %}
                                     <div class="participant-admin-actions">
                                         <form method="post" action="{{ path('admin_remove_participant', {id: sortie.id}) }}" class="remove-participant-form" style="display: inline;">
@@ -234,24 +239,67 @@
                     <p style="color: #888;">Aucun participant pour le moment.</p>
                 {% endif %}
 
-                {# Bouton CSV pour admin #}
-                {% if is_granted('ROLE_ADMIN') %}
-                    <div class="admin-buttons">
-                        <button class="btn-admin-action" data-bs-toggle="modal" data-bs-target="#csvImportModal">
-                            <i class="fas fa-file-csv"></i> Importer CSV
-                        </button>
+                {# Modal recherche de participants #}
+                <div class="modal fade" id="searchParticipantModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title"><i class="fas fa-search"></i> Rechercher un participant</h5>
+                                <button type="button" class="btn-close" onclick="closeSearchModal()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="text"
+                                       id="searchInput"
+                                       class="form-control search-input"
+                                       placeholder="Rechercher par nom, prénom ou pseudo..."
+                                       oninput="filterParticipants()">
+
+                                <div id="participantsList" class="participants-search-list">
+                                    {% for participant in participants %}
+                                        <div class="participant-search-item" data-search="{{ (participant.nom ~ ' ' ~ participant.prenom ~ ' ' ~ participant.pseudo)|lower }}">
+                                            <form method="post" action="{{ path('admin_add_participant', {id: sortie.id}) }}" style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                                                <input type="hidden" name="participantId" value="{{ participant.id }}">
+                                                <div class="search-avatar">
+                                                    {% if participant.getAvatarPath() %}
+                                                        <img src="{{ asset(participant.getAvatarPath()) }}" alt="Avatar">
+                                                    {% else %}
+                                                        <span>{{ participant.prenom|first }}{{ participant.nom|first }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div style="flex: 1;">
+                                                    <strong>{{ participant.prenom }} {{ participant.nom }}</strong>
+                                                    {% if participant.pseudo %}
+                                                        <small>@{{ participant.pseudo }}</small>
+                                                    {% endif %}
+                                                </div>
+                                                <button type="submit" class="btn-add-search">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <div id="noResults" class="no-results" style="display: none;">
+                                    <i class="fas fa-search"></i>
+                                    <p>Aucun participant trouvé</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                {% endif %}
-                <div class="modal fade" id="csvImportModal" tabindex="-1" aria-labelledby="csvImportModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                </div>
+
+                {# Modal import CSV #}
+                <div class="modal fade" id="csvImportModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             {{ form_start(form, {
                                 'action': path('admin_import', {id: sortie.id}),
                                 'attr': {'enctype': 'multipart/form-data'}
                             }) }}
                             <div class="modal-header">
-                                <h5 class="modal-title" id="csvImportModalLabel">Importer un fichier CSV</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                <h5 class="modal-title"><i class="fas fa-file-csv"></i> Importer un fichier CSV</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="mb-3">
@@ -276,40 +324,70 @@
     {% include 'partials/_footer.html.twig' %}
 {% endblock %}
 
-
 {% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-                const form = document.querySelector('#csvImportModal form');
-                if (form) {
-                    form.addEventListener('submit', function () {
-                        const modalElement = document.getElementById('csvImportModal');
-                        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-                        if (modalInstance) {
-                            modalInstance.hide(); // Ferme la modale immédiatement
-                        }
-                    });
+        // Recherche de participants
+        function openSearchModal() {
+            document.getElementById('searchParticipantModal').classList.add('show');
+            document.getElementById('searchParticipantModal').style.display = 'block';
+            document.body.classList.add('modal-open');
+            document.getElementById('searchInput').focus();
+        }
+
+        function closeSearchModal() {
+            document.getElementById('searchParticipantModal').classList.remove('show');
+            document.getElementById('searchParticipantModal').style.display = 'none';
+            document.body.classList.remove('modal-open');
+            document.getElementById('searchInput').value = '';
+            filterParticipants();
+        }
+
+        function filterParticipants() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.participant-search-item');
+            let visibleCount = 0;
+
+            items.forEach(item => {
+                const searchData = item.getAttribute('data-search');
+                if (searchData.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
                 }
             });
-        </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
 
-            // === CONFIRMATION AVEC MOTIF POUR RETRAIT DE PARTICIPANT ===
+            document.getElementById('noResults').style.display = visibleCount === 0 ? 'flex' : 'none';
+        }
+
+        // Fermeture du modal import CSV
+        document.addEventListener('DOMContentLoaded', function () {
+            const csvForm = document.querySelector('#csvImportModal form');
+            if (csvForm) {
+                csvForm.addEventListener('submit', function () {
+                    const modalElement = document.getElementById('csvImportModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                });
+            }
+
+            // Confirmation retrait participant
             document.querySelectorAll('.swal-remove-btn').forEach(button => {
                 button.addEventListener('click', function (e) {
                     e.preventDefault();
-
                     const form = this.closest('form');
                     const participantNom = this.getAttribute('data-nom');
 
                     Swal.fire({
                         title: 'Retirer un participant',
                         html: `
-                    <p>Veuillez indiquer le motif du retrait de <strong>${participantNom}</strong> :</p>
-                    <input id="motif-input" class="swal2-input" placeholder="Motif obligatoire">
-                `,
+                            <p>Veuillez indiquer le motif du retrait de <strong>${participantNom}</strong> :</p>
+                            <input id="motif-input" class="swal2-input" placeholder="Motif obligatoire">
+                        `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Confirmer le retrait',
@@ -326,15 +404,14 @@
                         }
                     }).then(result => {
                         if (result.isConfirmed) {
-                            const motif = result.value;
-                            form.querySelector('input[name="motif"]').value = motif;
+                            form.querySelector('input[name="motif"]').value = result.value;
                             form.submit();
                         }
                     });
                 });
             });
 
-            // === AFFICHAGE DES MESSAGES FLASH AVEC SWEETALERT ===
+            // Messages flash
             {% for label, messages in app.flashes %}
             {% for message in messages %}
             Swal.fire({
@@ -345,13 +422,8 @@
             });
             {% endfor %}
             {% endfor %}
-        });
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // Toggle menu trois points
-        document.addEventListener('DOMContentLoaded', function() {
+            // Menu trois points
             const dotsButton = document.querySelector('.dots-button');
             const dropdownMenu = document.getElementById('dropdownMenu');
 
@@ -361,7 +433,6 @@
                     dropdownMenu.classList.toggle('show');
                 });
 
-                // Fermer le menu si on clique ailleurs
                 document.addEventListener('click', function(event) {
                     if (!dropdownMenu.contains(event.target) && !dotsButton.contains(event.target)) {
                         dropdownMenu.classList.remove('show');
