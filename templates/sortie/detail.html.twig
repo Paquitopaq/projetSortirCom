@@ -138,7 +138,7 @@
                         {% elseif sortie.participants|length < sortie.nbInscriptionMax and sortie.etat.value == 'Ouverte' %}
                             <form method="post" action="{{ path('sortie_sinscrire', {'id': sortie.id}) }}" style="flex: 1;">
                                 <button type="submit" class="btn-action btn-join" style="width: 100%;">
-                                    <i class="fas fa-check"></i> S'inscrire
+                                    <i class="fa-solid fa-plus"></i> S'inscrire
                                 </button>
                             </form>
                         {% else %}

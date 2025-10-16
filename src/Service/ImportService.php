@@ -30,22 +30,11 @@ class ImportService
             if ($index === 0) continue;
 
             $line = trim($line);
-
-// Supprime BOM UTF-8 si présent
             $line = preg_replace('/\x{FEFF}/u', '', $line);
-
-// Corrige les guillemets doubles
             $line = str_replace('""', '"', $line);
-
-// Supprime les guillemets superflus en début/fin
             $line = preg_replace('/^"+|"+$/', '', $line);
-
-// Parse la ligne
             $row = str_getcsv($line, ',', '"');
-
-// Force 10 colonnes (remplit avec des chaînes vides si nécessaire)
             $row = array_pad($row, 10, '');
-
 
             if (count($row) === 1) {
                 $messages[] = $this->traiterEmailUniquement($row[0], $sortie, $index);
