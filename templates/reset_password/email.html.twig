@@ -1,9 +1,151 @@
-<h1>Hi!</h1>
+{% block body %}
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Réinitialisation du mot de passe</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
-<p>To reset your password, please visit the following link</p>
+        <style>
+            :root {
+                --orange: #FF6B00;
+                --blue-dark: #0B2447;
+                --background: #fdfcfa;
+                --light-gray: #f5f5f5;
+                --text-gray: #6b7280;
+                --border-gray: #e5e7eb;
+            }
 
-<a href="{{ url('app_reset_password', {token: resetToken.token}) }}">{{ url('app_reset_password', {token: resetToken.token}) }}</a>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background-color: var(--background);
+                margin: 0;
+                padding: 2rem;
+                color: var(--blue-dark);
+            }
 
-<p>This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
+            .email-container {
+                max-width: 600px;
+                margin: auto;
+                background: #fff;
+                border-radius: 16px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+                overflow: hidden;
+            }
 
-<p>Cheers!</p>
+            .email-header {
+                background: var(--orange);
+                color: #fff;
+                text-align: center;
+                padding: 2rem 1rem;
+            }
+
+            .email-header i {
+                font-size: 3rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .email-header h1 {
+                margin: 0;
+                font-size: 1.8rem;
+                font-weight: 700;
+            }
+
+            .email-body {
+                padding: 2rem;
+                color: var(--blue-dark);
+            }
+
+            .email-body p {
+                line-height: 1.6;
+                margin-bottom: 1rem;
+                color: var(--text-gray);
+            }
+
+            .reset-link {
+                display: inline-block;
+                margin: 1.5rem 0;
+                padding: 0.9rem 1.5rem;
+                background: var(--orange);
+                color: #fff !important;
+                font-weight: 600;
+                text-decoration: none;
+                border-radius: 12px;
+                transition: background 0.3s;
+            }
+
+            .reset-link:hover {
+                background: #e55f00;
+            }
+
+            .expiration {
+                font-size: 0.9rem;
+                color: var(--text-gray);
+                margin-top: 1rem;
+            }
+
+            .email-footer {
+                background: var(--light-gray);
+                text-align: center;
+                padding: 1rem;
+                font-size: 0.85rem;
+                color: var(--text-gray);
+            }
+
+            .email-footer i {
+                color: var(--orange);
+                margin-right: 0.3rem;
+            }
+
+            @media (max-width: 500px) {
+                .email-body {
+                    padding: 1.5rem;
+                }
+
+                .email-header h1 {
+                    font-size: 1.5rem;
+                }
+
+                .reset-link {
+                    padding: 0.8rem 1.2rem;
+                    font-size: 0.95rem;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+    <div class="email-container">
+        <div class="email-header">
+            <i class="fa-solid fa-lock-open"></i>
+            <h1>Réinitialisation du mot de passe</h1>
+        </div>
+
+        <div class="email-body">
+            <p>Bonjour 👋,</p>
+
+            <p>Vous avez demandé à réinitialiser votre mot de passe. Cliquez sur le bouton ci-dessous pour le faire :</p>
+
+            <p style="text-align: center;">
+                <a href="{{ url('app_reset_password', {token: resetToken.token}) }}" class="reset-link">
+                    <i class="fa-solid fa-arrow-rotate-right"></i> Réinitialiser mon mot de passe
+                </a>
+            </p>
+
+            <p class="expiration">
+                <i class="fa-regular fa-clock"></i>
+                Ce lien expirera dans
+                <strong>{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</strong>.
+            </p>
+
+            <p>Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer cet email.</p>
+        </div>
+
+        <div class="email-footer">
+            <i class="fa-solid fa-paper-plane"></i>
+            Cet email vous a été envoyé automatiquement — ne pas répondre.
+        </div>
+    </div>
+    </body>
+    </html>
+{% endblock %}

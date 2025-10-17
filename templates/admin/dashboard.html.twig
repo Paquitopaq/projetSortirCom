@@ -1,96 +1,253 @@
 {% extends 'base.html.twig' %}
+
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 {% endblock %}
 
 {% block body %}
     <div class="admin-dashboard">
+        <!-- Header avec actions rapides -->
         <div class="dashboard-header">
-            <h1>Tableau de bord</h1>
-            <button class="btn-refresh">
-                <i class="fas fa-sync-alt"></i> Actualiser
-            </button>
+            <div class="header-content">
+                <div>
+                    <h1><i class="fas fa-tachometer-alt"></i> Tableau de bord</h1>
+                    <p class="header-subtitle">Vue d'ensemble de votre plateforme</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="location.reload()">
+                        <i class="fas fa-sync-alt"></i> Actualiser
+                    </button>
+                    <a href="{{ path('admin_create_profil') }}" class="btn-primary">
+                        <i class="fas fa-user-plus"></i> Nouvel utilisateur
+                    </a>
+                </div>
+            </div>
         </div>
 
+        <!-- Statistiques principales -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-info">
-                    <span class="stat-label">Utilisateurs inscrits</span>
-                    <span class="stat-value">{{ nbUsers }}</span>
+            <div class="stat-card" data-aos="fade-up">
+                <div class="stat-icon-wrapper blue">
+                    <i class="fas fa-users"></i>
                 </div>
-                <i class="fas fa-users stat-icon"></i>
+                <div class="stat-content">
+                    <span class="stat-label">Utilisateurs</span>
+                    <span class="stat-value" data-target="{{ nbUsers }}">0</span>
+                    <span class="stat-trend positive">
+                        <i class="fas fa-arrow-up"></i> {{ nbUsersActifs }} actifs
+                    </span>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <span class="stat-label">Actifs</span>
-                    <span class="stat-value">{{ nbUsersActifs }}</span>
+
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-icon-wrapper orange">
+                    <i class="fas fa-calendar-check"></i>
                 </div>
-                <i class="fas fa-user-check stat-icon"></i>
+                <div class="stat-content">
+                    <span class="stat-label">Sorties totales</span>
+                    <span class="stat-value" data-target="{{ nbSorties }}">0</span>
+                    <span class="stat-trend">
+                        <i class="fas fa-calendar-alt"></i> {{ nbSortiesAVenir }} à venir
+                    </span>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <span class="stat-label">Sorties créées</span>
-                    <span class="stat-value">{{ nbSorties }}</span>
+
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-icon-wrapper green">
+                    <i class="fas fa-chart-line"></i>
                 </div>
-                <i class="fas fa-calendar-alt stat-icon"></i>
+                <div class="stat-content">
+                    <span class="stat-label">Taux d'activité</span>
+                    <span class="stat-value">{{ ((nbUsersActifs / nbUsers) * 100)|number_format(0) }}%</span>
+                    <span class="stat-trend positive">
+                        <i class="fas fa-fire"></i> Très actif
+                    </span>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <span class="stat-label">Sorties à venir</span>
-                    <span class="stat-value">{{ nbSortiesAVenir }}</span>
+
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-icon-wrapper purple">
+                    <i class="fas fa-user-friends"></i>
                 </div>
-                <i class="fas fa-hourglass-half stat-icon"></i>
+                <div class="stat-content">
+                    <span class="stat-label">Moy. participants</span>
+                    <span class="stat-value">{{ (nbUsers / nbSorties)|number_format(1) }}</span>
+                    <span class="stat-trend">
+                        <i class="fas fa-users"></i> par sortie
+                    </span>
+                </div>
             </div>
         </div>
 
-        <h2 class="section-title"><i class="fas fa-running"></i> Dernières sorties</h2>
-        {% if dernieresSorties is not empty %}
-            <div class="cards-list">
-                {% for sortie in dernieresSorties %}
-                    <div class="list-card">
-                        <h4>{{ sortie.nom }}</h4>
-                        <div class="meta">
-                        <span><i class="fas fa-user"></i>
-                            {% if sortie.organisateur %}
-                                {{ sortie.organisateur.pseudo }}
-                            {% else %}
-                                Inconnu
-                            {% endif %}
-                        </span>
-                            <span><i class="far fa-calendar"></i> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</span>
-                        </div>
+        <!-- Actions rapides -->
+        <div class="quick-actions">
+            <h2 class="section-title">
+                <i class="fas fa-bolt"></i> Actions rapides
+            </h2>
+            <div class="quick-actions-grid">
+                <a href="{{ path('admin_users') }}" class="quick-action-card">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-users-cog"></i>
                     </div>
-                {% endfor %}
+                    <span>Gérer les utilisateurs</span>
+                </a>
+                <a href="{{ path('app_sortie') }}" class="quick-action-card">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <span>Voir les sorties</span>
+                </a>
+                <a href="{{ path('sortie_create') }}" class="quick-action-card">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <span>Créer une sortie</span>
+                </a>
+                <a href="{{ path('admin_create_profil') }}" class="quick-action-card">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <span>Créer un compte</span>
+                </a>
             </div>
-        {% else %}
-            <div class="empty-state">
-                <i class="fas fa-calendar-times"></i>
-                <p>Aucune sortie récente.</p>
-            </div>
-        {% endif %}
+        </div>
 
-        <h2 class="section-title"><i class="fas fa-user-friends"></i> Derniers inscrits</h2>
-        {% if derniersParticipants is not empty %}
-            <div class="cards-list">
-                {% for participant in derniersParticipants %}
-                    <div class="list-card">
-                        <h4>{{ participant.pseudo }}</h4>
-                        <div class="meta">
-                            <span><i class="far fa-envelope"></i> {{ participant.email }}</span>
-                            {% if participant.actif %}
-                                <span><i class="fas fa-check-circle" style="color:green"></i> Actif</span>
-                            {% else %}
-                                <span><i class="fas fa-times-circle" style="color:red"></i> Inactif</span>
-                            {% endif %}
-                        </div>
+        <!-- Grille 2 colonnes -->
+        <div class="dashboard-grid">
+            <!-- Dernières sorties -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-day"></i> Dernières sorties
+                    </h2>
+                    <a href="{{ path('app_sortie') }}" class="link-view-all">
+                        Voir tout <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                {% if dernieresSorties is not empty %}
+                    <div class="timeline">
+                        {% for sortie in dernieresSorties|slice(0, 5) %}
+                            <div class="timeline-item" data-aos="fade-right">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-header">
+                                        <h4>{{ sortie.nom }}</h4>
+                                        <span class="timeline-badge badge-{{ sortie.etat.value|lower }}">
+                                            {{ sortie.etat.value }}
+                                        </span>
+                                    </div>
+                                    <div class="timeline-meta">
+                                        <span>
+                                            <i class="fas fa-user"></i>
+                                            {{ sortie.organisateur ? sortie.organisateur.pseudo : 'Inconnu' }}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-calendar"></i>
+                                            {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-users"></i>
+                                            {{ sortie.participants|length }}/{{ sortie.nbInscriptionMax }}
+                                        </span>
+                                    </div>
+                                    <a href="{{ path('sortie_detail', {id: sortie.id}) }}" class="timeline-link">
+                                        Voir la sortie <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
+                {% else %}
+                    <div class="empty-state-modern">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>Aucune sortie récente</p>
+                    </div>
+                {% endif %}
             </div>
-        {% else %}
-            <div class="empty-state">
-                <i class="fas fa-user-slash"></i>
-                <p>Aucun nouvel utilisateur.</p>
+
+            <!-- Derniers inscrits -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-plus"></i> Nouveaux membres
+                    </h2>
+                    <a href="{{ path('admin_users') }}" class="link-view-all">
+                        Voir tout <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                {% if derniersParticipants is not empty %}
+                    <div class="users-list-modern">
+                        {% for participant in derniersParticipants|slice(0, 5) %}
+                            <div class="user-item-modern" data-aos="fade-left">
+                                <div class="user-avatar-modern">
+                                    {% if participant.getAvatarPath() %}
+                                        <img src="{{ asset(participant.getAvatarPath()) }}" alt="Avatar">
+                                    {% else %}
+                                        <span>{{ participant.prenom|first }}{{ participant.nom|first }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="user-info-modern">
+                                    <h4>{{ participant.pseudo }}</h4>
+                                    <p>{{ participant.email }}</p>
+                                </div>
+                                <div class="user-status-modern">
+                                    {% if participant.actif %}
+                                        <span class="status-dot active"></span>
+                                        <span class="status-text">Actif</span>
+                                    {% else %}
+                                        <span class="status-dot inactive"></span>
+                                        <span class="status-text">Inactif</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state-modern">
+                        <i class="fas fa-user-slash"></i>
+                        <p>Aucun nouvel utilisateur</p>
+                    </div>
+                {% endif %}
             </div>
-        {% endif %}
+        </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        // Initialiser AOS
+        AOS.init({
+            duration: 600,
+            once: true
+        });
+
+        // Animation des compteurs
+        document.addEventListener('DOMContentLoaded', function() {
+            const counters = document.querySelectorAll('.stat-value[data-target]');
+
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const duration = 1500;
+                const step = target / (duration / 16);
+                let current = 0;
+
+                const updateCounter = () => {
+                    current += step;
+                    if (current < target) {
+                        counter.textContent = Math.floor(current);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+
+                updateCounter();
+            });
+        });
+    </script>
 {% endblock %}

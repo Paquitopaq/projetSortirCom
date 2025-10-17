@@ -21,7 +21,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180, nullable: true, unique: true)]
+    #[ORM\Column(length: 180, unique: true, nullable: true)]
     #[Assert\NotBlank(message: "L'email est obligatoire.")]
     #[Assert\Email(message: 'Veuillez renseigner un email valide')]
     private ?string $email = null;
@@ -78,12 +78,16 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: GroupePrive::class, mappedBy: 'membres')]
     private Collection $membreGroupe;
 
+    #[ORM\OneToMany(targetEntity: ResetPasswordRequest::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
+    private Collection $resetPasswordRequests;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
         $this->sortiesOrganisees = new ArrayCollection();
         $this->groupePrives = new ArrayCollection();
         $this->membreGroupe = new ArrayCollection();
+        $this->resetPasswordRequests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -323,5 +327,13 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, ResetPasswordRequest>
+     */
+    public function getResetPasswordRequests(): Collection
+    {
+        return $this->resetPasswordRequests;
     }
 }

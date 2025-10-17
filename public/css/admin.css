@@ -5,6 +5,7 @@
     --card-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
 }
 
+/* === Structure principale === */
 .admin-page {
     background: var(--background);
     min-height: 100vh;
@@ -13,17 +14,25 @@
     margin: 0 auto;
 }
 
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+.page-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--blue-dark);
+    padding-top: 80px;
 }
 
+/* === En-tête / recherche === */
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 .page-header .search-bar {
@@ -36,6 +45,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 
 .page-header .search-bar input {
@@ -59,76 +69,7 @@
     cursor: pointer;
 }
 
-.page-title {
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--blue-dark);
-    padding-top: 80px;
-}
-
-/* Barre de recherche */
-.search-bar {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 40px;
-    padding: 8px 16px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-}
-
-.search-bar i {
-    color: var(--background);
-    font-size: 16px;
-}
-
-.search-bar input {
-    border: none;
-    outline: none;
-    flex: 1;
-    font-size: 14px;
-    padding: 8px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.search-bar button:hover {
-    background: rgba(255, 107, 0, 0.05);
-}
-
-/* --- Menu à trois points --- */
-.user-actions .btn {
-    background: transparent;
-    border: none;
-    color: var(--blue-dark);
-    font-size: 18px;
-    padding: 4px;
-}
-
-.user-actions .dropdown-menu {
-    min-width: 180px;
-    border-radius: 10px;
-    box-shadow: var(--card-shadow);
-    border: none;
-    padding: 8px 0;
-}
-
-.user-actions .dropdown-item {
-    font-size: 14px;
-    padding: 8px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.2s;
-}
-
-.user-actions .dropdown-item:hover {
-    color: var(--orange);
-    background: rgba(255, 107, 0, 0.05);
-}
-
-/* Liste des utilisateurs */
+/* === Liste des utilisateurs === */
 .users-list {
     display: flex;
     flex-direction: column;
@@ -160,18 +101,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.avatar-placeholder {
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, var(--orange), #ff8533);
-    color: white;
-    font-weight: 600;
-    font-size: 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border-radius: 50%;
 }
 
@@ -215,22 +144,7 @@
     color: #999;
 }
 
-.badge-admin {
-    padding: 3px 8px;
-    background: #fff3cd;
-    color: #856404;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.badge-admin i {
-    color: #856404;
-}
-
+/* Statuts */
 .user-status {
     margin-right: 16px;
     flex-shrink: 0;
@@ -251,45 +165,43 @@
     color: #155724;
 }
 
-.status-open i {
-    color: #155724;
-}
-
 .status-closed {
     background: #f8d7da;
     color: #721c24;
 }
 
-.status-closed i {
-    color: #721c24;
-}
-
-.user-actions {
-    flex-shrink: 0;
-    display: flex;
-    gap: 8px;
-}
-
-/* 🔹 Boutons uniformes et petits */
+/* === Boutons === */
 .btn-action,
 .btn-disable-user,
 .btn-admin-toggle,
-.btn-create-user {
+.btn-create-user,
+.btn-save {
     padding: 6px 12px;
-    font-size: 12px;
+    font-size: 13px;
     border-radius: 6px;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     min-width: 120px;
-    text-align: center;
 }
 
-/* Couleurs spécifiques */
+.btn-create-user,
+.btn-save {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+}
+
+.btn-create-user:hover,
+.btn-save:hover {
+    background: #ff8533;
+    transform: translateY(-1px);
+}
+
 .btn-disable-user {
     background: #dc3545;
     color: white;
@@ -304,37 +216,7 @@
     color: #212529;
 }
 
-.btn-manage {
-    background: var(--background);
-    color: var(--background);
-}
-
-.btn-manage:hover {
-    color: var(--orange);
-    background: rgba(255, 107, 0, 0.05);
-}
-
-.btn-create-user {
-    background: var(--orange);
-    color: white;
-}
-
-.btn-create-user:hover {
-    color: var(--orange);
-    background: var(--orange);
-}
-
-/* Hover commun */
-.btn-action:hover,
-.btn-disable-user:hover,
-.btn-admin-toggle:hover,
-.btn-manage:hover,
-.btn-create-user:hover {
-    background: rgba(255, 107, 0, 0.05);
-    color: var(--orange);
-}
-
-/* Message vide */
+/* === Message vide === */
 .no-sorties {
     text-align: center;
     padding: 60px 20px;
@@ -354,44 +236,7 @@
     color: var(--blue-dark);
 }
 
-/* Modal */
-.modal-content {
-    border-radius: 12px;
-    border: none;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
-.modal-header {
-    border-bottom: 1px solid #e9ecef;
-    padding: 20px 24px;
-    background: var(--background);
-}
-
-.modal-title {
-    font-weight: 600;
-    color: var(--blue-dark);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.modal-title i {
-    color: var(--orange);
-}
-
-.modal-body {
-    padding: 24px;
-}
-
-.modal-footer {
-    border-top: 1px solid #e9ecef;
-    padding: 16px 24px;
-    gap: 8px;
-    display: flex;
-    justify-content: flex-end;
-}
-
-/* Responsive */
+/* === Responsive === */
 @media (max-width: 768px) {
     .admin-page {
         padding: 15px;
@@ -424,7 +269,6 @@
 
     .user-status,
     .user-actions {
-        margin-right: 0;
         width: 100%;
         display: flex;
         justify-content: flex-start;
@@ -434,8 +278,8 @@
     .btn-action,
     .btn-disable-user,
     .btn-admin-toggle,
-    .btn-manage,
-    .btn-create-user {
+    .btn-create-user,
+    .btn-save {
         width: 100%;
         justify-content: center;
     }

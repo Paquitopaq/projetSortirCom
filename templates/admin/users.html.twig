@@ -7,173 +7,129 @@
 {% endblock %}
 
 {% block body %}
-    <div class="admin-page py-4">
-
-        <!-- HEADER -->
-        <div class="page-header mb-4 d-flex justify-content-between align-items-center">
+    <div class="admin-page">
+        <div class="page-header">
             <h1 class="page-title">Gestion des utilisateurs</h1>
-            <div class="header-actions d-flex align-items-center gap-3">
-                <!-- Barre de recherche -->
-                <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Rechercher..." autocomplete="off">
-                    <button type="button"><i class="fas fa-search"></i></button>
-                </div>
-
-                <!-- Bouton Créer -->
+            <div class="header-actions">
+                <form class="search-bar" onsubmit="return false;">
+                    <i class="fas fa-search"></i>
+                    <input id="searchInput" type="text" placeholder="Rechercher un utilisateur..." name="search" />
+                    <button type="button"><i class="fas fa-arrow-right"></i></button>
+                </form>
                 <a href="{{ path('admin_create_profil') }}" class="btn-create-user">
-                    <i class="fas fa-user-plus"></i> Créer un utilisateur
+                    <i class="fas fa-plus"></i> Ajouter un utilisateur
                 </a>
             </div>
         </div>
 
-        <!-- Liste des utilisateurs -->
-        <div class="users-list d-flex flex-wrap gap-3">
-            {% for participant in participants %}
-                <div class="user-card" data-pseudo="{{ participant.pseudo|lower }}" data-email="{{ participant.email|lower }}">
-                    <div class="card shadow-sm p-3 d-flex flex-row align-items-center justify-content-between">
-
-                        <!-- Avatar + Infos -->
-                        <div class="d-flex align-items-center gap-3">
+        {% if participants is empty %}
+            <div class="no-sorties">
+                <i class="fas fa-user-slash"></i>
+                <h3>Aucun utilisateur trouvé</h3>
+                <p>Essayez d’ajouter un nouveau participant.</p>
+            </div>
+        {% else %}
+            <div class="users-list">
+                {% for participant in participants %}
+                    <div class="user-card" data-pseudo="{{ participant.pseudo|lower }}" data-email="{{ participant.email|lower }}">
+                        <div class="user-card-content">
                             <div class="user-avatar">
-
                                 {% if participant.photoProfil %}
-                                    <img src="{{ asset(participant.getAvatarPath()) }}" alt="Avatar" class="rounded-circle" width="48" height="48">
+                                    <img src="{{ asset(participant.getAvatarPath()) }}" alt="{{ participant.pseudo }}">
                                 {% else %}
-                                    <div class="avatar-placeholder rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-                                        <img src="{{ asset('assets/avatars/cchat.png') }}" alt="Avatar par défaut" width="48" height="48">
-                                    </div>
+                                    <img src="{{ asset('assets/avatars/cchat.png') }}" alt="Avatar par défaut">
                                 {% endif %}
                             </div>
 
                             <div class="user-info">
-                                <div class="user-name d-flex align-items-center gap-2">
-                                    {% if 'ROLE_ADMIN' in participant.roles %}
-                                        <span class="badge-admin">
-                                        <i class="fas fa-shield-alt"></i> Admin
-                                    </span>
-                                    {% endif %}
+                                <div class="user-name">
+                                    <i class="fas fa-user"></i>
                                     <span>{{ participant.pseudo }}</span>
+                                    {% if 'ROLE_ADMIN' in participant.roles %}
+                                        <span class="badge-admin"><i class="fas fa-star"></i> Admin</span>
+                                    {% endif %}
                                 </div>
 
-                                <div class="text-muted small">
-                                    {{ participant.prenom }} {{ participant.nom }}<br>
-                                    {{ participant.email }}
+                                <div class="user-details">
+                                    <span><i class="fas fa-envelope"></i> {{ participant.email }}</span>
+                                    <span><i class="fas fa-phone"></i> {{ participant.telephone ?? 'Non renseigné' }}</span>
+                                    {% if participant.site is defined and participant.site is not null %}
+                                        <span><i class="fas fa-city"></i> {{ participant.site.nom }}</span>
+                                    {% endif %}
                                 </div>
+                            </div>
 
-                                <!-- Badge Actif / Inactif ici -->
+                            <div class="user-status">
                                 {% if participant.actif %}
-                                    <span class="status-badge status-open mt-1">
-                                    <i class="fas fa-check-circle"></i> Actif
-                                </span>
+                                    <span class="status-badge status-open"><i class="fas fa-check-circle"></i> Actif</span>
                                 {% else %}
-                                    <span class="status-badge status-closed mt-1">
-                                    <i class="fas fa-times-circle"></i> Inactif
-                                </span>
+                                    <span class="status-badge status-closed"><i class="fas fa-ban"></i> Désactivé</span>
                                 {% endif %}
                             </div>
-                        </div>
 
-                        <!-- Menu déroulant à trois points -->
-                        <div class="dropdown user-actions">
-                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="actionsMenu{{ participant.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionsMenu{{ participant.id }}">
-                                <li>
-                                    <button class="dropdown-item btn-manage" data-bs-toggle="modal" data-bs-target="#modal-{{ participant.id }}">
-                                        <i class="fas fa-edit me-2"></i> Modifier
-                                    </button>
-                                </li>
-                                <li>
-                                    <form class="form-toggle-user" action="{{ path('admin_user_desactived', {'id': participant.id}) }}" method="POST">
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            {% if participant.actif %}
-                                                <i class="fas fa-user-slash me-2"></i> Désactiver
-                                            {% else %}
-                                                <i class="fas fa-user-check me-2"></i> Réactiver
-                                            {% endif %}
-                                        </button>
-                                    </form>
-                                </li>
-                                <li>
-                                    <form class="form-delete-user" action="{{ path('admin_user_delete', {'id': participant.id}) }}" method="POST">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ participant.id) }}">
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fas fa-trash-alt me-2"></i> Supprimer
-                                        </button>
-                                    </form>
-                                </li>
-                                <li>
-                                    <form action="{{ path('admin_user_toggle_admin', {'id': participant.id}) }}" method="post">
-                                        <button class="dropdown-item text-warning">
-                                            {% if 'ROLE_ADMIN' in participant.roles %}
-                                                <i class="fas fa-user-shield me-2"></i> Retirer admin
-                                            {% else %}
-                                                <i class="fas fa-user-shield me-2"></i> Promouvoir admin
-                                            {% endif %}
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal d'édition -->
-                <div class="modal fade" id="modal-{{ participant.id }}" tabindex="-1" aria-labelledby="modalLabel{{ participant.id }}" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="modalLabel{{ participant.id }}">
-                                    <i class="fas fa-edit"></i> Modifier {{ participant.email }}
-                                </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                            </div>
-                            <div class="modal-body">
-                                {{ form_start(forms[participant.id], {'attr': {'action': path('admin_user_edit', {'id': participant.id})}}) }}
-                                {{ form_widget(forms[participant.id]) }}
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                        <i class="fas fa-times"></i> Fermer
-                                    </button>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-check"></i> Valider
-                                    </button>
-                                </div>
-                                {{ form_end(forms[participant.id]) }}
+                            <div class="user-actions dropdown">
+                                <button class="btn" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <form class="form-toggle-user" action="{{ path('admin_user_desactived', { id: participant.id }) }}" method="POST">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-power-off"></i>
+                                                {{ participant.actif ? 'Désactiver' : 'Activer' }}
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form action="{{ path('admin_user_toggle_admin', { id: participant.id }) }}" method="post">
+                                            <button class="dropdown-item">
+                                                <i class="fas fa-crown"></i>
+                                                {% if 'ROLE_ADMIN' in participant.roles %}
+                                                    Retirer le rôle admin
+                                                {% else %}
+                                                    Donner le rôle admin
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form class="form-delete-user" action="{{ path('admin_user_delete', { id: participant.id }) }}" method="POST">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ participant.id) }}">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-trash-alt"></i> Supprimer
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
-                </div>
-            {% else %}
-                <div class="text-center mt-5 w-100">
-                    <i class="fas fa-users fa-2x text-muted"></i>
-                    <h3 class="mt-3">Aucun utilisateur trouvé</h3>
-                    <p class="text-muted">Il n'y a pas encore d'utilisateurs dans la base de données.</p>
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- Message Aucun résultat -->
-        <div class="no-results text-center mt-5" style="display:none;">
-            <i class="fas fa-search fa-2x text-muted"></i>
-            <h3 class="mt-3">Aucun résultat</h3>
-            <p class="text-muted">Aucun utilisateur ne correspond à votre recherche.</p>
-        </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 
-    <!-- Scripts -->
+    {# Script pour preview image + recherche + confirmations #}
     <script>
-        // Recherche en temps réel
-        document.getElementById('searchInput').addEventListener('input', function (e) {
+        function previewImage(event, id) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('preview-' + id);
+                    if (img) img.src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // recherche front
+        document.getElementById('searchInput')?.addEventListener('input', function (e) {
             const searchTerm = e.target.value.toLowerCase().trim();
             const userCards = document.querySelectorAll('.user-card');
-            const noResults = document.querySelector('.no-results');
             let visibleCount = 0;
 
             userCards.forEach(card => {
-                const pseudo = card.dataset.pseudo;
-                const email = card.dataset.email;
+                const pseudo = card.dataset.pseudo || '';
+                const email = card.dataset.email || '';
 
                 if (pseudo.includes(searchTerm) || email.includes(searchTerm)) {
                     card.style.display = '';
@@ -182,50 +138,34 @@
                     card.style.display = 'none';
                 }
             });
-
-            noResults.style.display = (visibleCount === 0 && searchTerm !== '') ? 'block' : 'none';
         });
 
-        // Confirmation Désactivation
+        // sweetalert confirmations (désactiver / supprimer)
         document.querySelectorAll('.form-toggle-user').forEach(form => {
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
-                const message = "Voulez-vous vraiment <b>changer le statut</b> de cet utilisateur ?";
                 Swal.fire({
-                    title: 'Êtes-vous sûr ?',
-                    html: message,
+                    title: 'Changer le statut ?',
+                    html: "Voulez-vous vraiment changer le statut de cet utilisateur ?",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Oui, confirmer',
+                    confirmButtonText: 'Oui',
                     cancelButtonText: 'Annuler'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
+                }).then((r) => { if (r.isConfirmed) form.submit(); });
             });
         });
 
-        // Confirmation Suppression
         document.querySelectorAll('.form-delete-user').forEach(form => {
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 Swal.fire({
-                    title: 'Êtes-vous sûr ?',
-                    html: "La suppression de cet utilisateur est <b>définitive</b> et irréversible.",
+                    title: 'Supprimer cet utilisateur ?',
+                    html: "La suppression est définitive.",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Oui, supprimer',
+                    confirmButtonText: 'Supprimer',
                     cancelButtonText: 'Annuler'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
+                }).then((r) => { if (r.isConfirmed) form.submit(); });
             });
         });
     </script>

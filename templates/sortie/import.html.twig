@@ -1,0 +1,178 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Importer des sorties | BougeTonCrew{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/sortie.css') }}">
+    <style>
+        .import-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .import-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .import-header h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .import-instructions {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .import-instructions h3 {
+            color: #495057;
+            margin-bottom: 1rem;
+        }
+
+        .import-instructions ul {
+            margin-left: 1.5rem;
+        }
+
+        .import-instructions li {
+            margin-bottom: 0.5rem;
+            color: #6c757d;
+        }
+
+        .csv-example {
+            background: #e9ecef;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .download-template {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .download-template a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .download-template a:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="import-container">
+        <div class="import-header">
+            <h1><i class="fas fa-file-import"></i> Importer des sorties</h1>
+            <p>Importez plusieurs sorties en une seule fois via un fichier CSV</p>
+        </div>
+
+        <div class="import-instructions">
+            <h3><i class="fas fa-info-circle"></i> Instructions</h3>
+            <ul>
+                <li>Le fichier doit être au format CSV (séparateur : virgule)</li>
+                <li>Les colonnes obligatoires sont : <strong>nom, date_debut, duree</strong></li>
+                <li>Format de date : <strong>YYYY-MM-DD HH:MM</strong> (ex: 2025-12-25 14:30)</li>
+                <li>Les sorties seront créées en brouillon par défaut</li>
+                <li>Si le lieu n'existe pas, il sera créé automatiquement</li>
+                <li>Vous serez défini comme organisateur de toutes les sorties importées</li>
+            </ul>
+
+            <div class="csv-example">
+                <strong>Exemple de format CSV :</strong><br><br>
+                nom,infoSortie,date_debut,duree,date_limite_inscription,nb_max_participants,lieu_nom,ville,rue,code_postal,latitude,longitude<br>
+                Randonnée en forêt,Belle balade nature,2025-11-20 10:00,180,2025-11-19 23:59,15,Forêt de Chizé,Chizé,Route de la forêt,79170,46.1234,-0.4567<br>
+                Visite du musée,Découverte culturelle,2025-11-22 14:00,120,2025-11-21 18:00,20,Musée d'Agesci,Niort,26 avenue de Limoges,79000,46.3236,-0.4650
+            </div>
+        </div>
+
+        <div class="download-template">
+            <p>
+                <i class="fas fa-download"></i>
+                <a href="{{ asset('templates/import_sorties_template.csv') }}" download>
+                    Télécharger un modèle CSV
+                </a>
+            </p>
+        </div>
+
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+        <div class="form-group">
+            {{ form_label(form.csv_file) }}
+            {{ form_widget(form.csv_file) }}
+            {{ form_errors(form.csv_file) }}
+        </div>
+
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-upload"></i>
+                {{ form.submit.vars.label }}
+            </button>
+            <a href="{{ path('app_sortie') }}" class="btn btn-secondary">
+                <i class="fas fa-times"></i>
+                Annuler
+            </a>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
