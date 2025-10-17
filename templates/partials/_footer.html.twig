@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="{{ asset('css/footer.css') }}">
+
 <!-- Footer -->
 <footer class="footer">
     <div class="footer-content">
@@ -9,23 +11,32 @@
             <h4><i class="fas fa-compass"></i> Navigation</h4>
             <a href="{{ path('app_home') }}"><i class="fas fa-home"></i> Accueil</a>
             <a href="{{ path('app_sortie') }}"><i class="fas fa-list"></i> Sorties</a>
-            <a href="{{ path('sortie_create') }}"><i class="fas fa-plus"></i> Créer une sortie</a>
-        </div>
-        <div class="footer-section">
-            <h4><i class="fas fa-user"></i> Compte</h4>
             {% if app.user %}
-                {# TODO: <a href="{{ path('profile_index') }}">Mon profil</a> #}
-            {% else %}
-                <a href="{{ path('app_login') }}"><i class="fas fa-sign-in-alt"></i> Se connecter</a>
-                <a href="{{ path('app_register') }}"><i class="fas fa-user-plus"></i> S'inscrire</a>
+                <a href="{{ path('sortie_create') }}"><i class="fas fa-plus"></i> Créer une sortie</a>
             {% endif %}
         </div>
         <div class="footer-section">
-            <h4><i class="fas fa-gavel"></i> Légal</h4>
-            <a href="#"><i class="fas fa-info-circle"></i> Mentions légales</a>
-            <a href="#"><i class="fas fa-file-contract"></i> CGU</a>
-            <a href="#"><i class="fas fa-shield-alt"></i> Confidentialité</a>
+            <h4><i class="fas fa-user"></i> Compte</h4>
+            <a href="{{ path('app_profil_participant', {id: app.user.id}) }}"><i class="fas fa-user-circle"></i> Mon profil</a>
+            <a href="{{ path('app_profil_update', {id: app.user.id}) }}"><i class="fa-solid fa-gear"></i> Gérer son profil</a>
+            <a href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt"></i> Se déconnecter</a>
         </div>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="footer-section">
+                <h4><i class="fas fa-shield-alt"></i> Administration</h4>
+                <a href="{{ path('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a>
+                <a href="{{ path('admin_users') }}"><i class="fas fa-users-cog"></i> Utilisateurs</a>
+                <a href="{{ path('admin_create_profil') }}"><i class="fas fa-user-plus"></i> Créer un utilisateur</a>
+            </div>
+        {% else %}
+            <div class="footer-section">
+                <h4><i class="fas fa-gavel"></i> Légal</h4>
+                <a href="#"><i class="fas fa-info-circle"></i> Mentions légales</a>
+                <a href="#"><i class="fas fa-file-contract"></i> CGU</a>
+                <a href="#"><i class="fas fa-shield-alt"></i> Confidentialité</a>
+            </div>
+        {% endif %}
     </div>
     <div class="footer-bottom">
         <p>&copy; {{ "now"|date("Y") }} BougeTonCrew - Tous droits réservés</p>
