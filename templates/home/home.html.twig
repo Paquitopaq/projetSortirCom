@@ -4,278 +4,182 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 {% endblock %}
 
 {% block body %}
+    <!-- Hero Section avec recherche intégrée -->
+    <section class="hero-section" id="hero-section">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">Bouge ton Crew !</h1>
+                <p class="hero-subtitle">Découvrez les meilleures sorties et événements près de chez vous</p>
 
-    <!-- Hero Section -->
-    <section class="hero-minimal" id="hero-section">
-        <div class="hero-minimal-content">
-            <div class="hero-badge">
-                <i class="fas fa-fire"></i> {{ sortiesDisponibles }} sorties disponibles
-            </div>
-            <h1 class="hero-title">Bouge ton Crew !</h1>
-            <p class="hero-subtitle">Découvrez les meilleures sorties et événements près de chez vous</p>
+                <!-- Barre de recherche dans le hero -->
+                <div class="hero-search-section">
+                    <span class="hero-search-label">Recherchez votre prochaine sortie</span>
 
-            <!-- Barre de recherche dans le hero -->
-            <div class="hero-search-section">
-                <span class="hero-search-label">Recherchez votre prochaine sortie</span>
-
-                <form action="{{ path('app_sortie') }}" method="get">
-                    <div class="search-container">
-                        <!-- Recherche par nom -->
-                        <div class="search-section">
-                            <div class="search-label">
-                                <i class="fas fa-search"></i> Nom de la sortie
+                    <form action="{{ path('app_sortie') }}" method="get">
+                        <div class="search-container">
+                            <!-- Recherche par nom -->
+                            <div class="search-section">
+                                <div class="search-label">
+                                    <i class="fas fa-search"></i> Nom de la sortie
+                                </div>
+                                <input type="text" name="nom_sortie" class="search-input"
+                                       placeholder="Rechercher une sortie...">
                             </div>
-                            <input type="text" name="nom_sortie" class="search-input"
-                                   placeholder="Rechercher une sortie...">
+
+                            <!-- Dates -->
+                            <div class="search-section">
+                                <div class="search-label">
+                                    <i class="fas fa-calendar-alt"></i> Date de début
+                                </div>
+                                <input type="text" name="date_debut" id="date-debut" class="search-input"
+                                       placeholder="À partir du..." readonly>
+                            </div>
+
+                            <div class="search-section">
+                                <div class="search-label">
+                                    <i class="fas fa-calendar-check"></i> Date de fin
+                                </div>
+                                <input type="text" name="date_fin" id="date-fin" class="search-input"
+                                       placeholder="Jusqu'au..." readonly>
+                            </div>
+
+                            <!-- Bouton de recherche -->
+                            <button type="submit" class="search-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
                         </div>
 
-                        <!-- Dates -->
-                        <div class="search-section">
-                            <div class="search-label">
-                                <i class="fas fa-calendar-alt"></i> Date de début
-                            </div>
-                            <input type="text" name="date_debut" id="date-debut" class="search-input"
-                                   placeholder="À partir du..." readonly>
+                        <!-- Filtres avancés (checkboxes) -->
+                        <div class="search-filters">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="organisateur" value="1">
+                                <span><i class="fas fa-user-tie"></i> Sorties que j'organise</span>
+                            </label>
+
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="inscrit" value="1">
+                                <span><i class="fas fa-check-circle"></i> Sorties auxquelles je participe</span>
+                            </label>
+
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="non_inscrit" value="1">
+                                <span><i class="fas fa-times-circle"></i> Sorties auxquelles je ne participe pas</span>
+                            </label>
+
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="passees" value="1">
+                                <span><i class="fas fa-history"></i> Sorties passées</span>
+                            </label>
                         </div>
-
-                        <div class="search-section">
-                            <div class="search-label">
-                                <i class="fas fa-calendar-check"></i> Date de fin
-                            </div>
-                            <input type="text" name="date_fin" id="date-fin" class="search-input"
-                                   placeholder="Jusqu'au..." readonly>
-                        </div>
-
-                        <!-- Bouton de recherche -->
-                        <button type="submit" class="search-btn">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-
-                    <!-- Filtres avancés (checkboxes) -->
-                    <div class="search-filters">
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="organisateur" value="1">
-                            <span><i class="fas fa-user-tie"></i> Sorties que j'organise</span>
-                        </label>
-
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="inscrit" value="1">
-                            <span><i class="fas fa-check-circle"></i> Sorties auxquelles je participe</span>
-                        </label>
-
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="non_inscrit" value="1">
-                            <span><i class="fas fa-times-circle"></i> Sorties auxquelles je ne participe pas</span>
-                        </label>
-
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="passees" value="1">
-                            <span><i class="fas fa-history"></i> Sorties passées</span>
-                        </label>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
 
-            <!-- Filtres rapides -->
-            <div class="quick-filters">
-                <a href="{{ path('app_sortie', {inscrit: 1}) }}" class="filter-chip">
-                    <i class="fas fa-user-check"></i> Mes inscriptions
-                </a>
-                <a href="{{ path('app_sortie', {organisateur: 1}) }}" class="filter-chip">
-                    <i class="fas fa-crown"></i> Mes sorties
-                </a>
-                <a href="{{ path('app_sortie') }}" class="filter-chip">
-                    <i class="fas fa-compass"></i> Découvrir
-                </a>
+            <div class="hero-image">
+                <img src="{{ asset('assets/images/niort-fond.jpg') }}" alt="Niort">
             </div>
-        </div>
-
-        <!-- Scroll indicator -->
-        <div class="scroll-indicator">
-            <i class="fas fa-chevron-down"></i>
         </div>
     </section>
 
-    <!-- Sorties à la une -->
-    <section class="featured-section">
-        <div class="section-container">
-            <div class="section-header-modern">
-                <div>
-                    <span class="section-subtitle">Événements populaires</span>
-                    <h2 class="section-title-modern">À ne pas manquer</h2>
-                </div>
-                <a href="{{ path('app_sortie') }}" class="link-arrow">
-                    Voir tout <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
+    <!-- Sorties Section -->
+    <section class="sorties-section">
+        <div class="section-header">
+            <h2 class="section-title">Prochaines sorties</h2>
+            <a href="{{ path('app_sortie') }}" class="see-all">
+                Voir tout <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
 
-            {% if sorties|length > 0 %}
-                <div class="sorties-modern-grid">
-                    {% for sortie in sorties|slice(0, 6) %}
-                        <article class="sortie-modern-card" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
-                            <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="card-link-overlay"></a>
-
-                            <div class="card-image-wrapper">
-                                {% if sortie.photoSortie %}
-                                    <img src="{{ asset('uploads/sorties/' ~ sortie.photoSortie) }}"
-                                         alt="{{ sortie.nom }}"
-                                         class="card-image">
+        <div class="sorties-grid">
+            {% for sortie in sorties|slice(0, 6) %}
+                <div class="sortie-card">
+                    <div class="sortie-image">
+                        {% if sortie.photoSortie %}
+                            <img src="{{ asset('uploads/sorties/' ~ sortie.photoSortie) }}"
+                                 alt="{{ sortie.nom }}"
+                                 class="card-image">
+                        {% else %}
+                            <div class="card-image-placeholder">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                        {% endif %}
+                        <span class="sortie-badge">{{ sortie.etat.value }}</span>
+                    </div>
+                    <div class="sortie-content">
+                        <h3 class="sortie-title">{{ sortie.nom }}</h3>
+                        <div class="sortie-meta">
+                            <div class="sortie-date">
+                                <i class="fas fa-calendar"></i>
+                                {% if sortie.dateHeureDebut %}
+                                    {{ sortie.dateHeureDebut|date('d/m/Y à H:i') }}
                                 {% else %}
-                                    <div class="card-image-placeholder">
-                                        <i class="fas fa-calendar-alt"></i>
-                                    </div>
-                                {% endif %}
-
-                                <!-- Badge état -->
-                                {% if sortie.etat.value == 'Ouverte' %}
-                                    <span class="card-badge badge-open">
-                                        <i class="fas fa-check-circle"></i> Ouvert
-                                    </span>
-                                {% elseif sortie.participants|length >= sortie.nbInscriptionMax %}
-                                    <span class="card-badge badge-full">
-                                        <i class="fas fa-users"></i> Complet
-                                    </span>
+                                    Date à définir
                                 {% endif %}
                             </div>
-
-                            <div class="card-content-modern">
-                                <div class="card-meta">
-                                    <span class="card-date">
-                                        <i class="fas fa-calendar"></i>
-                                        {{ sortie.dateHeureDebut|date('d M') }}
-                                    </span>
-                                    <span class="card-participants">
-                                        <i class="fas fa-users"></i>
-                                        {{ sortie.participants|length }}/{{ sortie.nbInscriptionMax }}
-                                    </span>
-                                </div>
-
-                                <h3 class="card-title-modern">{{ sortie.nom }}</h3>
-
-                                <div class="card-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    {{ sortie.lieu.nom ?? 'Lieu à définir' }}
-                                </div>
-
-                                <div class="card-footer-modern">
-                                    <div class="organizer-mini">
-                                        <div class="organizer-mini-avatar">
-                                            {% if sortie.organisateur and sortie.organisateur.getAvatarPath() %}
-                                                <img src="{{ asset(sortie.organisateur.getAvatarPath()) }}" alt="Avatar">
-                                            {% else %}
-                                                <span>{{ sortie.organisateur.prenom|first|upper }}{{ sortie.organisateur.nom|first|upper }}</span>
-                                            {% endif %}
-                                        </div>
-                                        <span class="organizer-mini-name">
-                                            {{ sortie.organisateur.prenom }}
-                                        </span>
-                                    </div>
-
-                                    <div class="card-action">
-                                        <i class="fas fa-arrow-right"></i>
-                                    </div>
-                                </div>
+                            <div class="sortie-lieu">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ sortie.lieu.nom ?? 'Lieu à définir' }}
                             </div>
-                        </article>
-                    {% endfor %}
+                        </div>
+                        <div class="sortie-footer">
+                            <div class="sortie-info">
+                                <i class="fas fa-clock"></i>
+                                <span class="sortie-duree">{{ sortie.duree }} min</span>
+                            </div>
+                            <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn-join">
+                                <i class="fas fa-eye"></i> Voir détails
+                            </a>
+                        </div>
+                    </div>
                 </div>
             {% else %}
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-calendar-plus"></i>
-                    </div>
+                <div class="no-sorties">
+                    <i class="fas fa-inbox fa-4x"></i>
                     <h3>Aucune sortie disponible</h3>
-                    <p>Soyez le premier à créer une sortie pour votre communauté</p>
-                    {% if app.user %}
-                        <a href="{{ path('sortie_create') }}" class="btn-primary-modern">
-                            <i class="fas fa-plus"></i> Créer une sortie
-                        </a>
-                    {% endif %}
+                    <p>Soyez le premier à créer une sortie !</p>
+                    <a href="{{ path('sortie_create') }}" class="btn-primary-large">
+                        <i class="fas fa-plus-circle"></i> Créer une sortie
+                    </a>
                 </div>
-            {% endif %}
+            {% endfor %}
         </div>
     </section>
 
-    <!-- Stats Section Moderne -->
-    <section class="stats-modern">
-        <div class="section-container">
-            <div class="stats-grid-modern">
-                <div class="stat-card-modern" data-aos="zoom-in">
-                    <div class="stat-icon">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number" data-target="{{ sortiesDisponibles }}">0</div>
-                        <div class="stat-label">Sorties actives</div>
-                    </div>
-                </div>
-
-                <div class="stat-card-modern" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="stat-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number" data-target="{{ participantsActifs }}">0</div>
-                        <div class="stat-label">Membres actifs</div>
-                    </div>
-                </div>
-
-                <div class="stat-card-modern" data-aos="zoom-in" data-aos-delay="200">
-                    <div class="stat-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number" data-target="{{ organisateurs }}">0</div>
-                        <div class="stat-label">Organisateurs</div>
-                    </div>
-                </div>
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-container">
+            <div class="stat-item">
+                <i class="fas fa-calendar-check fa-3x"></i>
+                <div class="stat-number">{{ sorties|length }}</div>
+                <div class="stat-label">Sorties disponibles</div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-users fa-3x"></i>
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Participants actifs</div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-user-tie fa-3x"></i>
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Organisateurs</div>
             </div>
         </div>
     </section>
-
-    <!-- CTA Section -->
-    <section class="cta-modern">
-        <div class="section-container">
-            <div class="cta-content-modern">
-                <div class="cta-text">
-                    <h2 class="cta-title-modern">Prêt à vivre de nouvelles expériences ?</h2>
-                    <p class="cta-subtitle-modern">
-                        Rejoignez notre communauté et découvrez des sorties qui vous ressemblent
-                    </p>
-                </div>
-                <div class="cta-actions">
-                    {% if app.user %}
-                        <a href="{{ path('sortie_create') }}" class="btn-primary-modern btn-large">
-                            <i class="fas fa-plus-circle"></i> Créer une sortie
-                        </a>
-                        <a href="{{ path('app_sortie') }}" class="btn-secondary-modern btn-large">
-                            <i class="fas fa-compass"></i> Explorer
-                        </a>
-                    {% else %}
-                        <a href="{{ path('app_register') }}" class="btn-primary-modern btn-large">
-                            <i class="fas fa-user-plus"></i> S'inscrire
-                        </a>
-                        <a href="{{ path('app_login') }}" class="btn-secondary-modern btn-large">
-                            <i class="fas fa-sign-in-alt"></i> Se connecter
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </section>
-
     {% include 'partials/_footer.html.twig' %}
+
 {% endblock %}
 
 {% block javascripts %}
-    <!-- AOS (Animate On Scroll) -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 
     <script>
         // Images de fond aléatoires pour le hero
@@ -293,55 +197,78 @@
     </script>
 
     <script>
-        // Initialiser AOS
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 100
-        });
-
-        // Animation des compteurs
         document.addEventListener('DOMContentLoaded', function() {
-            const counters = document.querySelectorAll('.stat-number');
-
-            const animateCounter = (counter) => {
-                const target = parseInt(counter.getAttribute('data-target'));
-                const duration = 2000;
-                const step = target / (duration / 16);
-                let current = 0;
-
-                const updateCounter = () => {
-                    current += step;
-                    if (current < target) {
-                        counter.textContent = Math.floor(current);
-                        requestAnimationFrame(updateCounter);
-                    } else {
-                        counter.textContent = target;
-                    }
-                };
-
-                updateCounter();
-            };
-
-            // Observer pour déclencher l'animation quand visible
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        animateCounter(entry.target);
-                        observer.unobserve(entry.target);
-                    }
-                });
+            // Messages flash avec SweetAlert2
+            {% for message in app.flashes('success') %}
+            Swal.fire({
+                icon: 'success',
+                title: 'Succès !',
+                text: '{{ message|escape('js') }}',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end',
+                background: '#d4edda',
+                color: '#155724',
+                iconColor: '#28a745'
             });
+            {% endfor %}
 
-            counters.forEach(counter => observer.observe(counter));
+            {% for message in app.flashes('danger') %}
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: '{{ message|escape('js') }}',
+                confirmButtonColor: '#dc3545',
+                confirmButtonText: 'Compris'
+            });
+            {% endfor %}
 
-            // Scroll indicator
-            const scrollIndicator = document.querySelector('.scroll-indicator');
-            if (scrollIndicator) {
-                scrollIndicator.addEventListener('click', () => {
-                    document.querySelector('.featured-section').scrollIntoView({
-                        behavior: 'smooth'
-                    });
+            {% for message in app.flashes('warning') %}
+            Swal.fire({
+                icon: 'warning',
+                title: 'Attention',
+                text: '{{ message|escape('js') }}',
+                confirmButtonColor: '#ffc107',
+                confirmButtonText: 'OK'
+            });
+            {% endfor %}
+
+            {% for message in app.flashes('info') %}
+            Swal.fire({
+                icon: 'info',
+                title: 'Information',
+                text: '{{ message|escape('js') }}',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
+            {% endfor %}
+
+            // Initialisation Flatpickr pour date début
+            const dateDebut = document.getElementById('date-debut');
+            if (dateDebut) {
+                flatpickr(dateDebut, {
+                    dateFormat: "Y-m-d",
+                    altInput: true,
+                    altFormat: "d/m/Y",
+                    locale: "fr",
+                    minDate: "today"
+                });
+            }
+
+            // Initialisation Flatpickr pour date fin
+            const dateFin = document.getElementById('date-fin');
+            if (dateFin) {
+                flatpickr(dateFin, {
+                    dateFormat: "Y-m-d",
+                    altInput: true,
+                    altFormat: "d/m/Y",
+                    locale: "fr",
+                    minDate: "today"
                 });
             }
         });
