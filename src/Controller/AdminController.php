@@ -241,6 +241,7 @@ class AdminController extends AbstractController
     }
 
     #[Route('/sortie/{id}/delete', name: 'sortie_delete_admin', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(
         Sortie $sortie,
         Request $request,
@@ -270,29 +271,33 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function deleteUser(
         Participant $participant,
         Request $request,
         EntityManagerInterface $em
     ): Response {
 
-        if (!$this->isCsrfTokenValid('delete'.$participant->getId(), $request->request->get('_token'))) {
+        $csrfToken = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('delete' . $participant->getId(), $csrfToken)) {
             $this->addFlash('danger', 'Action non autorisée.');
             return $this->redirectToRoute('admin_users');
         }
 
-        // Archiver les sorties organisées par l'utilisateur
-        $sortiesOrganisees = $em->getRepository(Sortie::class)->findBy(['organisateur' => $participant]);
+        $sortiesOrganisees = $em->getRepository(Sortie::class)
+            ->findBy(['organisateur' => $participant]);
 
         foreach ($sortiesOrganisees as $sortie) {
-            $sortie->setEtat(\App\Enum\Etat::ARCHIVEE);
-            $em->persist($sortie);
+            $sortie->setEtat(Etat::CANCELLED);
         }
 
         $em->remove($participant);
         $em->flush();
 
-        $this->addFlash('success', 'Utilisateur supprimé et ses sorties archivées avec succès.');
+        $this->addFlash(
+            'success',
+            'Utilisateur supprimé et ses sorties organisées ont été annulées avec succès.'
+        );
 
         return $this->redirectToRoute('admin_users');
     }
@@ -395,7 +400,6 @@ class AdminController extends AbstractController
         $this->addFlash('success', 'Participant ajouté avec succès.');
         return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
     }
-
 
 
     #[Route('/sortie/{id}/change-organizer', name: 'admin_change_organizer', methods: ['POST'])]
